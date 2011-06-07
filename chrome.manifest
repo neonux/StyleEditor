@@ -1,0 +1,4 @@
+content StyleEditor content/
+overlay chrome://browser/content/browser.xul chrome://StyleEditor/content/browser_overlay.xul
+locale StyleEditor en-US locale/en-US/
+skin StyleEditor classic/1.0 skin/

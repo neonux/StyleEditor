@@ -1,0 +1,9 @@
+Style Editor Preferences Documentation
+======================================
+
+Preference knobs available (in about:config) :
+
+* devtools.style_editor.debug
+  boolean
+  If true, debug knobs are visible in the UI and AST changes are logged.
+
