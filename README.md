@@ -43,7 +43,7 @@ make test
 
 Example to embed Style Editor in a textbox to edit a new stylesheet :
 
-Components.utils.import("chrome://StyleEditor/content/StyleEditor.js");
+Components.utils.import("chrome://StyleEditor/content/StyleEditor.jsm");
 let editor = new StyleEditor(aContentDocumentYouWantToEdit);
 editor.inputElement = document.getElementById("id_of_a_xul_textbox");
 editor.load();
