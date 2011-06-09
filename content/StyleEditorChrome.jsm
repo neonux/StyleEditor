@@ -359,7 +359,7 @@ StyleEditorChrome.prototype = {
     item.setUserData("editor", aEditor, null);
 
     let checkbox = this._xul("checkbox", "stylesheet-enabled");
-    checkbox.setAttribute("tooltiptext", "Toggle this stylesheet");
+    checkbox.setAttribute("tooltiptext", "&enabledButton.tooltip;");
     checkbox.addEventListener("command", function onToggleStyleSheet(evt) {
       evt.stopPropagation();
       aEditor.enableStyleSheet(evt.target.checked);
