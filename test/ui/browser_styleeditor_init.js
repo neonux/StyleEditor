@@ -48,6 +48,9 @@ function run()
   });
   is(apiCount, 2, "iterated 2 stylesheets");
 
+  // check editors API
+  is(SEC.editors.length, 2, "got 2 editors");
+
   // check we got document's style sheets in the list
   let listBox = gChromeWindow.document.querySelector("richlistbox");
   let listItems = listBox.querySelectorAll("richlistitem");
@@ -64,9 +67,8 @@ function run()
   let ruleCount = listItems[0].querySelector(".stylesheet-rule-count").value;
   is(parseInt(ruleCount), 1, "first stylesheet list item counts 1 rule");
 
-  ruleCount = listItems[1].querySelector(".stylesheet-rule-count").ovalue;
+  ruleCount = listItems[1].querySelector(".stylesheet-rule-count").value;
   is(parseInt(ruleCount), 3, "second stylesheet list item counts 3 rules");
 
   finish();
 }
-

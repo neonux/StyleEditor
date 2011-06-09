@@ -115,6 +115,21 @@ StyleEditorChrome.prototype = {
   },
 
   /**
+   * Retrieve an array with the StyleEditor instance for each style sheet,
+   * ordered by style sheet index.
+   *
+   * @return Array<StyleEditor>
+   */
+  get editors()
+  {
+    let editors = [];
+    this.forEachStyleSheet(function (aEditor) {
+      editors[aEditor.styleSheetIndex] = aEditor;
+    });
+    return editors;
+  },
+
+  /**
    * Set up the chrome UI. Install event listeners and so on.
    */
   _setupChrome: function SEC__setupChrome()
