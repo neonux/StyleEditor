@@ -157,7 +157,7 @@ StyleEditorChrome.prototype = {
    */
   forEachStyleSheet: function SEC_forEachStyleSheet(aCallback)
   {
-    let items = this._UI.styleSheetList.children;
+    let items = this._UI.styleSheetList.childNodes;
     for (let i = 0; i < items.length; ++i) {
       let editor = items[i].getUserData("editor");
       if (editor && aCallback(editor, items[i])) {
@@ -195,13 +195,20 @@ StyleEditorChrome.prototype = {
   /**
    * Retrieve the Stylesheets list item for an editor.
    *
-   * @param StylEditor aEditor
+   * @param StyleEditor aEditor
    * @return DOMElement
    *         Item element for the editor in Stylesheets list, null otherwise.
    */
   _getItemForEditor: function SEC__getItemForEditor(aEditor)
   {
-    return this._UI.styleSheetList.children[aEditor.styleSheetIndex] || null;
+    let item = null;
+    this.forEachStyleSheet(function (aOneEditor, aItem) {
+      if (aOneEditor == aEditor) {
+        item = aItem;
+        return true;
+      }
+    });
+    return item;
   },
 
   /**
@@ -297,9 +304,6 @@ StyleEditorChrome.prototype = {
   _updateItemForEditor: function SEC__updateItemForEditor(aEditor)
   {
     let item = this._getItemForEditor(aEditor);
-    if (!item) {
-      return; // editor has not been loaded yet
-    }
 
     item.className = aEditor.flags;
 
@@ -318,7 +322,7 @@ StyleEditorChrome.prototype = {
   {
     let tabPanel = this._getTabForEditor(aEditor);
     if (!tabPanel) {
-      return; // editor has not been loaded yet
+      return; // editor is not open
     }
 
     let tab = tabPanel.getUserData("tab");
@@ -349,7 +353,6 @@ StyleEditorChrome.prototype = {
     item.setUserData("editor", aEditor, null);
 
     let checkbox = this._xul("checkbox", "stylesheet-enabled");
-    checkbox.setAttribute("checked", (!styleSheet.disabled) ? "true" : "false");
     checkbox.setAttribute("tooltiptext", "Toggle this stylesheet");
     checkbox.addEventListener("command", function onToggleStyleSheet(evt) {
       evt.stopPropagation();
@@ -395,7 +398,7 @@ StyleEditorChrome.prototype = {
 
     // insert item at the correct index
     // (editor load is asynchronous so we have to check now where to insert)
-    let insertionPoint = this._UI.styleSheetList.firstChild;
+    let insertionPoint = this._UI.styleSheetList.firstElementChild;
     while (insertionPoint) {
       let itemEditor = insertionPoint.getUserData("editor");
       if (itemEditor.styleSheetIndex > aEditor.styleSheetIndex) {
