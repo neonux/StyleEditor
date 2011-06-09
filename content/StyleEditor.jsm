@@ -85,6 +85,7 @@ function StyleEditor(aDocument, aStyleSheet)
   this._styleSheetIndex = -1; // unknown for now, will be set after load
 
   this._flags = [];           // @see flags
+  this._savedFile = null;     // @see savedFile
 
   // listeners for significant editor actions. @see addActionListener
   this._actionListeners = [];
@@ -169,12 +170,11 @@ StyleEditor.prototype = {
   },
 
   /**
-   * Retrieve the NodeList of parsed nodes.
+   * Retrieve the last nsIFile this editor has been saved to or null if none.
    *
-   * @return NodeList
-   * @see StyleEditorParser.getNodeList
+   * @return nsIFile
    */
-  get nodeList() this._nodeList,
+  get savedFile() this._savedFile,
 
   /**
    * Load style sheet source into the editor, asynchronously.
@@ -197,6 +197,10 @@ StyleEditor.prototype = {
    */
   getFriendlyName: function SE_getFriendlyName()
   {
+    if (this.savedFile) { // reuse the saved filename if any
+      return this.savedFile.leafName;
+    }
+
     if (!this.styleSheet.href) {
       let index = this.styleSheetIndex + 1; // 0-indexing only works for devs
       return _("inlineStyleSheet", index);
@@ -358,6 +362,57 @@ StyleEditor.prototype = {
   },
 
   /**
+   * Save the editor contents into a file and set savedFile property.
+   * A file picker UI will open if file is not set and editor is not headless.
+   *
+   * @param aFile
+   *        Optional nsIFile or string representing the filename to save in the
+   *        background, no UI will be displayed.
+   *        To implement 'Save' instead of 'Save as', you can pass savedFile here.
+   * @see savedFile
+   */
+  saveToFile: function SE_saveToFile(aFile)
+  {
+    if (!aFile) {
+      assert(this.inputElement, "Argument 'aFile' is required when editor is headless");
+      let window = getDocumentForElement(this.inputElement).defaultView;
+      let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+
+      let title = _("saveStyleSheet.title");
+      filePicker.init(window, title, filePicker.modeSave);
+      filePicker.appendFilters(_("saveStyleSheet.filter"), "*.css");
+      filePicker.appendFilters(filePicker.filterAll);
+      //TODO: set defaultString to most likely filename wrt styleSheet.href
+      let rv = filePicker.show();
+      if (rv == filePicker.returnCancel) {
+        return;
+      }
+      aFile = filePicker.file;
+      this._savedFile = aFile; // remember filename
+    }
+
+    if (typeof(aFile) == "string") {
+      let localFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
+      localFile.initWithPath(aFile);
+      aFile = localFile;
+    }
+
+    let ostream = FileUtils.openSafeFileOutputStream(aFile);
+    let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
+                      .createInstance(Ci.nsIScriptableUnicodeConverter);
+    converter.charset = "UTF-8";
+    let istream = converter.convertToInputStream(this._driver.getText());
+
+    NetUtil.asyncCopy(istream, ostream, function SE_onStreamCopied(status) {
+      if (!Components.isSuccessCode(status)) {
+        return this._signalError(SAVE_ERROR);
+      }
+      FileUtils.closeSafeFileOutputStream(ostream);
+      this.clearFlag(this.UNSAVED_FLAG);
+    }.bind(this));
+  },
+
+  /**
    * Queue a throttled task to update style sheet with new source.
    */
   updateStyleSheet: function SE_updateStyleSheet()
@@ -378,6 +433,8 @@ StyleEditor.prototype = {
    */
   _updateStyleSheet: function SE__updateStyleSheet()
   {
+    this.setFlag(this.UNSAVED_FLAG);
+
     if (this.styleSheet.disabled) {
       return;
     }

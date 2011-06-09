@@ -69,8 +69,9 @@ const gStringBundle = Services.strings.createBundle(PROPERTIES_URL);
  */
 function _(aName)
 {
+
   if (arguments.length == 1) {
-    return gStringBundle.getStringFromName(aName);
+    return gStringBundle.GetStringFromName(aName);
   }
   let rest = Array.prototype.slice.call(arguments, 1);
   return gStringBundle.formatStringFromName(aName, rest, rest.length);

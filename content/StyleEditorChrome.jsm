@@ -291,6 +291,9 @@ StyleEditorChrome.prototype = {
       wire(document, ".stylesheet-enabled", function onEnabledButton() {
           aEditor.enableStyleSheet(this.checked);
       });
+      wire(document, ".stylesheet-save", function onSaveButton() {
+        aEditor.saveToFile(aEditor.savedFile);
+      });
 
       if (editorChrome.debugMode) {
         setupDebugUIForEditor(aEditor, document);

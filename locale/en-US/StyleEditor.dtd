@@ -14,9 +14,15 @@
 <!ENTITY newButton.accesskey       "N">
 <!ENTITY newButton.commandkey      "n">
 
+
 <!ENTITY enabledButton.label       "Enabled">
 <!ENTITY enabledButton.tooltip     "Enable or disable this stylesheet">
 <!ENTITY enabledButton.accesskey   "E">
+
+<!ENTITY saveButton.label           "Save">
+<!ENTITY saveButton.tooltip         "Save this stylesheet to a file">
+<!ENTITY saveButton.accesskey       "S">
+<!ENTITY saveButton.commandkey      "s">
 
 <!-- LOCALICATION NOTE  (scoped.label): This is shown in a stylesheets list item
      when the stylesheet uses the scoped attribute on the <style> element. -->

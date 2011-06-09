@@ -41,7 +41,7 @@
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 <?xml-stylesheet href="chrome://StyleEditor/skin/StyleEditor.css" type="text/css"?>
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        id="style-editor-standalone-window"
+        id="style-editor-standalone"
         title="&window.title;"
         windowtype="Tools:StyleEditor"
         persist="screenX screenY width height sizemode">
@@ -53,6 +53,10 @@
                    label="&enabledButton.label;"
                    tooltiptext="&enabledButton.tooltip;"
                    accesskey="&enabledButton.accesskey;"/>
+    <toolbarbutton class="stylesheet-save hidden"
+                   label="&saveButton.label;"
+                   tooltiptext="&saveButton.tooltip;"
+                   accesskey="&saveButton.accesskey;"/>
   </toolbar>
   <notificationbox flex="1">
     <textbox class="stylesheet-editor-input" multiline="true" flex="1"></textbox>
