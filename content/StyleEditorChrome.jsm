@@ -247,7 +247,11 @@ StyleEditorChrome.prototype = {
     }
 
     this._UI.tabPanels.selectedPanel = tabPanel;
-    this._UI.tabs.selectedIndex = this._UI.tabPanels.selectedIndex;
+    this._UI.tabs.selectedIndex = this._UI.tabPanels.selectedIndex
+
+    if (aEditor.inputElement) {
+      aEditor.inputElement.focus();
+    }
     return tabPanel;
   },
 
@@ -291,6 +295,8 @@ StyleEditorChrome.prototype = {
       if (editorChrome.debugMode) {
         setupDebugUIForEditor(aEditor, document);
       }
+
+      aEditor.inputElement.focus();
     }, false);
 
     return tabPanel;

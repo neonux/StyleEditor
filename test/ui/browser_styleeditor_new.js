@@ -5,7 +5,7 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
-const TAB_CREATION_DELAY = 100;
+const TAB_CREATION_DELAY = 500;
 const UPDATE_STYLESHEET_THROTTLE_DELAY = 1000;
 
 
@@ -65,8 +65,8 @@ function run()
 
     ok(newEditor.inputElement, "editor is opened and input element attached");
 
-    let focused = newEditor.window.document.querySelector(":focus");
-    is(focused, newEditor.inputElement, "editor input element has focus");
+    let focused = newEditor.window.document.commandDispatcher.focusedElement;
+    ok(focused, "editor has focus");
 
     //FIXME: should rather use EventUtils.sendString but it depends on jQuery!?
     newEditor.inputElement.value = "body{background-color:red;}";

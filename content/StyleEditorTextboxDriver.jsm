@@ -99,7 +99,8 @@ StyleEditorTextboxDriver.prototype = {
       }
 
       aElement.value = previousTextbox.value;
-      //TODO: preserve caret position
+      aElement.selectionStart = previousTextbox.selectionStart;
+      aElement.selectionEnd = previousTextbox.selectionEnd;
     }
 
     // this is a code editor so...
