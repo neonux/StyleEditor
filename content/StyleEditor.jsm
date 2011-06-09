@@ -369,6 +369,9 @@ StyleEditor.prototype = {
    *        Optional nsIFile or string representing the filename to save in the
    *        background, no UI will be displayed.
    *        To implement 'Save' instead of 'Save as', you can pass savedFile here.
+   * @return nsIFile
+   *         Return the nsIFile object for saved file, or null if save has been
+   *         canceled by the user.
    * @see savedFile
    */
   saveToFile: function SE_saveToFile(aFile)
@@ -385,7 +388,7 @@ StyleEditor.prototype = {
       //TODO: set defaultString to most likely filename wrt styleSheet.href
       let rv = filePicker.show();
       if (rv == filePicker.returnCancel) {
-        return;
+        return null;
       }
       aFile = filePicker.file;
       this._savedFile = aFile; // remember filename
@@ -410,6 +413,8 @@ StyleEditor.prototype = {
       FileUtils.closeSafeFileOutputStream(ostream);
       this.clearFlag(this.UNSAVED_FLAG);
     }.bind(this));
+
+    return aFile;
   },
 
   /**

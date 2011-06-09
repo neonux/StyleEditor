@@ -64,6 +64,11 @@
                          label="&newButton.label;"
                          tooltiptext="&newButton.tooltip;"
                          accesskey="&newButton.accesskey;"/>
+          <toolbarbutton id="style-editor-saveAllButton"
+                         class="hidden"
+                         label="&saveAllButton.label;"
+                         tooltiptext="&saveAllButton.tooltip;"
+                         accesskey="&saveAllButton.accesskey;"/>
         </toolbar>
         <notificationbox id="style-editor-styleSheetListNotification" flex="1">
           <richlistbox id="style-editor-styleSheetList" flex="1"></richlistbox>

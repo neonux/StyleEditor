@@ -14,6 +14,11 @@
 <!ENTITY newButton.accesskey       "N">
 <!ENTITY newButton.commandkey      "n">
 
+<!ENTITY saveAllButton.label       "Save all">
+<!ENTITY saveAllButton.tooltip     "Save all stylesheets with unsaved modifications">
+<!ENTITY saveAllButton.accesskey   "S">
+<!ENTITY saveAllButton.commandkey  "s">
+
 
 <!ENTITY enabledButton.label       "Enabled">
 <!ENTITY enabledButton.tooltip     "Enable or disable this stylesheet">

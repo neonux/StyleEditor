@@ -138,6 +138,7 @@ StyleEditorChrome.prototype = {
     this._UI.styleSheetList = this._root.querySelector("#style-editor-styleSheetList");
     this._UI.tabPanels = this._root.querySelector("#style-editor-tabPanels");
     this._UI.tabs = this._root.querySelector("#style-editor-tabs");
+    this._UI.saveAllButton = this._root.querySelector("#style-editor-saveAllButton");
 
     // wire up UI elements
     wire(this._root, "#style-editor-newButton", function onNewButton() {
@@ -145,6 +146,16 @@ StyleEditorChrome.prototype = {
       editor.addActionListener(this);
       editor.load();
       this._openTabForEditor(editor);
+    }.bind(this));
+    wire(this._root, this._UI.saveAllButton, function onSaveAllButton() {
+      this.forEachStyleSheet(function saveIfUnsaved(aEditor) {
+        if (!aEditor.hasFlag(aEditor.UNSAVED_FLAG)) {
+          return;
+        }
+        if (aEditor.saveToFile(aEditor.savedFile)) {
+          this._unsavedCount--;
+        }
+      });
     }.bind(this));
   },
 
@@ -467,6 +478,12 @@ StyleEditorChrome.prototype = {
   {
     this._updateItemForEditor(aEditor);
     this._updateTabForEditor(aEditor);
+
+    if (aFlagName == aEditor.UNSAVED_FLAG) {
+      /* display Save All button when there is at least one unsaved editor */
+      this._unsavedCount = this._unsavedCount || 0;
+      this._unsavedCount += aEditor.hasFlag(aEditor.UNSAVED_FLAG) ? 1 : -1;
+      this._UI.saveAllButton.className = this._unsavedCount ? "" : "hidden";
+    }
   }
 };
-
