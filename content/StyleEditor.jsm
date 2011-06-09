@@ -225,6 +225,11 @@ StyleEditor.prototype = {
   addActionListener: function SE_addActionListener(aListener)
   {
     this._actionListeners.push(aListener);
+    if (this._loaded) { // trigger load event when already loaded
+      if (aListener.onLoad) {
+        aListener.onLoad(this);
+      }
+    }
   },
 
   /**
@@ -467,6 +472,7 @@ StyleEditor.prototype = {
     this._driver.setText(aSourceText);
     this._driver.setCaretPosition(0);
     this._triggerAction("Load");
+    this._loaded = true;
   },
 
   /**
