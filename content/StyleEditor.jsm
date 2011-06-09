@@ -397,7 +397,7 @@ StyleEditor.prototype = {
   {
     if (!this.styleSheet.href) {
       // this is an inline <style> sheet
-      this.setFlag(this.INLINE_FLAG);
+      this._flags.push(this.INLINE_FLAG);
       this._onSourceLoad(this.styleSheet.ownerNode.textContent);
       return;
     }
@@ -481,7 +481,7 @@ StyleEditor.prototype = {
     parent.appendChild(style);
 
     this._styleSheet = document.styleSheets[document.styleSheets.length - 1];
-    this.setFlag(this.NEW_FLAG);
+    this._flags.push(this.NEW_FLAG);
   },
 
   /**
