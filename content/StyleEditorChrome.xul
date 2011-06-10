@@ -64,6 +64,10 @@
                          label="&newButton.label;"
                          tooltiptext="&newButton.tooltip;"
                          accesskey="&newButton.accesskey;"/>
+          <toolbarbutton id="style-editor-importButton"
+                         label="&importButton.label;"
+                         tooltiptext="&importButton.tooltip;"
+                         accesskey="&importButton.accesskey;"/>
           <toolbarbutton id="style-editor-saveAllButton"
                          class="hidden"
                          label="&saveAllButton.label;"

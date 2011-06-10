@@ -177,6 +177,35 @@ StyleEditor.prototype = {
   get savedFile() this._savedFile,
 
   /**
+   * Import style sheet from file and load it into the editor asynchronously.
+   * "Load" action triggers when complete.
+   *
+   * @param mixed aFile
+   *        Optional nsIFile or filename string.
+   *        If not set a file picker will be shown.
+   * @param nsIWindow aParentWindow
+   *        Optional parent window for the file picker.
+   */
+  importFromFile: function SE_import(aFile, aParentWindow) {
+    aFile = this._showFilePicker(aFile, false, aParentWindow);
+    if (!aFile) {
+      return;
+    }
+    this._savedFile = aFile; // remember filename for next save if any
+
+    NetUtil.asyncFetch(aFile, function onAsyncFetch(aStream, aStatus) {
+      if (!Components.isSuccessCode(aStatus)) {
+        return this._signalError(LOAD_ERROR);
+      }
+      let source = NetUtil.readInputStreamToString(aStream, aStream.available());
+      aStream.close();
+
+      this._appendNewStyleSheet(source);
+      this._loadSource();
+    }.bind(this));
+  },
+
+  /**
    * Load style sheet source into the editor, asynchronously.
    * "Load" action triggers when complete.
    *
@@ -185,6 +214,7 @@ StyleEditor.prototype = {
   load: function SE_load()
   {
     if (!this._styleSheet) {
+      this._flags.push(this.NEW_FLAG);
       this._appendNewStyleSheet();
     }
     this._loadSource();
@@ -365,7 +395,7 @@ StyleEditor.prototype = {
    * Save the editor contents into a file and set savedFile property.
    * A file picker UI will open if file is not set and editor is not headless.
    *
-   * @param aFile
+   * @param mixed aFile
    *        Optional nsIFile or string representing the filename to save in the
    *        background, no UI will be displayed.
    *        To implement 'Save' instead of 'Save as', you can pass savedFile here.
@@ -376,29 +406,11 @@ StyleEditor.prototype = {
    */
   saveToFile: function SE_saveToFile(aFile)
   {
+    aFile = this._showFilePicker(aFile, true);
     if (!aFile) {
-      assert(this.inputElement, "Argument 'aFile' is required when editor is headless");
-      let window = getDocumentForElement(this.inputElement).defaultView;
-      let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
-
-      let title = _("saveStyleSheet.title");
-      filePicker.init(window, title, filePicker.modeSave);
-      filePicker.appendFilters(_("saveStyleSheet.filter"), "*.css");
-      filePicker.appendFilters(filePicker.filterAll);
-      //TODO: set defaultString to most likely filename wrt styleSheet.href
-      let rv = filePicker.show();
-      if (rv == filePicker.returnCancel) {
-        return null;
-      }
-      aFile = filePicker.file;
-      this._savedFile = aFile; // remember filename
+      return;
     }
-
-    if (typeof(aFile) == "string") {
-      let localFile = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
-      localFile.initWithPath(aFile);
-      aFile = localFile;
-    }
+    this._savedFile = aFile; // remember filename
 
     let ostream = FileUtils.openSafeFileOutputStream(aFile);
     let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
@@ -455,6 +467,45 @@ StyleEditor.prototype = {
     oldNode.parentNode.replaceChild(newNode, oldNode);
 
     this._styleSheet = this.contentDocument.styleSheets[oldIndex];
+  },
+
+  /**
+   * Show file picker and return the file user selected.
+   *
+   * @param mixed aFile
+   *        Optional nsIFile or string representing the filename to auto-select.
+   * @param boolean aSave
+   *        If true, the user is selecting a filename to save.
+   * @param nsIWindow aParentWindow
+   *        Optional parent window. If null the parent window of the file picker
+   *        will be the window of the attached input element.
+   * @return nsIFile
+   *         The selected file or null if the user did not pick one.
+   */
+  _showFilePicker: function SE__showFilePicker(aFile, aSave, aParentWindow)
+  {
+    if (typeof(aFile) == "string") {
+      let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
+      file.initWithPath(aFile);
+      return file;
+    }
+    if (aFile) {
+      return aFile;
+    }
+
+    let window = aParentWindow
+                 ? aParentWindow
+                 : getDocumentForElement(this.inputElement).defaultView;
+    let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+    let mode = aSave ? fp.modeSave : fp.modeOpen;
+    let key = aSave ? "saveStyleSheet" : "importStyleSheet";
+
+    fp.init(window, _(key + ".title"), mode);
+    fp.appendFilters(_(key + ".filter"), "*.css");
+    fp.appendFilters(fp.filterAll);
+
+    let rv = fp.show();
+    return (rv == fp.returnCancel) ? null : fp.file;
   },
 
   /**
@@ -539,17 +590,22 @@ StyleEditor.prototype = {
 
   /**
    * Create a new style sheet and append it to the content document.
+   *
+   * @param string aText
+   *        Optional CSS text.
    */
-  _appendNewStyleSheet: function SE__appendNewStyleSheet()
+  _appendNewStyleSheet: function SE__appendNewStyleSheet(aText)
   {
     let document = this.contentDocument;
     let parent = document.body;
     let style = document.createElement("style");
     style.setAttribute("type", "text/css");
+    if (aText) {
+      style.appendChild(document.createTextNode(aText));
+    }
     parent.appendChild(style);
 
     this._styleSheet = document.styleSheets[document.styleSheets.length - 1];
-    this._flags.push(this.NEW_FLAG);
   },
 
   /**

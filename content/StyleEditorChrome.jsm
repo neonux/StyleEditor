@@ -147,6 +147,13 @@ StyleEditorChrome.prototype = {
       editor.load();
       this._openTabForEditor(editor);
     }.bind(this));
+
+    wire(this._root, "#style-editor-importButton", function onImportButton() {
+      let editor = new StyleEditor(this.contentDocument);
+      editor.addActionListener(this);
+      editor.importFromFile(null, this._window);
+    }.bind(this));
+
     wire(this._root, this._UI.saveAllButton, function onSaveAllButton() {
       this.forEachStyleSheet(function saveIfUnsaved(aEditor) {
         if (!aEditor.hasFlag(aEditor.UNSAVED_FLAG)) {

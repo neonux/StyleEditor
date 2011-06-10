@@ -14,6 +14,11 @@
 <!ENTITY newButton.accesskey       "N">
 <!ENTITY newButton.commandkey      "n">
 
+<!ENTITY importButton.label        "Import stylesheet">
+<!ENTITY importButton.tooltip      "Import and append an existing stylesheet to the page">
+<!ENTITY importButton.accesskey    "I">
+<!ENTITY importButton.commandkey   "i">
+
 <!ENTITY saveAllButton.label       "Save all">
 <!ENTITY saveAllButton.tooltip     "Save all stylesheets with unsaved modifications">
 <!ENTITY saveAllButton.accesskey   "S">
