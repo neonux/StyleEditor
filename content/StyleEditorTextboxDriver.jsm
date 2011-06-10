@@ -41,6 +41,10 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+const TAB_CHARS   = "\t";
+const INDENT_RE   = new RegExp("^", "gm");
+const UNINDENT_RE = new RegExp("^" + TAB_CHARS, "gm");
+
 
 /**
  * StyleEditorTextboxDriver constructor.
@@ -70,6 +74,7 @@ function StyleEditorTextboxDriver(parent) {
 
   // aEvent handlers
   // we bind them first here so we can remove listeners if textbox is detached
+  this._onKeydownBinding = this._onKeydown.bind(this);
   this._onInputBinding = this._onInput.bind(this);
 }
 
@@ -95,6 +100,7 @@ StyleEditorTextboxDriver.prototype = {
     if (previousTextbox) {
       if (previousTextbox != this._dummy) {
         // clean up stuff bound to the previous textbox
+        previousTextbox.removeEventListener("keydown", this._onKeydownBinding);
         previousTextbox.removeEventListener("input", this._onInputBinding);
       }
 
@@ -109,6 +115,7 @@ StyleEditorTextboxDriver.prototype = {
     // wire the stuff up
     this._textbox = aElement || this._dummy;
     if (aElement) {
+      aElement.addEventListener("keydown", this._onKeydownBinding, false);
       aElement.addEventListener("input", this._onInputBinding, false);
     }
   },
@@ -154,6 +161,37 @@ StyleEditorTextboxDriver.prototype = {
   },
 
   /**
+   * Event handler for 'keydown'.
+   *
+   * @param DOMEvent aEvent
+   */
+  _onKeydown: function SETD__onKeydown(aEvent)
+  {
+    if (aEvent.keyCode == aEvent.DOM_VK_TAB) {
+      aEvent.preventDefault();
+
+      let textbox = this.inputElement;
+      let selectionStart = textbox.selectionStart;
+      let selectionEnd = textbox.selectionEnd;
+
+      if (selectionStart == selectionEnd) {
+        // insert tab character
+        if (!aEvent.shiftKey) {
+          this._replaceText("", TAB_CHARS);
+        }
+        return;
+      }
+
+      // indent/unindent block
+      let oldBlock = textbox.value.substring(selectionStart, selectionEnd);
+      let newBlock = (!aEvent.shiftKey)
+                     ? oldBlock.replace(INDENT_RE, TAB_CHARS)
+                     : oldBlock.replace(UNINDENT_RE, "");
+      this._replaceText(oldBlock, newBlock);
+    }
+  },
+
+  /**
    * Event handler for 'input'.
    *
    * @param DOMEvent aEvent
@@ -161,6 +199,30 @@ StyleEditorTextboxDriver.prototype = {
   _onInput: function SETD__onInput(aEvent)
   {
     this._parent.updateStyleSheet();
+  },
+
+
+  /**
+   * Replace text at caret or within selection.
+   *
+   * @param string aOldText
+   * @param string aNewText
+   */
+  _replaceText: function SETD__replaceText(aOldText, aNewText)
+  {
+    let textbox = this.inputElement;
+    let selectionStart = textbox.selectionStart;
+    let selectionEnd = textbox.selectionEnd;
+    let caretAdjustment = aNewText.length - aOldText.length;
+
+    textbox.value = [textbox.value.substring(0, selectionStart),
+                     aNewText,
+                     textbox.value.substring(selectionEnd)].join("");
+
+    if (selectionStart == selectionEnd) {
+      selectionStart = selectionEnd + caretAdjustment;
+    }
+    textbox.setSelectionRange(selectionStart,
+                              selectionEnd + caretAdjustment);
   }
 };
-
