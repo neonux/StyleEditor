@@ -235,7 +235,19 @@ StyleEditor.prototype = {
       let index = this.styleSheetIndex + 1; // 0-indexing only works for devs
       return _("inlineStyleSheet", index);
     }
-    return this.styleSheet.href;
+
+    if (!this._friendlyName) {
+      let sheetURI = this.styleSheet.href;
+      let contentURI = this.contentDocument.defaultView.location.href;
+      let sheetURIIsRelativeToContentURI = (sheetURI.indexOf(contentURI) == 0);
+
+      // avoid verbose repetition of absolute URI when the style sheet
+      // URI is relative to the content URI
+      this._friendlyName = (sheetURIIsRelativeToContentURI)
+                           ? sheetURI.substring(contentURI.length)
+                           : sheetURI;
+    }
+    return this._friendlyName;
   },
 
   /**
