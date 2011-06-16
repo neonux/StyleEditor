@@ -1,0 +1,40 @@
+<!-- LOCALIZATION NOTE : FILE This file contains the Style Editor window strings -->
+<!-- LOCALIZATION NOTE : FILE Do not translate commandkeys -->
+
+<!ENTITY window.title              "Style Editor">
+
+<!ENTITY devToolsMenu-StyleEditor.label     "Style Editor">
+<!ENTITY devToolsMenu-StyleEditor.accesskey "y">
+
+<!ENTITY styleSheetsPanel.label    "Stylesheets">
+<!ENTITY styleSheetsPanel.tooltip  "List of stylesheets applied to the page">
+
+<!ENTITY newButton.label           "New stylesheet">
+<!ENTITY newButton.tooltip         "Append a new stylesheet to the page">
+<!ENTITY newButton.accesskey       "N">
+<!ENTITY newButton.commandkey      "n">
+
+<!ENTITY importButton.label        "Import stylesheet">
+<!ENTITY importButton.tooltip      "Import and append an existing stylesheet to the page">
+<!ENTITY importButton.accesskey    "I">
+<!ENTITY importButton.commandkey   "i">
+
+<!ENTITY saveAllButton.label       "Save all">
+<!ENTITY saveAllButton.tooltip     "Save all stylesheets with unsaved modifications">
+<!ENTITY saveAllButton.accesskey   "S">
+<!ENTITY saveAllButton.commandkey  "s">
+
+
+<!ENTITY enabledButton.label       "Enabled">
+<!ENTITY enabledButton.tooltip     "Enable or disable this stylesheet">
+<!ENTITY enabledButton.accesskey   "E">
+
+<!ENTITY saveButton.label           "Save">
+<!ENTITY saveButton.tooltip         "Save this stylesheet to a file">
+<!ENTITY saveButton.accesskey       "S">
+<!ENTITY saveButton.commandkey      "s">
+
+<!-- LOCALICATION NOTE  (scoped.label): This is shown in a stylesheets list item
+     when the stylesheet uses the scoped attribute on the <style> element. -->
+<!ENTITY scoped.label              "Scoped.">
+
