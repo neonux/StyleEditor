@@ -566,7 +566,7 @@
                             label="&errorConsoleCmd.label;"
                             accesskey="&errorConsoleCmd.accesskey;"
                             key="key_errorConsole"
-                            command="toJavaScriptConsole();"/>
+                            oncommand="toJavaScriptConsole();"/>
                   <menuitem id="menu_styleEditor"
                             hidden="true"
                             label="&styleEditor.label;"
