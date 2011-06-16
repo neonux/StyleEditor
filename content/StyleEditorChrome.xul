@@ -44,7 +44,7 @@
         xmlns:html="http://www.w3.org/1999/xhtml"
         id="style-editor-chrome-window"
         title="&window.title;"
-        windowtype="Tools:StyleEditorChrome"
+        windowtype="Tools:StyleEditor"
         width="640" height="480"
         persist="screenX screenY width height sizemode">
 <script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
