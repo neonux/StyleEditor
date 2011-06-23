@@ -52,13 +52,6 @@
     }
   };
   ]]></script>
-  <menupopup id="tabContextMenu">
-    <menuitem id="menu_StyleEditor_compat"
-              insertbefore="context_undoCloseTab"
-              label="Open Style Editor (temp FF&lt;7 menu)"
-              oncommand="StyleEditor.openChrome();"/>
-    <menuseparator insertbefore="context_undoCloseTab"/>
-  </menupopup>
   <menupopup id="menuWebDeveloperPopup">
     <menuitem id="menu_StyleEditor"
               insertbefore="devToolsEndSeparator"
