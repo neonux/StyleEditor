@@ -66,5 +66,12 @@
               accesskey="&devToolsMenu-StyleEditor.accesskey;"
               oncommand="StyleEditor.openChrome();"/>
   </menupopup>
+  <menupopup id="appmenu_webDeveloper_popup">
+    <menuitem id="appmenu_styleEditor"
+              insertbefore="appmenu_devToolsEndSeparator"
+              label="&devToolsMenu-StyleEditor.label;"
+              accesskey="&devToolsMenu-StyleEditor.accesskey;"
+              oncommand="StyleEditor.openChrome();"/>
+  </menupopup>
 </overlay>
 
