@@ -45,10 +45,10 @@
   var StyleEditor = {
     prefEnabledName: "devtools.style_editor.enabled",
     openChrome: function SE_openChrome() {
-      const STYLE_EDITOR_CHROME_URL = "chrome://StyleEditor/content/StyleEditorChrome.xul";
-      const STYLE_EDITOR_CHROME_WINDOW_FLAGS = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
-      return Services.ww.openWindow(null, STYLE_EDITOR_CHROME_URL, "_blank",
-                                    STYLE_EDITOR_CHROME_WINDOW_FLAGS, null);
+      const CHROME_URL = "chrome://StyleEditor/content/StyleEditorChrome.xul";
+      const CHROME_WINDOW_FLAGS = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
+      return Services.ww.openWindow(null, CHROME_URL, "_blank",
+                                    CHROME_WINDOW_FLAGS, null);
     }
   };
   ]]></script>
