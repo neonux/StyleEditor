@@ -73,6 +73,19 @@
                          label="&saveAllButton.label;"
                          tooltiptext="&saveAllButton.tooltip;"
                          accesskey="&saveAllButton.accesskey;"/>
+          <toolbarseparator/>
+          <toolbarbutton id="style-editor-openButton"
+                         type="checkbox"
+                         label="&openButton.label;"
+                         tooltiptext="&openButton.tooltip;"
+                         accesskey="&openButton.accesskey;"
+                         hidden="true"/>
+          <toolbarbutton id="style-editor-enabledButton"
+                         type="checkbox"
+                         label="&enabledButton.label;"
+                         tooltiptext="&enabledButton.tooltip_chrome;"
+                         accesskey="&enabledButton.accesskey;"
+                         hidden="true"/>
         </toolbar>
         <notificationbox id="style-editor-styleSheetListNotification" flex="1">
           <richlistbox id="style-editor-styleSheetList" flex="1"></richlistbox>

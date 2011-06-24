@@ -139,6 +139,8 @@ StyleEditorChrome.prototype = {
     this._UI.tabPanels = this._root.querySelector("#style-editor-tabPanels");
     this._UI.tabs = this._root.querySelector("#style-editor-tabs");
     this._UI.saveAllButton = this._root.querySelector("#style-editor-saveAllButton");
+    this._UI.openButton = this._root.querySelector("#style-editor-openButton");
+    this._UI.enabledButton = this._root.querySelector("#style-editor-enabledButton");
 
     // wire up UI elements
     wire(this._root, "#style-editor-newButton", function onNewButton() {
@@ -164,6 +166,31 @@ StyleEditorChrome.prototype = {
         }
       });
     }.bind(this));
+
+    this._UI.styleSheetList.addEventListener("select", function onSelect(evt) {
+      evt.stopPropagation();
+      let editor = this._selectedEditor;
+      let isNoneSelected = (editor == null);
+
+      this._UI.openButton.hidden = isNoneSelected;
+      this._UI.enabledButton.hidden = isNoneSelected;
+      if (!isNoneSelected) {
+        this._UI.openButton.checked = editor.hasFlag(editor.OPEN_FLAG);
+        this._UI.enabledButton.checked = !editor.hasFlag(editor.DISABLED_FLAG);
+      }
+    }.bind(this), false);
+
+    this._UI.openButton.addEventListener("command", function onOpen(evt) {
+      if (evt.target.checked) {
+        this._openTabForEditor(this._selectedEditor);
+      } else {
+        this._closeTabForEditor(this._selectedEditor);
+      }
+    }.bind(this), false);
+
+    this._UI.enabledButton.addEventListener("command", function onEnabled(evt) {
+      this._selectedEditor.enableStyleSheet(evt.target.checked);
+    }.bind(this), false);
   },
 
   /**
@@ -398,14 +425,6 @@ StyleEditorChrome.prototype = {
     let item = this._xul("richlistitem");
     item.setUserData("editor", aEditor, null);
 
-    let checkbox = this._xul("checkbox", "stylesheet-enabled");
-    checkbox.setAttribute("tooltiptext", "&enabledButton.tooltip;");
-    checkbox.addEventListener("command", function onToggleStyleSheet(evt) {
-      evt.stopPropagation();
-      aEditor.enableStyleSheet(evt.target.checked);
-    }, false);
-    item.appendChild(checkbox);
-
     let vbox = this._xul("vbox");
     vbox.setAttribute("flex", "1");
 
@@ -454,6 +473,19 @@ StyleEditorChrome.prototype = {
     }
 
     return this._UI.styleSheetList.appendChild(item);
+  },
+
+  /**
+   * Retrieve the selected StyleEditor instance or null if none selected.
+   *
+   * @return StyleEditor
+   */
+  get _selectedEditor() {
+    let item = this._UI.styleSheetList.selectedItem;
+    if (!item) {
+      return null;
+    }
+    return item.getUserData("editor");
   },
 
   /**
@@ -510,6 +542,11 @@ StyleEditorChrome.prototype = {
       this._unsavedCount = this._unsavedCount || 0;
       this._unsavedCount += aEditor.hasFlag(aEditor.UNSAVED_FLAG) ? 1 : -1;
       this._UI.saveAllButton.className = this._unsavedCount ? "" : "hidden";
+    }
+
+    if (aEditor == this._selectedEditor) {
+      this._UI.openButton.checked = aEditor.hasFlag(aEditor.OPEN_FLAG);
+      this._UI.enabledButton.checked = !aEditor.hasFlag(aEditor.DISABLED_FLAG);
     }
   }
 };
