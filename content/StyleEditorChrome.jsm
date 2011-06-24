@@ -256,7 +256,7 @@ StyleEditorChrome.prototype = {
    * @return DOMElement
    *         Tab element for the editor.
    */
-  _openTabForEditor: function SEC__openEditorTab(aEditor)
+  _openTabForEditor: function SEC__openTabForEditor(aEditor)
   {
     let tabPanel = this._getTabForEditor(aEditor);
     if (!tabPanel) {
@@ -271,6 +271,25 @@ StyleEditorChrome.prototype = {
       aEditor.inputElement.focus();
     }
     return tabPanel;
+  },
+
+  /**
+   * Close the tab open with given editor.
+   *
+   * @param StyleEditor aEditor
+   */
+  _closeTabForEditor: function SEC__closeTabForEditor(aEditor)
+  {
+    let tabPanel = this._getTabForEditor(aEditor);
+    if (!tabPanel) {
+      return; // the editor is not in a tab
+    }
+
+    aEditor.inputElement = null; // detach the editor
+
+    let tab = tabPanel.getUserData("tab");
+    tab.parentNode.removeChild(tab);
+    tabPanel.parentNode.removeChild(tabPanel);
   },
 
   /**
