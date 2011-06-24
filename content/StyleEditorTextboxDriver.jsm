@@ -104,17 +104,17 @@ StyleEditorTextboxDriver.prototype = {
         previousTextbox.removeEventListener("input", this._onInputBinding);
       }
 
-      aElement.value = previousTextbox.value;
-      aElement.selectionStart = previousTextbox.selectionStart;
-      aElement.selectionEnd = previousTextbox.selectionEnd;
+      if (aElement) {
+        aElement.value = previousTextbox.value;
+        aElement.selectionStart = previousTextbox.selectionStart;
+        aElement.selectionEnd = previousTextbox.selectionEnd;
+      }
     }
-
-    // this is a code editor so...
-    aElement.spellcheck = false;
 
     // wire the stuff up
     this._textbox = aElement || this._dummy;
     if (aElement) {
+      aElement.spellcheck = false;
       aElement.addEventListener("keydown", this._onKeydownBinding, false);
       aElement.addEventListener("input", this._onInputBinding, false);
     }
