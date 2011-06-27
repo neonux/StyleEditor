@@ -424,7 +424,7 @@ StyleEditorChrome.prototype = {
     let vbox = this._xul("vbox");
     vbox.setAttribute("flex", "1");
 
-    let name = this._xul("label", "stylesheet-name");
+    let name = this._xul("label", "stylesheet-name text-link");
     name.setAttribute("crop", "start");
     name.setAttribute("value", aEditor.getFriendlyName());
     vbox.appendChild(name);
