@@ -476,7 +476,8 @@ StyleEditorChrome.prototype = {
    *
    * @return StyleEditor
    */
-  get _selectedEditor() {
+  get _selectedEditor()
+  {
     let item = this._UI.styleSheetList.selectedItem;
     if (!item) {
       return null;
