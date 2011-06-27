@@ -359,10 +359,6 @@ StyleEditorChrome.prototype = {
         aEditor.saveToFile(aEditor.savedFile);
       });
 
-      if (editorChrome.debugMode) {
-        setupDebugUIForEditor(aEditor, document);
-      }
-
       aEditor.inputElement.focus();
     }, false);
 
