@@ -59,6 +59,26 @@
   font-size: 0.8em;
 }
 
+#style-editor-styleSheetList richlistitem .stylesheet-media {
+  border: 1px dotted gray;
+  border-radius: 4px;
+  text-align:center;
+  min-width: 4em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  color: gray;
+  font-style: italic;
+}
+#style-editor-styleSheetList richlistitem .stylesheet-media[disabled=false] {
+  border-style: solid;
+  border-color: black;
+  color: black;
+  font-style: normal;
+}
+#style-editor-styleSheetList richlistitem .stylesheet-media-invalid {
+  color: red;
+}
+
 #style-editor-styleSheetList > richlistitem {
   padding-left: 4px;
   padding-top: 4px;

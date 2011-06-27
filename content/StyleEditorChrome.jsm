@@ -445,6 +445,7 @@ StyleEditorChrome.prototype = {
       details.appendChild(scoped);
     }
 
+    this._appendMediaLabels(aEditor, details);
     vbox.appendChild(details);
     item.appendChild(vbox);
 
@@ -469,6 +470,73 @@ StyleEditorChrome.prototype = {
     }
 
     return this._UI.styleSheetList.appendChild(item);
+  },
+
+  /**
+   * Append media labels to an element from an editor's stylesheet media list.
+   *
+   * @param StyleEditor aEditor
+   * @param DOMElement aParent
+   */
+  _appendMediaLabels: function SEC__appendMediaLabels(aEditor, aParent)
+  {
+    for (let i = 0; i < aEditor.styleSheet.media.length; ++i) {
+      let media = aEditor.styleSheet.media[i];
+      let mql = this._safeMatchMedia(media);
+      let label = this._xul("label", "stylesheet-media");
+      label.setAttribute("crop", "center");
+
+      if (mql && mql.media != "not all") {
+        label.setAttribute("value", mql.media);
+        label.setAttribute("disabled", !mql.matches);
+
+        // bind media query listener to the chrome instance so that it does
+        // not leak when deleting stylesheets. Chrome instances are singletons
+        // for any given content window.
+        if (!this._mediaQueryListener) {
+          this._mediaQueryListener = this._onMediaQueryChange.bind(this);
+          log("MQL SET");
+        }
+        mql.addListener(function () { log("CHANGE"); });
+        mql.addListener(this._mediaQueryListener);
+        log("ATTACHED", mql.media == media);
+      }
+
+      aParent.appendChild(label);
+    }
+  },
+
+  /**
+   * Called when a media query list notifies change.
+   *
+   * @param MediaQueryList aMql
+   */
+  _onMediaQueryChange: function SEC__onMediaQueryChange(aMql)
+  {
+log("MQ CHANGE: ", aMql.media, aMql.matches);
+    let list = this._UI.styleSheetList;
+    let labels = list.querySelectorAll("label.stylesheet-media");
+    for (let i = 0; i < labels.length; ++i) {
+      let label = labels[i];
+      if (label.value == aMql.media) {
+        label.setAttribute("disabled", !aMql.matches);
+      }
+    }
+  },
+
+  /**
+   * Safely retrieve MediaQueryList for named media.
+   *
+   * @param string aMediaText
+   * @return MediaQueryList
+   */
+  _safeMatchMedia: function SEC__safeMatchMedia(aMediaText)
+  {
+    try {
+      return this.contentWindow.matchMedia(aMediaText);
+    } catch (e) {
+      return null;
+    }
   },
 
   /**
