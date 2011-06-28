@@ -495,11 +495,8 @@ StyleEditorChrome.prototype = {
         // for any given content window.
         if (!this._mediaQueryListener) {
           this._mediaQueryListener = this._onMediaQueryChange.bind(this);
-          log("MQL SET");
         }
-        mql.addListener(function () { log("CHANGE"); });
         mql.addListener(this._mediaQueryListener);
-        log("ATTACHED", mql.media == media);
       }
 
       aParent.appendChild(label);
@@ -513,7 +510,6 @@ StyleEditorChrome.prototype = {
    */
   _onMediaQueryChange: function SEC__onMediaQueryChange(aMql)
   {
-log("MQ CHANGE: ", aMql.media, aMql.matches);
     let list = this._UI.styleSheetList;
     let labels = list.querySelectorAll("label.stylesheet-media");
     for (let i = 0; i < labels.length; ++i) {
