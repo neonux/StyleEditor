@@ -417,6 +417,10 @@ StyleEditorChrome.prototype = {
   _newItemForEditor: function SEC__newItemForEditor(aEditor)
   {
     let styleSheet = aEditor.styleSheet;
+    let onOpenStyleSheet = function onOpenStyleSheet(evt) {
+      evt.stopPropagation();
+      this._openTabForEditor(aEditor);
+    }.bind(this)
 
     let item = this._xul("richlistitem");
     item.setUserData("editor", aEditor, null);
@@ -427,6 +431,7 @@ StyleEditorChrome.prototype = {
     let name = this._xul("label", "stylesheet-name text-link");
     name.setAttribute("crop", "start");
     name.setAttribute("value", aEditor.getFriendlyName());
+    name.addEventListener("click", onOpenStyleSheet, false);
     vbox.appendChild(name);
 
     let title = this._xul("label", "stylesheet-title");
@@ -453,10 +458,7 @@ StyleEditorChrome.prototype = {
     spacer.setAttribute("flex", "1");
     item.appendChild(spacer);
 
-    item.addEventListener("dblclick", function onOpenStyleSheet(evt) {
-      evt.stopPropagation();
-      this._openTabForEditor(aEditor);
-    }.bind(this), false);
+    item.addEventListener("dblclick", onOpenStyleSheet, false);
 
     // insert item at the correct index
     // (editor load is asynchronous so we have to check now where to insert)
