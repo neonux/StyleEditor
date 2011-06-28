@@ -227,6 +227,9 @@ StyleEditorChrome.prototype = {
   _populateChrome: function SEC__populateChrome() {
     this._resetChrome();
 
+    this._document.title = _("chromeWindowTitle",
+          this.contentDocument.title || this.contentDocument.location.href);
+
     let document = this.contentDocument;
     for (let i = 0; i < document.styleSheets.length; ++i) {
       let styleSheet = document.styleSheets[i];
