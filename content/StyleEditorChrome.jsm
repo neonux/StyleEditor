@@ -599,7 +599,7 @@ StyleEditorChrome.prototype = {
     this._updateTabForEditor(aEditor);
 
     if (aFlagName == aEditor.UNSAVED_FLAG) {
-      /* display Save All button when there is at least one unsaved editor */
+      // display Save All button when there is at least one unsaved editor
       this._unsavedCount = this._unsavedCount || 0;
       this._unsavedCount += aEditor.hasFlag(aEditor.UNSAVED_FLAG) ? 1 : -1;
       this._UI.saveAllButton.className = this._unsavedCount ? "" : "hidden";
