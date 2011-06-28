@@ -80,6 +80,10 @@ function StyleEditorChrome(aRoot, aContentWindow)
   // finally attach to the content window
   this._contentWindow = null;
   this.contentWindow = aContentWindow || getCurrentBrowserTabContentWindow();
+
+  this.contentWindow.addEventListener("unload", function onContentUnload() {
+    this.contentWindow = null;
+  }.bind(this), false);
 }
 
 StyleEditorChrome.prototype = {
@@ -101,7 +105,11 @@ StyleEditorChrome.prototype = {
       return; // no change
     }
     this._contentWindow = aContentWindow;
-    this._populateChrome();
+    if (aContentWindow) {
+      this._populateChrome();
+    } else {
+      this._disableChrome();
+    }
   },
 
   /**
@@ -238,6 +246,32 @@ StyleEditorChrome.prototype = {
       editor.addActionListener(this);
       editor.load();
     }
+  },
+
+  /**
+   * Disable all UI, effectively making editors read-only.
+   * This is automatically called when no content window is attached.
+   *
+   * @see contentWindow
+   */
+  _disableChrome: function SEC__disableChrome() {
+    function disableAll(aElement, aSelector) {
+      let matches = aElement.querySelectorAll(aSelector);
+      for (let i = 0; i < matches.length; ++i) {
+        matches[i].setAttribute("disabled", true);
+      }
+    }
+
+    this._UI.styleSheetList.setAttribute("disabled", true);
+    disableAll(this._root, "toolbarbutton,.stylesheet-name");
+
+    this.forEachStyleSheet(function (aEditor, aItem) {
+      if (!aEditor.window) {
+        return;
+      }
+      disableAll(aEditor.window.document, "toolbarbutton");
+      aEditor.inputElement.setAttribute("readonly", true);
+    }.bind(this));
   },
 
   /**
@@ -422,7 +456,9 @@ StyleEditorChrome.prototype = {
     let styleSheet = aEditor.styleSheet;
     let onOpenStyleSheet = function onOpenStyleSheet(evt) {
       evt.stopPropagation();
-      this._openTabForEditor(aEditor);
+      if (!evt.target.disabled) {
+        this._openTabForEditor(aEditor);
+      }
     }.bind(this)
 
     let item = this._xul("richlistitem");
