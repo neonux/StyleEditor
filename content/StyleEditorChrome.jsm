@@ -35,6 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 const EXPORTED_SYMBOLS = ["StyleEditorChrome"];
 
 const Cc = Components.classes;

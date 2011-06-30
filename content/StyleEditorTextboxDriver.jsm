@@ -35,6 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 const EXPORTED_SYMBOLS = ["StyleEditorTextboxDriver"];
 
 const Cc = Components.classes;
