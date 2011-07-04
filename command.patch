@@ -1,0 +1,173 @@
+diff --git a/browser/base/content/browser-appmenu.inc b/browser/base/content/browser-appmenu.inc
+index 72f320b..cafeab0 100644
+--- a/browser/base/content/browser-appmenu.inc
++++ b/browser/base/content/browser-appmenu.inc
+@@ -196,16 +196,21 @@
+                     label="&viewPageSourceCmd.label;"
+                     command="View:PageSource"
+                     key="key_viewSource"/>
+           <menuitem id="appmenu_errorConsole"
+                     hidden="true"
+                     label="&errorConsoleCmd.label;"
+                     key="key_errorConsole"
+                     oncommand="toJavaScriptConsole();"/>
++          <menuitem id="appmenu_styleEditor"
++                    hidden="true"
++                    label="&styleEditor.label;"
++                    key="key_styleEditor"
++                    command="Tools:StyleEditor"/>
+           <menuseparator id="appmenu_devToolsEndSeparator"/>
+           <menuitem id="appmenu_getMoreDevtools"
+                     label="&getMoreDevtoolsCmd.label;"
+                     oncommand="openUILinkIn('https://addons.mozilla.org/firefox/collections/mozilla/webdeveloper/', 'tab');"/>
+           <menuseparator/>
+ #define ID_PREFIX appmenu_developer_
+ #define OMIT_ACCESSKEYS
+ #include browser-charsetmenu.inc
+diff --git a/browser/base/content/browser-menubar.inc b/browser/base/content/browser-menubar.inc
+index 094a0f2..aa6f60b 100644
+--- a/browser/base/content/browser-menubar.inc
++++ b/browser/base/content/browser-menubar.inc
+@@ -556,16 +556,21 @@
+                             key="key_viewSource"
+                             command="View:PageSource"/>
+                   <menuitem id="javascriptConsole"
+                             hidden="true"
+                             label="&errorConsoleCmd.label;"
+                             accesskey="&errorConsoleCmd.accesskey;"
+                             key="key_errorConsole"
+                             oncommand="toJavaScriptConsole();"/>
++                  <menuitem id="menu_styleEditor"
++                            hidden="true"
++                            label="&styleEditor.label;"
++                            key="key_styleEditor"
++                            command="Tools:StyleEditor"/>
+                   <menuseparator id="devToolsEndSeparator"/>
+                   <menuitem id="getMoreDevtools"
+                             label="&getMoreDevtoolsCmd.label;"
+                             accesskey="&getMoreDevtoolsCmd.accesskey;"
+                             oncommand="openUILinkIn('https://addons.mozilla.org/firefox/collections/mozilla/webdeveloper/', 'tab');"/>
+                 </menupopup>
+               </menu>
+               <menuitem id="menu_pageInfo"
+diff --git a/browser/base/content/browser-sets.inc b/browser/base/content/browser-sets.inc
+index 5e13fac..b113db4 100644
+--- a/browser/base/content/browser-sets.inc
++++ b/browser/base/content/browser-sets.inc
+@@ -121,16 +121,17 @@
+     <command id="cmd_fullZoomReset"   oncommand="FullZoom.reset()"/>
+     <command id="cmd_fullZoomToggle"  oncommand="ZoomManager.toggleZoom();"/>
+     <command id="Browser:OpenLocation" oncommand="openLocation();"/>
+ 
+     <command id="Tools:Search" oncommand="BrowserSearch.webSearch();"/>
+     <command id="Tools:Downloads" oncommand="BrowserDownloadsUI();"/>
+     <command id="Tools:Inspect" oncommand="InspectorUI.toggleInspectorUI();" disabled="true"/>
+     <command id="Tools:Scratchpad" oncommand="Scratchpad.openScratchpad();" disabled="true"/>
++    <command id="Tools:StyleEditor" oncommand="StyleEditor.openChrome();" disabled="true"/>
+     <command id="Tools:Addons" oncommand="BrowserOpenAddonsMgr();"/>
+     <command id="Tools:Sanitize"
+      oncommand="Cc['@mozilla.org/browser/browserglue;1'].getService(Ci.nsIBrowserGlue).sanitize(window);"/>
+     <command id="Tools:PrivateBrowsing" oncommand="gPrivateBrowsingUI.toggleMode();"/>
+     <command id="History:UndoCloseTab" oncommand="undoCloseTab();"/>
+     <command id="History:UndoCloseWindow" oncommand="undoCloseWindow();"/>
+     <command id="Browser:ToggleAddonBar" oncommand="toggleAddonBar();"/>
+   </commandset>
+@@ -239,16 +240,17 @@
+     <key id="key_openDownloads" key="&downloads.commandkey;" command="Tools:Downloads" modifiers="accel"/>
+ #endif
+     <key id="key_openAddons" key="&addons.commandkey;" command="Tools:Addons" modifiers="accel,shift"/>
+     <key id="key_errorConsole" key="&errorConsoleCmd.commandkey;" oncommand="toJavaScriptConsole();" modifiers="accel,shift" disabled="true"/>
+     <key id="key_webConsole" key="&webConsoleCmd.commandkey;" oncommand="HUDConsoleUI.toggleHUD();" modifiers="accel,shift"/>
+     <key id="key_inspect" key="&inspectMenu.commandkey;" command="Tools:Inspect" modifiers="accel,shift"/>
+     <key id="key_scratchpad" keycode="&scratchpad.keycode;" modifiers="shift"
+          keytext="&scratchpad.keytext;" command="Tools:Scratchpad"/>
++    <key id="key_styleEditor" key="&styleEditor.commandkey;" command="Tools:StyleEditor" modifiers="accel,alt"/>
+     <key id="openFileKb" key="&openFileCmd.commandkey;" command="Browser:OpenFile"  modifiers="accel"/>
+     <key id="key_savePage" key="&savePageCmd.commandkey;" command="Browser:SavePage" modifiers="accel"/>
+     <key id="printKb" key="&printCmd.commandkey;" command="cmd_print"  modifiers="accel"/>
+     <key id="key_close" key="&closeCmd.key;" command="cmd_close" modifiers="accel"/>
+     <key id="key_closeWindow" key="&closeCmd.key;" command="cmd_closeWindow" modifiers="accel,shift"/>
+     <key id="key_undo"
+          key="&undoCmd.key;"
+          modifiers="accel"/>
+diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
+index 04f29b3..c088cb3 100644
+--- a/browser/base/content/browser.js
++++ b/browser/base/content/browser.js
+@@ -1678,16 +1678,26 @@ function delayedStartup(isLoadingBlank, mustLoadSidebar) {
+   if (scratchpadEnabled) {
+     document.getElementById("menu_scratchpad").hidden = false;
+     document.getElementById("Tools:Scratchpad").removeAttribute("disabled");
+ #ifdef MENUBAR_CAN_AUTOHIDE
+     document.getElementById("appmenu_scratchpad").hidden = false;
+ #endif
+   }
+ 
++  // Enable Style Editor?
++  let styleEditorEnabled = gPrefService.getBoolPref(StyleEditor.prefEnabledName);
++  if (styleEditorEnabled) {
++    document.getElementById("menu_styleEditor").hidden = false;
++    document.getElementById("Tools:StyleEditor").removeAttribute("disabled");
++#ifdef MENUBAR_CAN_AUTOHIDE
++    document.getElementById("appmenu_styleEditor").hidden = false;
++#endif
++  }
++
+ #ifdef MENUBAR_CAN_AUTOHIDE
+   // If the user (or the locale) hasn't enabled the top-level "Character
+   // Encoding" menu via the "browser.menu.showCharacterEncoding" preference,
+   // hide it.
+   if ("true" != gPrefService.getComplexValue("browser.menu.showCharacterEncoding",
+                                              Ci.nsIPrefLocalizedString).data)
+     document.getElementById("appmenu_charsetMenu").hidden = true;
+ #endif
+@@ -8662,16 +8672,24 @@ var Scratchpad = {
+     const SCRATCHPAD_WINDOW_URL = "chrome://browser/content/scratchpad.xul";
+     const SCRATCHPAD_WINDOW_FEATURES = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
+ 
+     return Services.ww.openWindow(null, SCRATCHPAD_WINDOW_URL, "_blank",
+                                   SCRATCHPAD_WINDOW_FEATURES, null);
+   },
+ };
+ 
++var StyleEditor = {
++  prefEnabledName: "devtools.style_editor.enabled",
++  openChrome: function SE_openChrome() {
++    const WINDOW_URL = "chrome://browser/content/StyleEditor/StyleEditorChrome.xul";
++    const WINDOW_FLAGS = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
++    return Services.ww.openWindow(null, WINDOW_URL, "_blank", WINDOW_FLAGS, null);
++  }
++};
+ 
+ XPCOMUtils.defineLazyGetter(window, "gShowPageResizers", function () {
+ #ifdef XP_WIN
+   // Only show resizers on Windows 2000 and XP
+   let sysInfo = Components.classes["@mozilla.org/system-info;1"]
+                           .getService(Components.interfaces.nsIPropertyBag2);
+   return parseFloat(sysInfo.getProperty("version")) < 6;
+ #else
+diff --git a/browser/locales/en-US/chrome/browser/browser.dtd b/browser/locales/en-US/chrome/browser/browser.dtd
+index 4a61e6f..30b66f0 100644
+--- a/browser/locales/en-US/chrome/browser/browser.dtd
++++ b/browser/locales/en-US/chrome/browser/browser.dtd
+@@ -202,16 +202,20 @@ can reach it easily. -->
+   -  "Scratchpad" in your locale. You should feel free to find a close
+   -  approximation to it or choose a word (or words) that means
+   -  "simple discardable text editor". -->
+ <!ENTITY scratchpad.label             "Scratchpad">
+ <!ENTITY scratchpad.accesskey         "s">
+ <!ENTITY scratchpad.keycode           "VK_F4">
+ <!ENTITY scratchpad.keytext           "F4">
+ 
++<!ENTITY styleEditor.label            "Style Editor">
++<!ENTITY styleEditor.accesskey        "Y">
++<!ENTITY styleEditor.commandkey       "Y">
++
+ <!ENTITY inspectPanelTitle.label      "HTML">
+ <!ENTITY inspectButton.label          "Inspect">
+ <!ENTITY inspectButton.accesskey      "I">
+ 
+ <!ENTITY getMoreDevtoolsCmd.label        "Get More Tools">
+ <!ENTITY getMoreDevtoolsCmd.accesskey    "M">
+ 
+ <!ENTITY fileMenu.label         "File"> 
