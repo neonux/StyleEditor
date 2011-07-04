@@ -5,6 +5,7 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
+let gStyleEditor;  //StyleEditor object in browser window
 let gChromeWindow; //StyleEditorChrome window
 
 function cleanup()
@@ -24,6 +25,7 @@ function test()
     gBrowser.selectedBrowser.removeEventListener("load", onLoad);
 
     ok(StyleEditor, "StyleEditor object exists in browser window");
+    gStyleEditor = StyleEditor; // keep to test singleton behavior later
 
     gChromeWindow = StyleEditor.openChrome();
     gChromeWindow.addEventListener("load", run, false);
@@ -69,6 +71,10 @@ function run()
 
   ruleCount = listItems[1].querySelector(".stylesheet-rule-count").value;
   is(parseInt(ruleCount), 3, "second stylesheet list item counts 3 rules");
+
+  let chromeWindow = gStyleEditor.openChrome();
+  is(chromeWindow, gChromeWindow,
+     "attempt to edit the same document returns the same Style Editor window");
 
   finish();
 }

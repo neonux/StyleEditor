@@ -46,7 +46,21 @@
     prefEnabledName: "devtools.style_editor.enabled",
     openChrome: function SE_openChrome() {
       const CHROME_URL = "chrome://StyleEditor/content/StyleEditorChrome.xul";
+      const CHROME_WINDOW_TYPE = "Tools:StyleEditor";
       const CHROME_WINDOW_FLAGS = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
+
+      // focus currently open Style Editor window for this document, if any
+      let contentWindow = Services.wm.getMostRecentWindow("navigator:browser")
+                            .gBrowser.selectedBrowser.contentWindow;
+      let enumerator = Services.wm.getEnumerator(CHROME_WINDOW_TYPE);
+      while(enumerator.hasMoreElements()) {
+        var win = enumerator.getNext();
+        if (win.styleEditorChrome.contentWindow == contentWindow) {
+          win.focus();
+          return win;
+        }
+      }
+
       return Services.ww.openWindow(null, CHROME_URL, "_blank",
                                     CHROME_WINDOW_FLAGS, null);
     }
