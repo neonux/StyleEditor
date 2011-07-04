@@ -36,7 +36,7 @@ function run()
 {
   gChromeWindow.removeEventListener("load", run);
 
-  let SEC = gChromeWindow.StyleEditorChrome;
+  let SEC = gChromeWindow.styleEditorChrome;
   ok(SEC, "StyleEditorChrome object exists in new window");
 
   // check forEachStyleSheet API

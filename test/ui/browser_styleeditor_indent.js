@@ -40,7 +40,7 @@ function run()
 {
   gChromeWindow.removeEventListener("load", run);
 
-  let SEC = gChromeWindow.StyleEditorChrome;
+  let SEC = gChromeWindow.styleEditorChrome;
   let document = gChromeWindow.document;
 
   let countBeforeNew = SEC.editors.length;

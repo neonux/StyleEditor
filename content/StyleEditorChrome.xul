@@ -98,7 +98,7 @@
 Components.utils.import("chrome://StyleEditor/content/StyleEditorChrome.jsm");
 let chromeRoot = document.getElementById("style-editor-chrome");
 let chrome = new StyleEditorChrome(chromeRoot);
-window.StyleEditorChrome = chrome;
+window.styleEditorChrome = chrome;
 ]]></script>
 </window>
 

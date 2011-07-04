@@ -37,7 +37,7 @@ function run()
 {
   gChromeWindow.removeEventListener("load", run);
 
-  let SEC = gChromeWindow.StyleEditorChrome;
+  let SEC = gChromeWindow.styleEditorChrome;
   let document = gChromeWindow.document;
 
   // check that the stylesheet list is enabled
