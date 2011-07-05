@@ -201,6 +201,11 @@
                     label="&errorConsoleCmd.label;"
                     key="key_errorConsole"
                     oncommand="toJavaScriptConsole();"/>
+          <menuitem id="appmenu_styleEditor"
+                    hidden="true"
+                    label="&styleEditor.label;"
+                    key="key_styleEditor"
+                    command="Tools:StyleEditor"/>
           <menuseparator id="appmenu_devToolsEndSeparator"/>
           <menuitem id="appmenu_getMoreDevtools"
                     label="&getMoreDevtoolsCmd.label;"

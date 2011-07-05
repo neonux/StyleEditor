@@ -207,6 +207,10 @@ can reach it easily. -->
 <!ENTITY scratchpad.keycode           "VK_F4">
 <!ENTITY scratchpad.keytext           "F4">
 
+<!ENTITY styleEditor.label            "Style Editor">
+<!ENTITY styleEditor.accesskey        "Y">
+<!ENTITY styleEditor.commandkey       "Y">
+
 <!ENTITY inspectPanelTitle.label      "HTML">
 <!ENTITY inspectButton.label          "Inspect">
 <!ENTITY inspectButton.accesskey      "I">

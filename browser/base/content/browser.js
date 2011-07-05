@@ -1683,6 +1683,16 @@ function delayedStartup(isLoadingBlank, mustLoadSidebar) {
 #endif
   }
 
+  // Enable Style Editor?
+  let styleEditorEnabled = gPrefService.getBoolPref(StyleEditor.prefEnabledName);
+  if (styleEditorEnabled) {
+    document.getElementById("menu_styleEditor").hidden = false;
+    document.getElementById("Tools:StyleEditor").removeAttribute("disabled");
+#ifdef MENUBAR_CAN_AUTOHIDE
+    document.getElementById("appmenu_styleEditor").hidden = false;
+#endif
+  }
+
 #ifdef MENUBAR_CAN_AUTOHIDE
   // If the user (or the locale) hasn't enabled the top-level "Character
   // Encoding" menu via the "browser.menu.showCharacterEncoding" preference,
@@ -8667,6 +8677,28 @@ var Scratchpad = {
   },
 };
 
+var StyleEditor = {
+  prefEnabledName: "devtools.style_editor.enabled",
+  openChrome: function SE_openChrome() {
+    const WINDOW_URL = "chrome://browser/content/StyleEditor/StyleEditorChrome.xul";
+    const WINDOW_TYPE = "Tools:StyleEditor";
+    const WINDOW_FLAGS = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
+
+    // focus currently open Style Editor window for this document, if any
+    let contentWindow = Services.wm.getMostRecentWindow("navigator:browser")
+                          .gBrowser.selectedBrowser.contentWindow;
+    let enumerator = Services.wm.getEnumerator(WINDOW_TYPE);
+    while(enumerator.hasMoreElements()) {
+      var win = enumerator.getNext();
+      if (win.styleEditorChrome.contentWindow == contentWindow) {
+        win.focus();
+        return win;
+      }
+    }
+
+    return Services.ww.openWindow(null, WINDOW_URL, "_blank", WINDOW_FLAGS, null);
+  }
+};
 
 XPCOMUtils.defineLazyGetter(window, "gShowPageResizers", function () {
 #ifdef XP_WIN

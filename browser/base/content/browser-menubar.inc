@@ -561,6 +561,11 @@
                             accesskey="&errorConsoleCmd.accesskey;"
                             key="key_errorConsole"
                             oncommand="toJavaScriptConsole();"/>
+                  <menuitem id="menu_styleEditor"
+                            hidden="true"
+                            label="&styleEditor.label;"
+                            key="key_styleEditor"
+                            command="Tools:StyleEditor"/>
                   <menuseparator id="devToolsEndSeparator"/>
                   <menuitem id="getMoreDevtools"
                             label="&getMoreDevtoolsCmd.label;"

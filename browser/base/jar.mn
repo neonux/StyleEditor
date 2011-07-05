@@ -95,3 +95,9 @@ browser.jar:
 % override chrome://global/content/license.html chrome://browser/content/license.html
 # XXXkhuey This really should live in browser/, but it's too late in the release cycle to move
 +       content/browser/NetworkPanel.xhtml            (/toolkit/components/console/hudservice/NetworkPanel.xhtml)
+        content/browser/StyleEditor/StyleEditor.jsm (content/StyleEditor/StyleEditor.jsm)
+        content/browser/StyleEditor/StyleEditor.xul (content/StyleEditor/StyleEditor.xul)
+        content/browser/StyleEditor/StyleEditorChrome.jsm (content/StyleEditor/StyleEditorChrome.jsm)
+        content/browser/StyleEditor/StyleEditorChrome.xul (content/StyleEditor/StyleEditorChrome.xul)
+        content/browser/StyleEditor/StyleEditorTextboxDriver.jsm (content/StyleEditor/StyleEditorTextboxDriver.jsm)
+        content/browser/StyleEditor/StyleEditorUtil.jsm (content/StyleEditor/StyleEditorUtil.jsm)

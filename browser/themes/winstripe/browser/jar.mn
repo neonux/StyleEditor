@@ -231,3 +231,5 @@ browser.jar:
         skin/classic/aero/browser/syncQuota.css
 #endif
 #endif
+  skin/classic/browser/StyleEditor-list.png
+  skin/classic/browser/StyleEditor.css

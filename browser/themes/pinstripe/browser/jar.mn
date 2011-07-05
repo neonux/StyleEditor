@@ -135,3 +135,5 @@ browser.jar:
   skin/classic/browser/syncCommon.css
   skin/classic/browser/syncQuota.css
 #endif
+  skin/classic/browser/StyleEditor-list.png
+  skin/classic/browser/StyleEditor.css
