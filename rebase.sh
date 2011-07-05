@@ -32,7 +32,6 @@ browser/base/content/browser-sets.inc \
 browser/base/content/browser-menubar.inc \
 browser/base/content/test/Makefile.in \
 browser/base/content/browser.js \
-browser/base/content/browser.xul \
 browser/base/jar.mn \
 browser/locales/en-US/chrome/browser/browser.dtd \
 browser/locales/jar.mn \
