@@ -69,12 +69,35 @@ done
 git add browser/themes
 
 
+insert_tests()
+{
+  while read -r; do
+    if echo $REPLY | grep -q '@TESTS@'; then
+      cat tests.tmp
+      echo "                 \$(NULL)"
+    else
+      echo $REPLY
+    fi
+  done
+}
+
 mkdir -p browser/base/content/test/StyleEditor
+if [ -x tests.tmp ]; then
+  rm tests.tmp
+fi
+
 for FILE in `git ls-tree -r --name-only $ADDON test/ui/`
 do
   BROWSER_FILE=browser/base/content/test/StyleEditor/`basename $FILE`
   git show $ADDON:$FILE > $BROWSER_FILE
+  FILE=`basename $FILE`
+  if [[ $FILE == browser_*.js ]]; then
+    echo "                 $FILE \\" >> tests.tmp
+  fi
 done
+insert_tests < test.Makefile.in.in > browser/base/content/test/StyleEditor/Makefile.in
+rm tests.tmp
+
 git add browser/base/content/test/StyleEditor
 
 echo "Done! Now fix up index if needed and run update.sh"
