@@ -9,7 +9,7 @@ To enable pref 'devtools.style_editor.enabled' must be set to 'true'.
 
 Helpers for migration to add-on to browser :
 
-`./rebase.sh => ./migrate.sh => ./update.sh => commit`
+`./rebase.sh => ./integrate.sh => ./update.sh => commit`
 
 (fix up if needed between steps)
 

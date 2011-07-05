@@ -1,12 +1,14 @@
 #!/bin/env bash
-# Helper script to migrate add-on code to the current browser branch.
+# Helper script to integrate add-on code to the current browser branch.
 #
-# Migrates add-on code from <argument> commit (default: master).
+# Integrates add-on code from <argument> commit.
 # Adds to the index but does not commit.
 
-if [ -z "$ADDON" ]; then
-  ADDON=master
+if [ -z "$1" ]; then
+  echo "Usage: integrate.sh <extension-commit-or-branch>"
+  exit 1
 fi
+ADDON="$1"
 
 STATUS=`git status --porcelain --untracked=no`
 if [ -n "$STATUS" ]; then

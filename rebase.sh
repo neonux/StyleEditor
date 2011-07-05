@@ -51,5 +51,5 @@ fi
 git add browser
 git commit -m "$MESSAGE"
 
-echo "Done! Now fix up index if needed and run migrate.sh <addon-branch>"
+echo "Done! Now fix up index if needed and run integrate.sh <addon-branch>"
 
