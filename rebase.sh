@@ -17,6 +17,11 @@ export GIT_WORK_TREE=$MOZILLA_SOURCE
 GIT_REV=`git show-ref --abbrev --head -d HEAD | cut -d " " -f 1`
 HG_REV=`git show-hg-rev $GIT_REV | head -c 7`
 
+if [ -z "$HG_REV" ]; then
+  echo "No HG revision found! Abort."
+  exit 1
+fi
+
 MESSAGE="Rebase browser hg=$HG_REV git=$GIT_REV."
 unset GIT_DIR
 unset GIT_WORK_TREE
