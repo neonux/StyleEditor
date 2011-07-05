@@ -91,7 +91,7 @@ index 5e13fac..b113db4 100644
           key="&undoCmd.key;"
           modifiers="accel"/>
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 04f29b3..c088cb3 100644
+index 04f29b3..3eec617 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -1678,16 +1678,26 @@ function delayedStartup(isLoadingBlank, mustLoadSidebar) {
@@ -121,7 +121,7 @@ index 04f29b3..c088cb3 100644
                                               Ci.nsIPrefLocalizedString).data)
      document.getElementById("appmenu_charsetMenu").hidden = true;
  #endif
-@@ -8662,16 +8672,24 @@ var Scratchpad = {
+@@ -8662,16 +8672,38 @@ var Scratchpad = {
      const SCRATCHPAD_WINDOW_URL = "chrome://browser/content/scratchpad.xul";
      const SCRATCHPAD_WINDOW_FEATURES = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
  
@@ -134,7 +134,21 @@ index 04f29b3..c088cb3 100644
 +  prefEnabledName: "devtools.style_editor.enabled",
 +  openChrome: function SE_openChrome() {
 +    const WINDOW_URL = "chrome://browser/content/StyleEditor/StyleEditorChrome.xul";
++    const WINDOW_TYPE = "Tools:StyleEditor";
 +    const WINDOW_FLAGS = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
++
++    // focus currently open Style Editor window for this document, if any
++    let contentWindow = Services.wm.getMostRecentWindow("navigator:browser")
++                          .gBrowser.selectedBrowser.contentWindow;
++    let enumerator = Services.wm.getEnumerator(WINDOW_TYPE);
++    while(enumerator.hasMoreElements()) {
++      var win = enumerator.getNext();
++      if (win.styleEditorChrome.contentWindow == contentWindow) {
++        win.focus();
++        return win;
++      }
++    }
++
 +    return Services.ww.openWindow(null, WINDOW_URL, "_blank", WINDOW_FLAGS, null);
 +  }
 +};
