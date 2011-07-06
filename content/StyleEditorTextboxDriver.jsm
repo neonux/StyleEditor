@@ -116,7 +116,10 @@ StyleEditorTextboxDriver.prototype = {
     // wire the stuff up
     this._textbox = aElement || this._dummy;
     if (aElement) {
+      // force sensible textbox settings for a *code* editor
       aElement.spellcheck = false;
+      aElement.style.direction = "ltr";
+
       aElement.addEventListener("keydown", this._onKeydownBinding, false);
       aElement.addEventListener("input", this._onInputBinding, false);
     }
