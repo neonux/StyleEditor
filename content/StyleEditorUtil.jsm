@@ -144,9 +144,9 @@ function text(aRoot, aSelector, aText)
   }
 
   if (aText === undefined) {
-    return element.innerHTML;
+    return element.textContent;
   }
-  element.innerHTML = aText;
+  element.textContent = aText;
   return aText;
 }
 
