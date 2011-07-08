@@ -121,10 +121,19 @@ li.splitview-active .splitview-inline-details {
   background-color: peachpuff;
 }
 
-@media (min-aspect-ratio: 16/9) {
+@media (min-aspect-ratio: 5/3) {
+  * {
+    text-overflow: ellipsis;
+  }
+
+  .splitview-controller {
+    -moz-box-flex: 1;
+    max-width: 15em;
+  }
+
   .splitview-side-details {
     display: -moz-box;
-    -moz-box-flex: 10;
+    -moz-box-flex: 2;
   }
   .splitview-details {
     display: none;

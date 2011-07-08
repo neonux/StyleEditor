@@ -40,7 +40,7 @@
 const EXPORTED_SYMBOLS = ["AdaptiveSplitView"];
 
 /* these must be kept in sync with CSS */
-const LANDSCAPE_MEDIA_QUERY = "(min-aspect-ratio: 16/9)";
+const LANDSCAPE_MEDIA_QUERY = "(min-aspect-ratio: 5/3)";
 
 const BINDING_USERDATA = "splitview-binding";
 
