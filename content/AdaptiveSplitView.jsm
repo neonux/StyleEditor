@@ -39,7 +39,7 @@
 
 const EXPORTED_SYMBOLS = ["AdaptiveSplitView"];
 
-/* these must be kept in sync with CSS */
+/* this must be kept in sync with CSS */
 const LANDSCAPE_MEDIA_QUERY = "(min-aspect-ratio: 5/3)";
 
 const BINDING_USERDATA = "splitview-binding";
@@ -52,8 +52,8 @@ const BINDING_USERDATA = "splitview-binding";
  *
  * A split view organizes content with a summary list and a details view on the
  * side for the active/selected summary.
- * It is adaptive as it shows details on the side or inside the list depending
- * on the aspect ratio of the UI.
+ * It is adaptive as it can show details on the side or embedded inside the
+ * summary list when the container's aspect ratio is too narrow.
  *
  * @param DOMElement aRoot
  */

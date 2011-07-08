@@ -194,9 +194,9 @@ function log()
  * @param DOMElement aRoot
  *        The element to use for querySelector.
  *        Can be null if aSelector is a DOMElement.
- * @param aSelector
+ * @param string|DOMElement aSelectorOrElement
  *        Selector string or DOMElement for the element to wire up.
- * @param aDescriptor
+ * @param object aDescriptor
  *        An object describing how to wire matching selector, supported properties
  *        are "events", "attributes" and "userData" taking objects themselves.
  *        Each key of properties above represents the name of the event, attribute
@@ -204,16 +204,16 @@ function log()
  *        string to use as attribute value, or object to use as named userData
  *        respectively.
  *        If aDescriptor is a function, the argument is equivalent to :
- *        {events: {'command': aDescriptor}}
+ *        {events: {'click': aDescriptor}}
  * @return DOMElement
  *         The element that has been been wired up, or null if there were no
  *         element matching aSelector.
  */
-function wire(aRoot, aSelector, aDescriptor)
+function wire(aRoot, aSelectorOrElement, aDescriptor)
 {
-  let element = aSelector;
-  if (typeof(aSelector) == "string") {
-    element = aRoot.querySelector(aSelector);
+  let element = aSelectorOrElement;
+  if (typeof(element) == "string") {
+    element = aRoot.querySelector(aSelectorOrElement);
     if (!element) {
       return null;
     }
