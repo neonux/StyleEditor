@@ -170,8 +170,8 @@ AdaptiveSplitView.prototype = {
 
     if (this._activeSummary) {
       let binding = this._activeSummary.getUserData(BINDING_USERDATA);
-      removeClass(this._activeSummary, "splitview-active");
-      removeClass(binding._details, "splitview-active");
+      this._activeSummary.classList.remove("splitview-active");
+      binding._details.classList.remove("splitview-active");
 
       if (binding.onHide) {
         binding.onHide(this._activeSummary, binding._details, binding.data);
@@ -183,8 +183,8 @@ AdaptiveSplitView.prototype = {
     }
 
     let binding = aSummary.getUserData(BINDING_USERDATA);
-    addClass(aSummary, "splitview-active");
-    addClass(binding._details, "splitview-active");
+    aSummary.classList.add("splitview-active");
+    binding._details.classList.add("splitview-active");
 
     this._activeSummary = aSummary;
 
@@ -344,10 +344,10 @@ AdaptiveSplitView.prototype = {
     }
     if (!aQuery) {
       for (let i = 0; i < this._nav.children.length; ++i) {
-        removeClass(this._nav.children[i], "splitview-filtered");
+        this._nav.children[i].classList.remove("splitview-filtered");
       }
-      removeClass(this._filter, "splitview-all-filtered");
-      removeClass(this._nav, "splitview-all-filtered");
+      this._filter.classList.remove("splitview-all-filtered");
+      this._nav.classList.remove("splitview-all-filtered");
       return 0;
     }
 
@@ -367,19 +367,19 @@ AdaptiveSplitView.prototype = {
 
       count++;
       if (!matches) {
-        addClass(summary, "splitview-filtered");
+        summary.classList.add("splitview-filtered");
         filteredCount++;
       } else {
-        removeClass(summary, "splitview-filtered");
+        summary.classList.remove("splitview-filtered");
       }
     }
 
     if (count > 0 && filteredCount == count) {
-      addClass(this._filter, "splitview-all-filtered");
-      addClass(this._nav, "splitview-all-filtered");
+      this._filter.classList.add("splitview-all-filtered");
+      this._nav.classList.add("splitview-all-filtered");
     } else {
-      removeClass(this._filter, "splitview-all-filtered");
-      removeClass(this._nav, "splitview-all-filtered");
+      this._filter.classList.remove("splitview-all-filtered");
+      this._nav.classList.remove("splitview-all-filtered");
     }
     return filteredCount;
   },
@@ -465,55 +465,27 @@ function assert(aExpression, aMessage)
 }
 
 /**
- * Add one or multiple CSS class(es) to an element.
- *
- * @param DOMElement aElement
- * @param string ...
- *        One or multiple class name(s).
- */
-function addClass(aElement)
-{
-  assert(arguments.length > 1);
-
-  let args = Array.prototype.slice.call(arguments, 1);
-  let toAdd = args.join(" ");
-  aElement.className += " " + toAdd;
-}
-
-/**
- * Remove one or multiple CSS class(es) from an element.
- *
- * @param DOMElement aElement
- * @param string ...
- *        One or multiple class name(s).
- */
-function removeClass(aElement)
-{
-  assert(arguments.length > 1);
-
-  let args = Array.prototype.slice.call(arguments, 1);
-  for (let i = 0; i < args.length; ++i) {
-    aElement.className = aElement.className.replace(args[i], "");
-  }
-}
-
-/**
  * Schedule one or multiple CSS animation(s) on an element.
  *
  * @param DOMElement aElement
  * @param string ...
  *        One or multiple animation class name(s).
  */
-function scheduleAnimation(aElement, aClass)
+function scheduleAnimation(aElement)
 {
   assert(arguments.length > 1);
 
-  let args = [aElement].concat(Array.prototype.slice.call(arguments, 1));
-  addClass.apply(null, args);
+  let classes = Array.prototype.slice.call(arguments, 1);
+  for each (let klass in classes) {
+    aElement.classList.add(klass);
+  }
+
   let window = aElement.ownerDocument.defaultView;
   window.mozRequestAnimationFrame(function triggerAnimation() {
     window.setTimeout(function () {
-      removeClass.apply(null, args);
+      for each (let klass in classes) {
+        aElement.classList.remove(klass);
+      }
     }, 10);
   });
 }
