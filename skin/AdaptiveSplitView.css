@@ -6,7 +6,7 @@
  * with other XUL/CSS code (eg. browser) easier, less prone to conflicts.
  */
 
-html, body {
+:root {
   background-color: -moz-dialog;
   margin: 0;
   padding: 0;

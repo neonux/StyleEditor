@@ -39,23 +39,72 @@
  %styleEditorDTD;
 ]>
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://StyleEditor/skin/AdaptiveSplitView.css" type="text/css"?>
 <?xml-stylesheet href="chrome://StyleEditor/skin/StyleEditor.css" type="text/css"?>
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-        xmlns:html="http://www.w3.org/1999/xhtml"
+<xul:window xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns="http://www.w3.org/1999/xhtml"
         id="style-editor-chrome-window"
         title="&window.title;"
         windowtype="Tools:StyleEditor"
         width="640" height="480"
         persist="screenX screenY width height sizemode">
-<script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
-<iframe id="style-editor-chrome"
-        flex="1"
-        src="chrome://StyleEditor/content/StyleEditorChrome.html"/>
-<script type="application/javascript"><![CDATA[
+<xul:script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
+
+<div id="style-editor-chrome" class="splitview-root">
+  <div class="splitview-controller">
+    <div class="splitview-main">
+      <div class="toolbar">
+        <button class="style-editor-newButton" accesskey="N">New stylesheet</button>
+        <button class="style-editor-importButton" accesskey="I">Import…</button>
+        <div class="spacer"></div>
+        <input class="splitview-filter"
+               type="search"
+               title="Search through all stylesheets"
+               placeholder="Search stylesheets"/>
+      </div>
+    </div>
+    <div class="splitview-nav-container">
+      <ol class="splitview-nav" tabindex="0"></ol>
+      <div class="splitview-nav placeholder empty">
+        <h5>This page has no stylesheet.</h5>
+        <small>Perhaps you'd like to <a href="#" class="style-editor-newButton">append a new stylesheet</a>?</small>
+      </div>
+      <div class="splitview-nav placeholder all-filtered">
+        <h5>No results.</h5>
+        <small><a href="#" class="splitview-filter-clearButton">Clear</a></small>
+      </div>
+    </div> <!-- .splitview-nav-container -->
+  </div>   <!-- .splitview-controller -->
+
+  <div class="splitview-side-details"></div>
+
+  <div id="splitview-templates" hidden="true">
+    <li id="splitview-tpl-summary-stylesheet" tabindex="0">
+      <header>
+        <div class="stylesheet-enabled" tabindex="0"></div>
+        <hgroup>
+          <h1><a class="stylesheet-name" href="#">default.css</a></h1>
+          <h2 class="stylesheet-title">Untitled.</h2>
+          <h3 class="stylesheet-stats"><span class="stylesheet-rule-count">0 rules.</span></h3>
+        </hgroup>
+        <div class="toolbar">
+          <a class="stylesheet-saveButton" href="#">Save</a>
+        </div>
+      </header>
+      <div class="splitview-inline-details"></div>
+    </li>
+
+    <div id="splitview-tpl-details-stylesheet" class="splitview-details">
+      <textarea class="stylesheet-editor-input" placeholder="Type CSS here"></textarea>
+    </div>
+  </div> <!-- #splitview-templates -->
+</div>   <!-- .splitview-root -->
+
+<xul:script type="application/javascript"><![CDATA[
 Components.utils.import("chrome://StyleEditor/content/StyleEditorChrome.jsm");
 let chromeRoot = document.getElementById("style-editor-chrome");
 let chrome = new StyleEditorChrome(chromeRoot);
 window.styleEditorChrome = chrome;
-]]></script>
-</window>
+]]></xul:script>
+</xul:window>
 

@@ -74,17 +74,9 @@ function StyleEditorChrome(aRoot, aContentWindow)
   this._document = this._root.ownerDocument;
   this._window = this._document.defaultView;
 
-  //FIXME: using a proper load event results in "docShell is null" exception!?
-  //aRoot.contentWindow.addEventListener("load", function onChromeLoad() {
-  //  aRoot.removeEventListener("load", onChromeLoad, false);
-  this._window.setTimeout(function () {
-
-
-    let viewDocument = this._root.contentWindow.document;
-    let viewRoot = viewDocument.querySelector(".splitview-root");
-    this._view = new AdaptiveSplitView(viewRoot);
-    this._setupChrome();
-  }.bind(this), 100);
+  let viewRoot = this._root.parentNode.querySelector(".splitview-root");
+  this._view = new AdaptiveSplitView(viewRoot);
+  this._setupChrome();
 
   // finally attach to the content window
   this._contentWindow = null;
@@ -115,12 +107,10 @@ StyleEditorChrome.prototype = {
       return; // no change
     }
     this._contentWindow = aContentWindow;
-    if (this._view) {
-      if (aContentWindow) {
-        this._populateChrome();
-      } else {
-        this._disableChrome();
-      }
+    if (aContentWindow) {
+      this._populateChrome();
+    } else {
+      this._disableChrome();
     }
   },
 
@@ -177,12 +167,6 @@ StyleEditorChrome.prototype = {
         }
       });
     }.bind(this));
-
-    if (this.contentWindow) {
-      this._populateChrome();
-    } else {
-      this._disableChrome();
-    }
   },
 
   /**
