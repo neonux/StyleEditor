@@ -101,10 +101,11 @@ li:hover .stylesheet-enabled {
 textarea {
   display: -moz-box;
   -moz-box-flex: 1;
-  resize: none;
   margin: 4px;
   min-height: 18em;
   font-family: monospace;
+  white-space: nowrap;
+  resize: none;
 }
 
 /* limited width mode (remove discoverable search bar) */
