@@ -43,8 +43,6 @@ const EXPORTED_SYMBOLS = [
   "attr",
   "getCurrentBrowserTabContentWindow",
   "getDocumentForElement",
-  "getNodeAsJSON",
-  "isShadowStyleSheet",
   "log",
   "wire"
 ];
@@ -164,38 +162,6 @@ function getDocumentForElement(aElement)
     aElement = aElement.parentNode;
   }
   return aElement;
-}
-
-/**
- * Retrieve a JSON representation for a source node or a change node.
- *
- * @param Node aNode
- * @return string
- */
-function getNodeAsJSON(aNode)
-{
-  return JSON.stringify(aNode, function filterNodeLinks(key, value) {
-    switch (key) {
-    case "prev":
-    case "next":
-      return undefined;
-    }
-    return value;
-  }, 4);
-}
-
-/**
- * Return true if the a style sheet is a 'shadow style sheet'.
- *
- * @param DOMStyleSheet aStyleSHeet
- * @return boolean
- * @see StyleEditor._setupShadowStyleSheet
- */
-function isShadowStyleSheet(aStyleSheet)
-{
-  return aStyleSheet
-         && aStyleSheet.ownerNode
-         && aStyleSheet.ownerNode.getAttribute("data-style-editor-managed");
 }
 
 /**
