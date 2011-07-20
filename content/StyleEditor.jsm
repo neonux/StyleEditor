@@ -166,7 +166,7 @@ StyleEditor.prototype = {
   get window()
   {
     if (!this._window && this.inputElement) {
-      this._window = getDocumentForElement(this.inputElement).defaultView;
+      this._window = this.inputElement.ownerDocument.defaultView;
     }
     return this._window;
   },
@@ -509,7 +509,7 @@ StyleEditor.prototype = {
 
     let window = aParentWindow
                  ? aParentWindow
-                 : getDocumentForElement(this.inputElement).defaultView;
+                 : this.inputElement.ownerDocument.defaultView;
     let fp = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     let mode = aSave ? fp.modeSave : fp.modeOpen;
     let key = aSave ? "saveStyleSheet" : "importStyleSheet";

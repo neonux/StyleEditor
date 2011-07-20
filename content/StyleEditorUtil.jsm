@@ -42,7 +42,6 @@ const EXPORTED_SYMBOLS = [
   "assert",
   "attr",
   "getCurrentBrowserTabContentWindow",
-  "getDocumentForElement",
   "log",
   "wire"
 ];
@@ -148,20 +147,6 @@ function forEach(aObject, aCallback)
 function getCurrentBrowserTabContentWindow() {
   let mostRecentWindow = Services.wm.getMostRecentWindow("navigator:browser");
   return mostRecentWindow.gBrowser.selectedBrowser.contentWindow;
-}
-
-/**
- * Retrieve the root DOMDocument that owns a DOMElement.
- *
- * @param DOMElement aElement
- * @return DOMDocument
- */
-function getDocumentForElement(aElement)
-{
-  while (aElement.parentNode) {
-    aElement = aElement.parentNode;
-  }
-  return aElement;
 }
 
 /**

@@ -73,7 +73,7 @@ function StyleEditorChrome(aRoot, aContentWindow)
   assert(aRoot, "Argument 'aRoot' is required.");
 
   this._root = aRoot;
-  this._document = getDocumentForElement(this._root);
+  this._document = this._root.ownerDocument;
   this._window = this._document.defaultView;
 
   this._UI = {}; // object to store references to frequently used UI elements
