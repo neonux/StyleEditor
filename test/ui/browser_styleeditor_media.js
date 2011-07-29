@@ -5,9 +5,6 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "media.html";
 
-const TAB_CREATION_DELAY = 500;
-const UPDATE_STYLESHEET_THROTTLE_DELAY = 1000;
-
 
 let gBrowserWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]
                        .getService(Components.interfaces.nsIWindowMediator)
@@ -63,11 +60,11 @@ function run()
   // resize the browser so that second stylesheet media does not match anymore
   gBrowserWindow.resizeTo(180, 300);
 
-  setTimeout(function afterBrowserResize() {
+  executeSoon(function afterBrowserResize() {
     is(media[0].disabled, true,
        "second stylesheet's media does not match anymore after resize");
 
     finish();
-  }, 1);
+  });
 }
 

@@ -5,9 +5,6 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
-const TAB_CREATION_DELAY = 500;
-const UPDATE_STYLESHEET_THROTTLE_DELAY = 1000;
-
 
 let gChromeWindow; //StyleEditorChrome window
 
@@ -48,7 +45,7 @@ function run()
 
   // select first stylesheet, check buttons are now visible
   list.selectedIndex = 0;
-  setTimeout(function () {
+  executeSoon(function () {
     is(openButton.hidden, false,
        "open button is visible when a stylesheet is selected");
     is(enabledButton.hidden, false,
@@ -61,14 +58,14 @@ function run()
 
     enabledButton.click(); // toggle stylesheet
 
-    setTimeout(function () {
+    executeSoon(function () {
       is(SEC.contentDocument.styleSheets[0].disabled, true,
          "selected stylesheet is now disabled");
       is(enabledButton.checked, false,
          "selected stylesheet is now disabled, button is unchecked");
 
       finish();
-    }, 1);
-  }, 1);
+    });
+  });
 }
 
