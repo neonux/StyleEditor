@@ -1,0 +1,112 @@
+/*
+ * Any copyright is dedicated to the Public Domain.
+ * http://creativecommons.org/publicdomain/zero/1.0/
+ *
+ * All rules are prefixed with #style-editor-* in order to make integration
+ * with other XUL/CSS code (eg. browser) easier, less prone to conflicts.
+ */
+
+#style-editor-chrome .hidden,
+#style-editor-standalone .hidden,
+#style-editor-standalone .stylesheet-debug {
+  display: none;
+}
+
+#style-editor-chrome {
+  overflow: hidden;
+}
+
+#style-editor-chrome tab {
+  max-width: 30em;
+}
+#style-editor-chrome tab.unsaved,
+#style-editor-chrome .unsaved .stylesheet-name {
+  font-style: italic;
+}
+#style-editor-chrome tab.unsaved:before,
+#style-editor-chrome .unsaved .stylesheet-name:before {
+  content: "* ";
+}
+
+#style-editor-chrome tabpanel {
+  -moz-box-orient: vertical;
+}
+
+/*                   */
+/* Stylesheets panel */
+
+#style-editor-styleSheetsList richlistitem .stylesheet-name {
+  color: -moz-hyperlinktext;
+}
+#style-editor-styleSheetsList richlistitem.open .stylesheet-name {
+  color: -moz-visitedhyperlinktext;
+}
+
+#style-editor-styleSheetList richlistitem .stylesheet-title {
+  font-size: 0.7em;
+  color: gray;
+}
+
+#style-editor-styleSheetList richlistitem .stylesheet-details {
+  font-size: 0.8em;
+}
+
+#style-editor-styleSheetList richlistitem .stylesheet-media {
+  border: 1px dotted gray;
+  border-radius: 4px;
+  text-align:center;
+  min-width: 4em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  color: gray;
+  font-style: italic;
+}
+#style-editor-styleSheetList richlistitem .stylesheet-media[disabled=false] {
+  border-style: solid;
+  border-color: black;
+  color: black;
+  font-style: normal;
+}
+#style-editor-styleSheetList richlistitem .stylesheet-media-invalid {
+  color: red;
+}
+
+#style-editor-styleSheetList > richlistitem {
+  padding-left: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+#style-editor-styleSheetList > richlistitem.open {
+  padding-left: 0px;
+  border-left: 4px solid lightgreen;
+}
+#style-editor-styleSheetList > richlistitem.disabled {
+  padding-left: 0px;
+  border-left: 4px solid gray;
+  color: gray;
+}
+#style-editor-styleSheetList > richlistitem.unsaved {
+  padding-left: 0px;
+  border-left: 4px solid tomato;
+}
+
+#style-editor-styleSheetList > richlistitem > checkbox {
+  -moz-box-align: start;
+}
+
+/*              */
+/* Editor panel */
+
+#style-editor-standalone.unsaved .stylesheet-save {
+  display: block;
+}
+
+#style-editor-standalone[data-debug-mode] .stylesheet-debug {
+  color: red;
+  display: block;
+}
+
+#style-editor-standalone .style-editor-input {
+  font-family: monospace, sans-serif;
+}
+
