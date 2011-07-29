@@ -16,7 +16,7 @@ function test()
 
   gBrowser.selectedTab = gBrowser.addTab();
   gBrowser.selectedBrowser.addEventListener("load", function onLoad() {
-    gBrowser.selectedBrowser.removeEventListener("load", onLoad);
+    gBrowser.selectedBrowser.removeEventListener("load", onLoad, false);
 
     ok(StyleEditor, "StyleEditor object exists in browser window");
     gStyleEditor = StyleEditor; // keep to test singleton behavior later
@@ -30,7 +30,7 @@ function test()
 
 function run()
 {
-  gChromeWindow.removeEventListener("load", run);
+  gChromeWindow.removeEventListener("load", run, false);
 
   let SEC = gChromeWindow.styleEditorChrome;
   ok(SEC, "StyleEditorChrome object exists in new window");

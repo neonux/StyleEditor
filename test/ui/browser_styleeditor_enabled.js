@@ -16,7 +16,7 @@ function test()
 
   gBrowser.selectedTab = gBrowser.addTab();
   gBrowser.selectedBrowser.addEventListener("load", function onLoad() {
-    gBrowser.selectedBrowser.removeEventListener("load", onLoad);
+    gBrowser.selectedBrowser.removeEventListener("load", onLoad, false);
 
     gChromeWindow = StyleEditor.openChrome();
     gChromeWindow.addEventListener("load", run, false);
@@ -27,7 +27,7 @@ function test()
 
 function run()
 {
-  gChromeWindow.removeEventListener("load", run);
+  gChromeWindow.removeEventListener("load", run, false);
 
   let SEC = gChromeWindow.styleEditorChrome;
   let document = gChromeWindow.document;

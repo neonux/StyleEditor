@@ -385,7 +385,7 @@ StyleEditorChrome.prototype = {
     // set up editor UI when the stand-alone editor frame is loaded
     let editorChrome = this;
     frame.contentWindow.addEventListener("load", function onFrameLoad() {
-      frame.contentWindow.removeEventListener("load", onFrameLoad);
+      frame.contentWindow.removeEventListener("load", onFrameLoad, false);
 
       let document = this.document;
 

@@ -102,8 +102,8 @@ StyleEditorTextboxDriver.prototype = {
     if (previousTextbox) {
       if (previousTextbox != this._dummy) {
         // clean up stuff bound to the previous textbox
-        previousTextbox.removeEventListener("keydown", this._onKeydownBinding);
-        previousTextbox.removeEventListener("input", this._onInputBinding);
+        previousTextbox.removeEventListener("keydown", this._onKeydownBinding, false);
+        previousTextbox.removeEventListener("input", this._onInputBinding, false);
       }
 
       if (aElement) {
