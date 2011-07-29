@@ -37,7 +37,7 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["StyleEditor"];
+const EXPORTED_SYMBOLS = ["StyleEditor", "StyleEditorFlags"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -150,7 +150,7 @@ StyleEditor.prototype = {
   set inputElement(aElement)
   {
     // set 'open' flag on this editor if we are attaching, clear otherwise
-    this.toggleFlag(aElement, this.OPEN_FLAG);
+    this.toggleFlag(aElement, StyleEditorFlags.OPEN);
 
     this._window = null;
 
@@ -216,7 +216,7 @@ StyleEditor.prototype = {
   load: function SE_load()
   {
     if (!this._styleSheet) {
-      this._flags.push(this.NEW_FLAG);
+      this._flags.push(StyleEditorFlags.NEW);
       this._appendNewStyleSheet();
     }
     this._loadSource();
@@ -308,16 +308,9 @@ StyleEditor.prototype = {
    * via CSS (including possibly complex combinations).
    *
    * Flag changes can be tracked via onFlagChange (@see addActionListener).
+   *
+   * @see StyleEditorFlags
    */
-
-  DISABLED_FLAG:      "disabled",
-  ERROR_FLAG:         "error",
-  IMPORTED_FLAG:      "imported",
-  INLINE_FLAG:        "inline",
-  MODIFIED_FLAG:      "modified",
-  NEW_FLAG:           "new",
-  OPEN_FLAG:          "open",
-  UNSAVED_FLAG:       "unsaved",
 
   /**
    * Retrieve a space-separated string of all UI flags set on this editor.
@@ -332,12 +325,16 @@ StyleEditor.prototype = {
    * Set a flag.
    *
    * @param string aName
-   *        Name of the flag to set.
+   *        Name of the flag to set. One of StyleEditorFlags members.
    * @return boolean
    *         True if the flag has been set, false if flag is already set.
+   * @see StyleEditorFlags
    */
   setFlag: function SE_setFlag(aName)
   {
+    let prop = aName.toUpperCase();
+    assert(StyleEditorFlags[prop], "Unknown flag: " + prop);
+
     if (this.hasFlag(aName)) {
       return false;
     }
@@ -398,7 +395,7 @@ StyleEditor.prototype = {
   enableStyleSheet: function SE_enableStyleSheet(aEnabled)
   {
     this.styleSheet.disabled = !aEnabled;
-    this.toggleFlag(this.styleSheet.disabled, this.DISABLED_FLAG);
+    this.toggleFlag(this.styleSheet.disabled, StyleEditorFlags.DISABLED);
 
     if (this._updateTask) {
       this._updateStyleSheet(); // perform cancelled update
@@ -437,7 +434,7 @@ StyleEditor.prototype = {
         return this._signalError(SAVE_ERROR);
       }
       FileUtils.closeSafeFileOutputStream(ostream);
-      this.clearFlag(this.UNSAVED_FLAG);
+      this.clearFlag(StyleEditorFlags.UNSAVED);
     }.bind(this));
 
     return aFile;
@@ -464,7 +461,7 @@ StyleEditor.prototype = {
    */
   _updateStyleSheet: function SE__updateStyleSheet()
   {
-    this.setFlag(this.UNSAVED_FLAG);
+    this.setFlag(StyleEditorFlags.UNSAVED);
 
     if (this.styleSheet.disabled) {
       return;
@@ -529,7 +526,7 @@ StyleEditor.prototype = {
   {
     if (!this.styleSheet.href) {
       // this is an inline <style> sheet
-      this._flags.push(this.INLINE_FLAG);
+      this._flags.push(StyleEditorFlags.INLINE);
       this._onSourceLoad(this.styleSheet.ownerNode.textContent);
       return;
     }
@@ -633,7 +630,7 @@ StyleEditor.prototype = {
    */
   _signalError: function SE__signalError(aErrorCode)
   {
-    this.setFlag(this.ERROR_FLAG);
+    this.setFlag(StyleEditorFlags.ERROR);
 
     if (!_inputElement || _inputElement.parentNode != "notificationbox") {
       return;
@@ -676,4 +673,21 @@ StyleEditor.prototype = {
       }
     }
   }
+};
+
+/**
+ * List of StyleEditor UI flags.
+ * A Style Editor add-on using its own flag needs to add it to this object.
+ *
+ * @see StyleEditor.setFlag
+ */
+let StyleEditorFlags = {
+  DISABLED:      "disabled",
+  ERROR:         "error",
+  IMPORTED:      "imported",
+  INLINE:        "inline",
+  MODIFIED:      "modified",
+  NEW:           "new",
+  OPEN:          "open",
+  UNSAVED:       "unsaved"
 };

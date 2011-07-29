@@ -168,7 +168,7 @@ StyleEditorChrome.prototype = {
 
     wire(this._root, this._UI.saveAllButton, function onSaveAllButton() {
       this.forEachStyleSheet(function saveIfUnsaved(aEditor) {
-        if (!aEditor.hasFlag(aEditor.UNSAVED_FLAG)) {
+        if (!aEditor.hasFlag(StyleEditorFlags.UNSAVED)) {
           return;
         }
         if (aEditor.saveToFile(aEditor.savedFile)) {
@@ -185,8 +185,8 @@ StyleEditorChrome.prototype = {
       this._UI.openButton.hidden = isNoneSelected;
       this._UI.enabledButton.hidden = isNoneSelected;
       if (!isNoneSelected) {
-        this._UI.openButton.checked = editor.hasFlag(editor.OPEN_FLAG);
-        this._UI.enabledButton.checked = !editor.hasFlag(editor.DISABLED_FLAG);
+        this._UI.openButton.checked = editor.hasFlag(StyleEditorFlags.OPEN);
+        this._UI.enabledButton.checked = !editor.hasFlag(StyleEditorFlags.DISABLED);
       }
     }.bind(this), false);
 
@@ -641,16 +641,16 @@ StyleEditorChrome.prototype = {
     this._updateItemForEditor(aEditor);
     this._updateTabForEditor(aEditor);
 
-    if (aFlagName == aEditor.UNSAVED_FLAG) {
+    if (aFlagName == StyleEditorFlags.UNSAVED) {
       // display Save All button when there is at least one unsaved editor
       this._unsavedCount = this._unsavedCount || 0;
-      this._unsavedCount += aEditor.hasFlag(aEditor.UNSAVED_FLAG) ? 1 : -1;
+      this._unsavedCount += aEditor.hasFlag(StyleEditorFlags.UNSAVED) ? 1 : -1;
       this._UI.saveAllButton.className = this._unsavedCount ? "" : "hidden";
     }
 
     if (aEditor == this._selectedEditor) {
-      this._UI.openButton.checked = aEditor.hasFlag(aEditor.OPEN_FLAG);
-      this._UI.enabledButton.checked = !aEditor.hasFlag(aEditor.DISABLED_FLAG);
+      this._UI.openButton.checked = aEditor.hasFlag(StyleEditorFlags.OPEN);
+      this._UI.enabledButton.checked = !aEditor.hasFlag(StyleEditorFlags.DISABLED);
     }
   }
 };
