@@ -46,14 +46,6 @@
   font-size: 0.7em;
   color: gray;
 }
-#style-editor-styleSheetList richlistitem.modified .stylesheet-title:before {
-  content: "Modified. ";
-  color: gray;
-}
-#style-editor-styleSheetList richlistitem.new .stylesheet-title:before {
-  content: "New. ";
-  color: gray;
-}
 
 #style-editor-styleSheetList richlistitem .stylesheet-details {
   font-size: 0.8em;
