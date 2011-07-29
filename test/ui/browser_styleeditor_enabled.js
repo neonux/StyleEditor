@@ -12,13 +12,6 @@ const UPDATE_STYLESHEET_THROTTLE_DELAY = 1000;
 let gChromeWindow; //StyleEditorChrome window
 
 
-function cleanup()
-{
-  gChromeWindow.close();
-  gChromeWindow = null;
-  gBrowser.removeCurrentTab();
-}
-
 function test()
 {
   registerCleanupFunction(cleanup);

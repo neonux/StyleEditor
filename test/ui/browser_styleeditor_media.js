@@ -18,18 +18,12 @@ let gOriginalHeight = gBrowserWindow.outerHeight;
 let gChromeWindow; //StyleEditorChrome window
 
 
-function cleanup()
-{
-  gChromeWindow.close();
-  gChromeWindow = null;
-
-  gBrowser.removeCurrentTab();
-  gBrowserWindow.resizeTo(gOriginalWidth, gOriginalHeight);
-}
-
 function test()
 {
-  registerCleanupFunction(cleanup);
+  registerCleanupFunction(function cleanupAndRestoreSize() {
+    cleanup();
+    gBrowserWindow.resizeTo(gOriginalWidth, gOriginalHeight);
+  });
   waitForExplicitFinish();
 
   gBrowser.selectedTab = gBrowser.addTab();

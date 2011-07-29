@@ -8,12 +8,6 @@ const TESTCASE_URI = TEST_BASE + "simple.html";
 let gStyleEditor;  //StyleEditor object in browser window
 let gChromeWindow; //StyleEditorChrome window
 
-function cleanup()
-{
-  gChromeWindow.close();
-  gChromeWindow = null;
-  gBrowser.removeCurrentTab();
-}
 
 function test()
 {

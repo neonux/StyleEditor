@@ -10,13 +10,6 @@ const TAB_CREATION_DELAY = 500;
 let gChromeWindow; //StyleEditorChrome window
 
 
-function cleanup()
-{
-  gChromeWindow.close();
-  gChromeWindow = null;
-  gBrowser.removeCurrentTab();
-}
-
 function test()
 {
   registerCleanupFunction(cleanup);

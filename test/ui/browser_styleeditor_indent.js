@@ -13,13 +13,6 @@ const NOT_INDENTED = "\nNOT INDENTED";
 let gChromeWindow; //StyleEditorChrome window
 
 
-function cleanup()
-{
-  gChromeWindow.close();
-  gChromeWindow = null;
-  gBrowser.removeCurrentTab();
-}
-
 function test()
 {
   registerCleanupFunction(cleanup);
