@@ -72,11 +72,11 @@ git add browser/themes
 insert_tests()
 {
   while read -r; do
-    if echo $REPLY | grep -q '@TESTS@'; then
+    if echo "$REPLY" | grep -q '@TESTS@'; then
       cat tests.tmp
       echo "                 \$(NULL)"
     else
-      echo $REPLY
+      echo "$REPLY"
     fi
   done
 }
@@ -91,9 +91,9 @@ do
   BROWSER_FILE=browser/base/content/test/StyleEditor/`basename $FILE`
   git show $ADDON:$FILE > $BROWSER_FILE
   FILE=`basename $FILE`
-  if [[ $FILE == browser_*.js ]]; then
-    echo "                 $FILE \\" >> tests.tmp
-  fi
+  #if [[ $FILE == browser_*.js ]]; then
+  echo "                 $FILE \\" >> tests.tmp
+  #fi
 done
 insert_tests < test.Makefile.in.in > browser/base/content/test/StyleEditor/Makefile.in
 rm tests.tmp
