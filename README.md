@@ -1,15 +1,11 @@
-This branch is for integration of Style Editor add-on into the browser.
+This branch has helpers for integration of Style Editor add-on into the browser.
 
-
-The feature is disabled by default.
-
+The feature is disabled by default in the browser.
 To enable pref 'devtools.style_editor.enabled' must be set to 'true'.
 
+Typical integration procedure :
 
-
-Helpers for migration to add-on to browser :
-
-`./rebase.sh => ./integrate.sh => ./update.sh => commit`
-
-(fix up if needed between steps)
-
+$ MOZILLA_SOURCE=... ./rebase.sh
+$ ./integrate.sh master
+$ ./update.sh
+$ git commit -a --amend
