@@ -5,8 +5,6 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
-const TAB_CREATION_DELAY = 500;
-
 let gChromeWindow; //StyleEditorChrome window
 
 
@@ -40,19 +38,21 @@ function run()
   document.querySelector("#style-editor-newButton").click();
   let editor = SEC.editors[SEC.editors.length - 1];
 
-  setTimeout(function testEditorWindow() {
-    ok(!editor.inputElement.getAttribute("readonly"),
-       "editor is not read-only initially");
+  editor.addActionListener({
+    onAttached: function () {
+      ok(!editor.inputElement.getAttribute("readonly"),
+         "editor is not read-only initially");
 
-    gBrowser.removeCurrentTab();
+      gBrowser.removeCurrentTab();
 
-    is(editor.inputElement.getAttribute("readonly"), "true",
-       "editor is read-only after content has been closed");
+      is(editor.inputElement.getAttribute("readonly"), "true",
+         "editor is read-only after content has been closed");
 
-    is(listBox.disabled, true,
-       "stylesheet list is disabled after contnet has been closed");
+      is(listBox.disabled, true,
+         "stylesheet list is disabled after contnet has been closed");
 
-    finish();
-  }, TAB_CREATION_DELAY);
+      finish();
+    }
+  });
 }
 

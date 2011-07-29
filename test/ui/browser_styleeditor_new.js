@@ -5,9 +5,6 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
-const TAB_CREATION_DELAY = 500;
-const UPDATE_STYLESHEET_THROTTLE_DELAY = 1000;
-
 
 let gChromeWindow; //StyleEditorChrome window
 
@@ -46,31 +43,34 @@ function run()
   let newEditor = SEC.editors[SEC.editors.length - 1];
   ok(newEditor, "got the new editor instance");
 
-  setTimeout(function testNewEditorWindow() {
-    let gotLoadEvent;
-    newEditor.addActionListener({
-      onLoad: function () {
-        gotLoadEvent = true;
-      }
-    });
+  let gotLoadEvent;
 
-    ok(gotLoadEvent, "load event got fired to new action listener");
+  newEditor.addActionListener({
+    onLoad: function () {
+      gotLoadEvent = true;
+    },
 
-    ok(newEditor.inputElement, "editor is opened and input element attached");
+    onAttached: function () {
+      ok(gotLoadEvent, "load event got fired to new action listener");
 
-    let focused = newEditor.window.document.commandDispatcher.focusedElement;
-    ok(focused, "editor has focus");
+      ok(newEditor.inputElement, "editor is opened and input element attached");
 
-    //FIXME: should rather use EventUtils.sendString but it depends on jQuery!?
-    newEditor.inputElement.value = "body{background-color:red;}";
-    newEditor.updateStyleSheet();
+      executeSoon(function () {
+        let focused = newEditor.window.document.commandDispatcher.focusedElement;
+        ok(focused, "editor has focus");
 
-    setTimeout(function checkComputedStyle() {
+        //FIXME: should rather use EventUtils.sendString but it depends on jQuery!?
+        newEditor.inputElement.value = "body{background-color:red;}";
+        newEditor.updateStyleSheet();
+      });
+    },
+
+    onCommit: function () {
       let computedStyle = content.getComputedStyle(content.document.body, null);
       is(computedStyle.backgroundColor, "rgb(255, 0, 0)",
          "background color has been updated to red");
 
       finish();
-    }, UPDATE_STYLESHEET_THROTTLE_DELAY);
-  }, TAB_CREATION_DELAY);
+    }
+  });
 }

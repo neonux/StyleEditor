@@ -156,6 +156,8 @@ StyleEditor.prototype = {
 
     this._inputElement = aElement;
     this._driver.inputElement = aElement; // attach to the input driver
+
+    this._triggerAction(aElement ? "Attached" : "Detached");
   },
 
   /**
@@ -262,6 +264,19 @@ StyleEditor.prototype = {
    *
    *   onFlagChange:           Called when a flag has been set or cleared.
    *                           Arguments: (editor, flagName)
+   *                           @see setFlag
+   *
+   *   onAttached:             Called when an input element has been attached.
+   *                           Arguments: (editor)
+   *                           @see inputElement
+   *
+   *   onDetached:             Called when input element has been detached.
+   *                           Arguments: (editor)
+   *                           @see inputElement
+   *
+   *   onCommit:               Called when changes have been committed/applied
+   *                           to the live DOM style sheet.
+   *                           Arguments: (editor)
    * }
    *
    * A listener does not have to implement all of the interface above, actions
@@ -478,6 +493,8 @@ StyleEditor.prototype = {
     oldNode.parentNode.replaceChild(newNode, oldNode);
 
     this._styleSheet = this.contentDocument.styleSheets[oldIndex];
+
+    this._triggerAction("Commit");
   },
 
   /**
