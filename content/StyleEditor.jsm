@@ -533,26 +533,56 @@ StyleEditor.prototype = {
 
     let scheme = Services.io.extractScheme(this.styleSheet.href);
     switch (scheme) {
-    case "file":
-    case "chrome":
-    case "resource":
-      NetUtil.asyncFetch(this.styleSheet.href, function onAsyncFetch(stream, status) {
-        if (!Components.isSuccessCode(status)) {
+      case "file":
+      case "chrome":
+      case "resource":
+        this._loadSourceFromFile(this.styleSheet.href);
+        break;
+
+      default:
+        this._loadSourceFromCache(this.styleSheet.href);
+        break;
+    }
+  },
+
+  /**
+   * Load source from a file or file-like resource.
+   *
+   * @param string aHref
+   *        URL for the stylesheet.
+   */
+  _loadSourceFromFile: function SE__loadSourceFromFile(aHref)
+  {
+    try {
+      NetUtil.asyncFetch(aHref, function onFetch(aStream, aStatus) {
+        if (!Components.isSuccessCode(aStatus)) {
           return this._signalError(LOAD_ERROR);
         }
-        let source = NetUtil.readInputStreamToString(stream, stream.available());
-        stream.close();
+        let source = NetUtil.readInputStreamToString(aStream, aStream.available());
+        aStream.close();
         this._onSourceLoad(source);
       }.bind(this));
-      break;
+    } catch (ex) {
+      this._signalError(LOAD_ERROR);
+    }
+  },
 
-    default:
-      let cacheService = Cc["@mozilla.org/network/cache-service;1"].getService(Ci.nsICacheService);
+  /**
+   * Load source from the HTTP cache.
+   *
+   * @param string aHref
+   *        URL for the stylesheet.
+   */
+  _loadSourceFromCache: function SE__loadSourceFromCache(aHref)
+  {
+    try {
+      let cacheService = Cc["@mozilla.org/network/cache-service;1"]
+                           .getService(Ci.nsICacheService);
       let session = cacheService.createSession("HTTP", Ci.nsICache.STORE_ANYWHERE, true);
       session.doomEntriesIfExpired = false;
-      session.asyncOpenCacheEntry(this.styleSheet.href, Ci.nsICache.ACCESS_READ, {
-        onCacheEntryAvailable: function onCacheEntryAvailable(entry, mode, status) {
-          if (!Components.isSuccessCode(status)) {
+      session.asyncOpenCacheEntry(aHref, Ci.nsICache.ACCESS_READ, {
+        onCacheEntryAvailable: function onCacheEntryAvailable(aEntry, aMode, aStatus) {
+          if (!Components.isSuccessCode(aStatus)) {
             return this._signalError(LOAD_ERROR);
           }
 
@@ -561,10 +591,11 @@ StyleEditor.prototype = {
           let head = entry.getMetaDataElement("response-head");
 
           if (/Content-Encoding:\s*gzip/i.test(head)) {
-            let converter = Cc["@mozilla.org/streamconv;1?from=gzip&to=uncompressed"].createInstance(Ci.nsIStreamConverter);
+            let converter = Cc["@mozilla.org/streamconv;1?from=gzip&to=uncompressed"]
+                              .createInstance(Ci.nsIStreamConverter);
             converter.asyncConvertData("gzip", "uncompressed", {
-              onDataAvailable: function onDataAvailable(aRequest, aContext, uncompressedStream, aOffset, aCount) {
-                source += NetUtil.readInputStreamToString(uncompressedStream, aCount);
+              onDataAvailable: function onDataAvailable(aRequest, aContext, aUncompressedStream, aOffset, aCount) {
+                source += NetUtil.readInputStreamToString(aUncompressedStream, aCount);
               }
             }, this);
             while (stream.available()) {
@@ -582,7 +613,8 @@ StyleEditor.prototype = {
           this._onSourceLoad(source);
         }.bind(this)
       });
-      break;
+    } catch (ex) {
+      this._signalError(LOAD_ERROR);
     }
   },
 
