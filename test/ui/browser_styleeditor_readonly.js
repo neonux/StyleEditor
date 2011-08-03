@@ -39,7 +39,7 @@ function run()
   let editor = SEC.editors[SEC.editors.length - 1];
 
   editor.addActionListener({
-    onAttached: function () {
+    onAttach: function () {
       ok(!editor.inputElement.getAttribute("readonly"),
          "editor is not read-only initially");
 

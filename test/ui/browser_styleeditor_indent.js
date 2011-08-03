@@ -40,7 +40,7 @@ function run()
   let editor = SEC.editors[SEC.editors.length - 1];
 
   editor.addActionListener({
-    onAttached: function () {
+    onAttach: function () {
       let source = "line 1\nline 2\nline 3" + NOT_INDENTED;
       let indentedSource1 = "\tline 1\n\tline 2\n\tline 3" + NOT_INDENTED;
       let indentedSource2 = "\t\tline 1\n\t\tline 2\n\t\tline 3" + NOT_INDENTED;

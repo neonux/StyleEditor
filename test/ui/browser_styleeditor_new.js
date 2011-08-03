@@ -50,7 +50,7 @@ function run()
       gotLoadEvent = true;
     },
 
-    onAttached: function () {
+    onAttach: function () {
       ok(gotLoadEvent, "load event got fired to new action listener");
 
       ok(newEditor.inputElement, "editor is opened and input element attached");

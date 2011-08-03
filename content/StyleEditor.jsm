@@ -157,7 +157,7 @@ StyleEditor.prototype = {
     this._inputElement = aElement;
     this._driver.inputElement = aElement; // attach to the input driver
 
-    this._triggerAction(aElement ? "Attached" : "Detached");
+    this._triggerAction(aElement ? "Attach" : "Detach");
   },
 
   /**
@@ -266,11 +266,11 @@ StyleEditor.prototype = {
    *                           Arguments: (editor, flagName)
    *                           @see setFlag
    *
-   *   onAttached:             Called when an input element has been attached.
+   *   onAttach:             Called when an input element has been attached.
    *                           Arguments: (editor)
    *                           @see inputElement
    *
-   *   onDetached:             Called when input element has been detached.
+   *   onDetach:             Called when input element has been detached.
    *                           Arguments: (editor)
    *                           @see inputElement
    *
