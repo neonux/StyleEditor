@@ -378,10 +378,13 @@ StyleEditorChrome.prototype = {
 
           editor.enableStyleSheet(editor.styleSheet.disabled);
         });
-/*
-        wire(document, ".stylesheet-save", function onSaveButton() {
-          aEditor.saveToFile(aEditor.savedFile);
-        });*/
+
+        wire(aSummary, ".stylesheet-saveButton", function onSaveButton(evt) {
+          evt.stopPropagation();
+          evt.target.blur();
+
+          editor.saveToFile(editor.savedFile);
+        });
 
         this._updateSummaryForEditor(editor, aSummary);
 

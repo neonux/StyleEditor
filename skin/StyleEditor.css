@@ -39,13 +39,20 @@
 
 
 .splitview-nav > li > header > .toolbar {
-  display: none;
+  visibility: hidden;
+  float: right;
+  font-size: 0.8em;
+  margin-right: 20px;
+}
+.splitview-nav > li > header > .toolbar > a {
+  color: black;
 }
 
-/*FIXME: .splitview-nav > li:hover > header > .toolbar,
+.splitview-nav > li:hover > header > .toolbar,
+.splitview-nav > li:focus > header > .toolbar,
 .splitview-nav > li.splitview-active > header > .toolbar {
-  float: right;
-}*/
+  visibility: visible;
+}
 
 li hgroup {
   display: block;
