@@ -419,10 +419,10 @@ AdaptiveSplitView.prototype = {
     backup = aSummary.className.match(/(splitview\-[\w-]+)/);
     backup = backup ? backup.slice(1).join(" ") : "";
     aSummary.className = backup + " " + className;
-
+/*
     backup = binding._details.className.match(/(splitview\-[\w-]+)/);
     backup = backup ? backup.slice(1).join(" ") : "";
-    binding._details.className = backup + " " + className;
+    binding._details.className = backup + " " + className;*/
   },
 
   /**
