@@ -656,6 +656,8 @@ StyleEditor.prototype = {
    */
   _appendNewStyleSheet: function SE__appendNewStyleSheet(aText)
   {
+    this.setFlag(aText ? StyleEditorFlags.IMPORTED : StyleEditorFlags.NEW);
+
     let document = this.contentDocument;
     let parent = document.body;
     let style = document.createElement("style");
