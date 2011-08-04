@@ -43,6 +43,7 @@ const EXPORTED_SYMBOLS = [
   "attr",
   "getCurrentBrowserTabContentWindow",
   "log",
+  "text",
   "wire"
 ];
 
@@ -121,6 +122,32 @@ function attr(aRoot, aSelector, aName, aValue)
   }
   element.setAttribute(aName, aValue);
   return aValue;
+}
+
+/**
+ * Retrieve or set the text content of an element.
+ *
+ * @param DOMElement aRoot
+ *        The element to use for querySelector.
+ * @param string aSelector
+ *        Selector string for the element to set the attribute to.
+ *        If there is no match, the call is ignored and returns null.
+ * @param string aText
+ *        Optional text to set.
+ * @return string
+ */
+function text(aRoot, aSelector, aText)
+{
+  let element = aRoot.querySelector(aSelector);
+  if (!element) {
+    return null;
+  }
+
+  if (aText === undefined) {
+    return element.innerHTML;
+  }
+  element.innerHTML = aText;
+  return aText;
 }
 
 /**
