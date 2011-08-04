@@ -84,6 +84,7 @@ function StyleEditorChrome(aRoot, aContentWindow)
   this.contentWindow = aContentWindow || getCurrentBrowserTabContentWindow();
 
   this.contentWindow.addEventListener("unload", function onContentUnload() {
+    this.contentWindow.removeEventListener("unload", onContentUnload, false);
     this.contentWindow = null;
   }.bind(this), false);
 }
