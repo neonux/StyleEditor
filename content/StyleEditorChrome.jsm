@@ -397,6 +397,10 @@ StyleEditorChrome.prototype = {
       onShow: function ASV_onShow(aSummary, aDetails, aData) {
         let editor = aData.editor;
         editor.inputElement.focus();
+      },
+      onFilterBy: function ASV_onFilterBy(aSummary, aDetails, aData, aQuery) {
+        let editor = aData.editor;
+        return editor.inputElement.value.indexOf(aQuery) > -1;
       }
     });
   },
