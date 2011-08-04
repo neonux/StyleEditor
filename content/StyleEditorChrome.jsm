@@ -235,7 +235,8 @@ StyleEditorChrome.prototype = {
    *
    * @see StyleEditor._setupShadowStyleSheet
    */
-  _populateChrome: function SEC__populateChrome() {
+  _populateChrome: function SEC__populateChrome()
+  {
     this._resetChrome();
 
     this._document.title = _("chromeWindowTitle",
