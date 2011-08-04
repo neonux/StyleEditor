@@ -108,8 +108,12 @@ StyleEditorTextboxDriver.prototype = {
 
       if (aElement) {
         aElement.value = previousTextbox.value;
-        aElement.selectionStart = previousTextbox.selectionStart;
-        aElement.selectionEnd = previousTextbox.selectionEnd;
+        aElement.ownerDocument.defaultView.setTimeout(function () {
+          //HACK: textarea in the live DOM does not get a docshell before the
+          //      next reflow/rendering (happens only in chrome)
+          aElement.setSelectionRange(previousTextbox.selectionStart,
+                                     previousTextbox.selectionEnd);
+        }, 0);
       }
     }
 
