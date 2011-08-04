@@ -74,6 +74,16 @@ function AdaptiveSplitView(aRoot)
       this.filterContentBy(this._filter.value);
     }.bind(this);
     this._filter.addEventListener("input", this._filter.search, false);
+    this._filter.addEventListener("keyup", function onFilterKeyUp(aEvent) {
+      if (aEvent.keyCode == aEvent.DOM_VK_ENTER
+          || aEvent.keyCode == aEvent.DOM_VK_RETURN) {
+        // autofocus matching content if there is only one
+        let matches = this._nav.querySelectorAll("* > li:not(.splitview-filtered)");
+        if (matches.length == 1) {
+          this.activeSummary = matches[0];
+        }
+      }
+    }.bind(this), false);
   }
 
   this._nav.addEventListener("keydown", function onKeyCatchAll(aEvent) {
