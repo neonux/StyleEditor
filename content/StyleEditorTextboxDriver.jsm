@@ -113,7 +113,7 @@ StyleEditorTextboxDriver.prototype = {
           //      next reflow/rendering (happens only in chrome)
           aElement.setSelectionRange(previousTextbox.selectionStart,
                                      previousTextbox.selectionEnd);
-        }, 0);
+        }, 100);
       }
     }
 
