@@ -220,7 +220,7 @@ function wire(aRoot, aSelector, aDescriptor)
   }
 
   if (typeof(aDescriptor) == "function") {
-    aDescriptor = {events: {'command': aDescriptor}};
+    aDescriptor = {events: {click: aDescriptor}};
   }
 
   forEach(aDescriptor.events, function (aName, aHandler) {
