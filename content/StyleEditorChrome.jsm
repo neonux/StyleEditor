@@ -48,11 +48,9 @@ const STYLE_EDITOR_CONTENT = "chrome://StyleEditor/content/";
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import(STYLE_EDITOR_CONTENT + "StyleEditor.jsm");
 Cu.import(STYLE_EDITOR_CONTENT + "StyleEditorUtil.jsm");
+Cu.import(STYLE_EDITOR_CONTENT + "AdaptiveSplitView.jsm");
 
-
-const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
-// url to the stand-alone UI
-const STYLE_EDITOR_STANDALONE_XUL = "StyleEditor.xul";
+const STYLE_EDITOR_TEMPLATE = "stylesheet";
 
 
 /**
@@ -76,8 +74,17 @@ function StyleEditorChrome(aRoot, aContentWindow)
   this._document = this._root.ownerDocument;
   this._window = this._document.defaultView;
 
-  this._UI = {}; // object to store references to frequently used UI elements
-  this._setupChrome();
+  //FIXME: using a proper load event results in "docShell is null" exception!?
+  //aRoot.contentWindow.addEventListener("load", function onChromeLoad() {
+  //  aRoot.removeEventListener("load", onChromeLoad, false);
+  this._window.setTimeout(function () {
+
+
+    let viewDocument = this._root.contentWindow.document;
+    let viewRoot = viewDocument.querySelector(".splitview-root");
+    this._view = new AdaptiveSplitView(viewRoot);
+    this._setupChrome();
+  }.bind(this), 100);
 
   // finally attach to the content window
   this._contentWindow = null;
@@ -108,10 +115,12 @@ StyleEditorChrome.prototype = {
       return; // no change
     }
     this._contentWindow = aContentWindow;
-    if (aContentWindow) {
-      this._populateChrome();
-    } else {
-      this._disableChrome();
+    if (this._view) {
+      if (aContentWindow) {
+        this._populateChrome();
+      } else {
+        this._disableChrome();
+      }
     }
   },
 
@@ -145,29 +154,20 @@ StyleEditorChrome.prototype = {
    */
   _setupChrome: function SEC__setupChrome()
   {
-    // store references to frequently used UI elements
-    this._UI.styleSheetList = this._root.querySelector("#style-editor-styleSheetList");
-    this._UI.tabPanels = this._root.querySelector("#style-editor-tabPanels");
-    this._UI.tabs = this._root.querySelector("#style-editor-tabs");
-    this._UI.saveAllButton = this._root.querySelector("#style-editor-saveAllButton");
-    this._UI.openButton = this._root.querySelector("#style-editor-openButton");
-    this._UI.enabledButton = this._root.querySelector("#style-editor-enabledButton");
-
     // wire up UI elements
-    wire(this._root, "#style-editor-newButton", function onNewButton() {
+    wire(this._view.rootElement, ".style-editor-newButton", function onNewButton() {
       let editor = new StyleEditor(this.contentDocument);
       editor.addActionListener(this);
       editor.load();
-      this._openTabForEditor(editor);
     }.bind(this));
 
-    wire(this._root, "#style-editor-importButton", function onImportButton() {
+    wire(this._view.rootElement, ".style-editor-importButton", function onImportButton() {
       let editor = new StyleEditor(this.contentDocument);
       editor.addActionListener(this);
       editor.importFromFile(null, this._window);
     }.bind(this));
 
-    wire(this._root, this._UI.saveAllButton, function onSaveAllButton() {
+    wire(this._view.rootElement, ".style-editor-saveAllButton", function onSaveAllButton() {
       this.forEachStyleSheet(function saveIfUnsaved(aEditor) {
         if (!aEditor.hasFlag(StyleEditorFlags.UNSAVED)) {
           return;
@@ -178,48 +178,26 @@ StyleEditorChrome.prototype = {
       });
     }.bind(this));
 
-    this._UI.styleSheetList.addEventListener("select", function onSelect(evt) {
-      evt.stopPropagation();
-      let editor = this._selectedEditor;
-      let isNoneSelected = (editor == null);
-
-      this._UI.openButton.hidden = isNoneSelected;
-      this._UI.enabledButton.hidden = isNoneSelected;
-      if (!isNoneSelected) {
-        this._UI.openButton.checked = editor.hasFlag(StyleEditorFlags.OPEN);
-        this._UI.enabledButton.checked = !editor.hasFlag(StyleEditorFlags.DISABLED);
-      }
-    }.bind(this), false);
-
-    this._UI.openButton.addEventListener("command", function onOpen(evt) {
-      if (evt.target.checked) {
-        this._openTabForEditor(this._selectedEditor);
-      } else {
-        this._closeTabForEditor(this._selectedEditor);
-      }
-    }.bind(this), false);
-
-    this._UI.enabledButton.addEventListener("command", function onEnabled(evt) {
-      this._selectedEditor.enableStyleSheet(evt.target.checked);
-    }.bind(this), false);
+    if (this.contentWindow) {
+      this._populateChrome();
+    } else {
+      this._disableChrome();
+    }
   },
 
   /**
-   * Iterates the StyleEditor instance and Stylesheets list item for each
-   * stylesheet in the content document.
+   * Iterates every StyleEditor instance for each stylesheet in content document.
    * Iteration stops if aCallback returns true.
    *
-   * @param function aCallback(editor, styleSheetListItem)
+   * @param function aCallback(aEditor)
    */
   forEachStyleSheet: function SEC_forEachStyleSheet(aCallback)
   {
-    let items = this._UI.styleSheetList.childNodes;
-    for (let i = 0; i < items.length; ++i) {
-      let editor = items[i].getUserData("editor");
-      if (editor && aCallback(editor, items[i])) {
-        return;
+    this._view.forEachContent(function (aSummary, aDetails, aData) {
+      if (aCallback(aData.editor)) {
+        return true;
       }
-    }
+    });
   },
 
   /**
@@ -227,7 +205,7 @@ StyleEditorChrome.prototype = {
    */
   _resetChrome: function SEC__resetChrome()
   {
-    this._UI.styleSheetList.innerHTML = "";
+    this._view.removeAll();
   },
 
   /**
@@ -258,235 +236,47 @@ StyleEditorChrome.prototype = {
    *
    * @see contentWindow
    */
-  _disableChrome: function SEC__disableChrome() {
+//FIXME: HTML-ize
+  _disableChrome: function SEC__disableChrome()
+  {
     function disableAll(aElement, aSelector) {
       let matches = aElement.querySelectorAll(aSelector);
       for (let i = 0; i < matches.length; ++i) {
         matches[i].setAttribute("disabled", true);
+        matches[i].setAttribute("readonly", true);
       }
     }
 
-    this._UI.styleSheetList.setAttribute("disabled", true);
-    disableAll(this._root, "toolbarbutton,.stylesheet-name");
-
-    this.forEachStyleSheet(function (aEditor, aItem) {
-      if (!aEditor.window) {
-        return;
-      }
-      disableAll(aEditor.window.document, "toolbarbutton");
-      aEditor.inputElement.setAttribute("readonly", true);
-    }.bind(this));
+    disableAll(this._root, "button,input,textarea,select");
   },
 
   /**
-   * Retrieve the Stylesheets list item for an editor.
+   * Update split view summary of given StyleEditor instance.
    *
    * @param StyleEditor aEditor
-   * @return DOMElement
-   *         Item element for the editor in Stylesheets list, null otherwise.
+   * @param DOMElement aSummary
+   *        Optional.
    */
-  _getItemForEditor: function SEC__getItemForEditor(aEditor)
+  _updateSummaryForEditor: function SEC__updateSummaryForEditor(aEditor, aSummary)
   {
-    let item = null;
-    this.forEachStyleSheet(function (aOneEditor, aItem) {
-      if (aOneEditor == aEditor) {
-        item = aItem;
-        return true;
-      }
-    });
-    return item;
-  },
-
-  /**
-   * Retrieve the tab panel element for an editor.
-   *
-   * @param StyleEditor aEditor
-   * @return DOMElement
-   *         Tab panel element for the editor, null if not found.
-   */
-  _getTabForEditor: function SEC__getTabForEditor(aEditor)
-  {
-    let panel = this._UI.tabPanels.children[0];
-    while (panel) {
-      if (panel.getUserData("editor") == aEditor) {
-        return panel;
-      }
-      panel = panel.nextElementSibling;
-    }
-    return null;
-  },
-
-  /**
-   * Select the tab for given editor or create a new tab if no tab for this editor
-   * has been opened yet.
-   *
-   * @param StyleEditor aEditor
-   * @return DOMElement
-   *         Tab element for the editor.
-   */
-  _openTabForEditor: function SEC__openTabForEditor(aEditor)
-  {
-    let tabPanel = this._getTabForEditor(aEditor);
-    if (!tabPanel) {
-      tabPanel = this._newTabForEditor(aEditor);
-      this._updateTabForEditor(aEditor);
-    }
-
-    this._UI.tabPanels.selectedPanel = tabPanel;
-    this._UI.tabs.selectedIndex = this._UI.tabPanels.selectedIndex
-
-    if (aEditor.inputElement) {
-      aEditor.inputElement.focus();
-    }
-    return tabPanel;
-  },
-
-  /**
-   * Close the tab open with given editor.
-   *
-   * @param StyleEditor aEditor
-   */
-  _closeTabForEditor: function SEC__closeTabForEditor(aEditor)
-  {
-    let tabPanel = this._getTabForEditor(aEditor);
-    if (!tabPanel) {
-      return; // the editor is not in a tab
-    }
-
-    aEditor.inputElement = null; // detach the editor
-
-    let tab = tabPanel.getUserData("tab");
-    tab.parentNode.removeChild(tab);
-    tabPanel.parentNode.removeChild(tabPanel);
-  },
-
-  /**
-   * Create a new tab for an editor.
-   *
-   * @param StyleEditor aEditor
-   * @return DOMElement
-   *         Tab element for the editor.
-   */
-  _newTabForEditor: function SEC__newTabForEditor(aEditor)
-  {
-    let tab = this._UI.tabs.appendItem(aEditor.getFriendlyName());
-    tab.setAttribute("crop", "start");
-
-    let tabPanel = this._xul("tabpanel");
-    tabPanel.setUserData("editor", aEditor, null);
-    tabPanel.setUserData("tab", tab, null);
-    tabPanel.setAttribute("flex", "1");
-
-    let frame = this._xul("iframe");
-    frame.setAttribute("flex", "1");
-    frame.setAttribute("src", STYLE_EDITOR_STANDALONE_XUL);
-    tabPanel.appendChild(frame);
-
-    this._UI.tabPanels.appendChild(tabPanel);
-
-    // set up editor UI when the stand-alone editor frame is loaded
-    let editorChrome = this;
-    frame.contentWindow.addEventListener("load", function onFrameLoad() {
-      frame.contentWindow.removeEventListener("load", onFrameLoad, false);
-
-      let document = this.document;
-
-      aEditor.inputElement = document.querySelector(".stylesheet-editor-input");
-
-      wire(document, ".stylesheet-enabled", function onEnabledButton() {
-          aEditor.enableStyleSheet(this.checked);
+    let summary = aSummary;
+    if (!summary) {
+      this._view.forEachContent(function (aSummary, aDetails, aData) {
+        if (aData.editor == aEditor) {
+          summary = aSummary;
+          return true;
+        }
       });
-      wire(document, ".stylesheet-save", function onSaveButton() {
-        aEditor.saveToFile(aEditor.savedFile);
-      });
+    }
 
-      aEditor.inputElement.focus();
-    }, false);
+    this._view.setContentClassName(summary, aEditor.flags);
 
-    return tabPanel;
-  },
-
-  /**
-   * Update the Stylesheets list item of an editor.
-   *
-   * @param StyleEditor aEditor
-   */
-  _updateItemForEditor: function SEC__updateItemForEditor(aEditor)
-  {
-    let item = this._getItemForEditor(aEditor);
-
-    item.className = aEditor.flags;
-
-    attr(item, ".stylesheet-name", "value", aEditor.getFriendlyName());
-    attr(item, ".stylesheet-rule-count", "value",
+    text(summary, ".stylesheet-name", aEditor.getFriendlyName());
+    text(summary, ".stylesheet-title", aEditor.styleSheet.title || "");
+    text(summary, ".stylesheet-rule-count",
          _("ruleCount.label", aEditor.styleSheet.cssRules.length));
-    attr(item, ".stylesheet-enabled", "checked", !aEditor.styleSheet.disabled);
-  },
 
-  /**
-   * Update the tab UI of an editor.
-   *
-   * @param StyleEditor aEditor
-   */
-  _updateTabForEditor: function SEC__updateTabForEditor(aEditor)
-  {
-    let tabPanel = this._getTabForEditor(aEditor);
-    if (!tabPanel) {
-      return; // editor is not open
-    }
-
-    let tab = tabPanel.getUserData("tab");
-    tab.className = tabPanel.className = aEditor.flags;
-
-    let friendlyName = aEditor.getFriendlyName();
-    tab.setAttribute("label", friendlyName);
-
-    if (aEditor.window) {
-      let editorXULWindow = aEditor.window.document.documentElement;
-      editorXULWindow.className = aEditor.flags;
-      editorXULWindow.setAttribute("title", friendlyName);
-    }
-  },
-
-  /**
-   * Create a new Style sheets list item for an editor.
-   *
-   * @param StyleEditor aEditor
-   * @return DOMElement
-   *         New list item element.
-   */
-  _newItemForEditor: function SEC__newItemForEditor(aEditor)
-  {
-    let styleSheet = aEditor.styleSheet;
-    let onOpenStyleSheet = function onOpenStyleSheet(evt) {
-      evt.stopPropagation();
-      if (!evt.target.disabled) {
-        this._openTabForEditor(aEditor);
-      }
-    }.bind(this)
-
-    let item = this._xul("richlistitem");
-    item.setUserData("editor", aEditor, null);
-
-    let vbox = this._xul("vbox");
-    vbox.setAttribute("flex", "1");
-
-    let name = this._xul("label", "stylesheet-name text-link");
-    name.setAttribute("crop", "start");
-    name.setAttribute("value", aEditor.getFriendlyName());
-    name.addEventListener("click", onOpenStyleSheet, false);
-    vbox.appendChild(name);
-
-    let title = this._xul("label", "stylesheet-title");
-    title.setAttribute("crop", "end");
-    title.setAttribute("value", styleSheet.title || "");
-    vbox.appendChild(title);
-
-    let details = this._xul("hbox", "stylesheet-details");
-
-    let count = this._xul("label", "stylesheet-rule-count");
-    details.appendChild(count);
-
+/*TODO:
     if (styleSheet.scoped) {
       let scoped = this._xul("label", "stylesheet-scoped");
       scoped.setAttribute("value", "&scoped.label;");
@@ -494,27 +284,7 @@ StyleEditorChrome.prototype = {
     }
 
     this._appendMediaLabels(aEditor, details);
-    vbox.appendChild(details);
-    item.appendChild(vbox);
-
-    let spacer = this._xul("spacer");
-    spacer.setAttribute("flex", "1");
-    item.appendChild(spacer);
-
-    item.addEventListener("dblclick", onOpenStyleSheet, false);
-
-    // insert item at the correct index
-    // (editor load is asynchronous so we have to check now where to insert)
-    let insertionPoint = this._UI.styleSheetList.firstElementChild;
-    while (insertionPoint) {
-      let itemEditor = insertionPoint.getUserData("editor");
-      if (itemEditor.styleSheetIndex > aEditor.styleSheetIndex) {
-        return this._UI.styleSheetList.insertBefore(item, insertionPoint);
-      }
-      insertionPoint = insertionPoint.nextElementSibling;
-    }
-
-    return this._UI.styleSheetList.appendChild(item);
+*/
   },
 
   /**
@@ -523,6 +293,7 @@ StyleEditorChrome.prototype = {
    * @param StyleEditor aEditor
    * @param DOMElement aParent
    */
+//FIXME: HTML-ize!
   _appendMediaLabels: function SEC__appendMediaLabels(aEditor, aParent)
   {
     for (let i = 0; i < aEditor.styleSheet.media.length; ++i) {
@@ -553,6 +324,7 @@ StyleEditorChrome.prototype = {
    *
    * @param MediaQueryList aMql
    */
+//FIXME: HTML-ize!
   _onMediaQueryChange: function SEC__onMediaQueryChange(aMql)
   {
     let list = this._UI.styleSheetList;
@@ -581,38 +353,6 @@ StyleEditorChrome.prototype = {
   },
 
   /**
-   * Retrieve the selected StyleEditor instance or null if none selected.
-   *
-   * @return StyleEditor
-   */
-  get _selectedEditor()
-  {
-    let item = this._UI.styleSheetList.selectedItem;
-    if (!item) {
-      return null;
-    }
-    return item.getUserData("editor");
-  },
-
-  /**
-   * Create a new XUL element.
-   *
-   * @param string aTagName
-   *        Tag name of the new element.
-   * @param string aClassName
-   *        Optional class name.
-   * @return DOMElement
-   */
-  _xul: function SEC__xul(aTagName, aClassName)
-  {
-    let element = this._document.createElementNS(XUL_NS, aTagName);
-    if (aClassName) {
-      element.className = aClassName;
-    }
-    return element;
-  },
-
-  /**
    * IStyleEditorActionListener implementation
    * @See StyleEditor.addActionListener.
    */
@@ -624,11 +364,41 @@ StyleEditorChrome.prototype = {
    */
   onLoad: function SEAL_onLoad(aEditor)
   {
-    // insert editor's style sheet in the list
-    this._newItemForEditor(aEditor);
+    this._view.appendContent(STYLE_EDITOR_TEMPLATE, {
+      data: {
+        editor: aEditor
+      },
+      ordinal: aEditor.styleSheetIndex,
+      onCreate: function ASV_onCreate(aSummary, aDetails, aData) {
+        let editor = aData.editor;
 
-    this._updateItemForEditor(aEditor);
-    this._updateTabForEditor(aEditor);
+        wire(aSummary, ".stylesheet-enabled", function onToggleEnabled(evt) {
+          evt.stopPropagation();
+          evt.target.blur();
+
+          editor.enableStyleSheet(editor.styleSheet.disabled);
+        });
+/*
+        wire(document, ".stylesheet-save", function onSaveButton() {
+          aEditor.saveToFile(aEditor.savedFile);
+        });*/
+
+        this._updateSummaryForEditor(editor, aSummary);
+
+        editor.inputElement = aDetails.querySelector(".stylesheet-editor-input");
+        editor.inputElement.focus();
+
+        // autofocus first or new stylesheet
+        if (editor.styleSheetIndex == 0
+            || editor.hasFlag(StyleEditorFlags.NEW)) {
+          this._view.activeSummary = aSummary;
+        }
+      }.bind(this),
+      onShow: function ASV_onShow(aSummary, aDetails, aData) {
+        let editor = aData.editor;
+        editor.inputElement.focus();
+      }
+    });
   },
 
   /**
@@ -640,19 +410,14 @@ StyleEditorChrome.prototype = {
    */
   onFlagChange: function SEAL_onFlagChange(aEditor, aFlagName)
   {
-    this._updateItemForEditor(aEditor);
-    this._updateTabForEditor(aEditor);
+    this._updateSummaryForEditor(aEditor);
 
+/*FIXME:
     if (aFlagName == StyleEditorFlags.UNSAVED) {
       // display Save All button when there is at least one unsaved editor
       this._unsavedCount = this._unsavedCount || 0;
       this._unsavedCount += aEditor.hasFlag(StyleEditorFlags.UNSAVED) ? 1 : -1;
       this._UI.saveAllButton.className = this._unsavedCount ? "" : "hidden";
-    }
-
-    if (aEditor == this._selectedEditor) {
-      this._UI.openButton.checked = aEditor.hasFlag(StyleEditorFlags.OPEN);
-      this._UI.enabledButton.checked = !aEditor.hasFlag(StyleEditorFlags.DISABLED);
-    }
+    }*/
   }
 };

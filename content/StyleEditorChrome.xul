@@ -48,52 +48,9 @@
         width="640" height="480"
         persist="screenX screenY width height sizemode">
 <script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
-<vbox id="style-editor-chrome" flex="1">
-  <tabbox id="style-editor-tabBox" flex="1">
-    <tabs id="style-editor-tabs" class="tabs-closebutton">
-      <tab image="chrome://StyleEditor/skin/StyleEditor-list.png"
-           pinned="true"
-           crop="start"
-           label="&styleSheetsPanel.label;"
-           tooltiptext="&styleSheetsPanel.tooltip;"/>
-    </tabs>
-    <tabpanels id="style-editor-tabPanels" flex="1">
-      <tabpanel id="style-editor-styleSheetsPanel" flex="1">
-        <toolbar nowindowdrag="true">
-          <toolbarbutton id="style-editor-newButton"
-                         label="&newButton.label;"
-                         tooltiptext="&newButton.tooltip;"
-                         accesskey="&newButton.accesskey;"/>
-          <toolbarbutton id="style-editor-importButton"
-                         label="&importButton.label;"
-                         tooltiptext="&importButton.tooltip;"
-                         accesskey="&importButton.accesskey;"/>
-          <toolbarbutton id="style-editor-saveAllButton"
-                         class="hidden"
-                         label="&saveAllButton.label;"
-                         tooltiptext="&saveAllButton.tooltip;"
-                         accesskey="&saveAllButton.accesskey;"/>
-          <toolbarseparator/>
-          <toolbarbutton id="style-editor-openButton"
-                         type="checkbox"
-                         label="&openButton.label;"
-                         tooltiptext="&openButton.tooltip;"
-                         accesskey="&openButton.accesskey;"
-                         hidden="true"/>
-          <toolbarbutton id="style-editor-enabledButton"
-                         type="checkbox"
-                         label="&enabledButton.label;"
-                         tooltiptext="&enabledButton.tooltip_chrome;"
-                         accesskey="&enabledButton.accesskey;"
-                         hidden="true"/>
-        </toolbar>
-        <notificationbox id="style-editor-styleSheetListNotification" flex="1">
-          <richlistbox id="style-editor-styleSheetList" flex="1"></richlistbox>
-        </notificationbox>
-      </tabpanel>
-    </tabpanels>
-  </tabbox>
-</vbox>
+<iframe id="style-editor-chrome"
+        flex="1"
+        src="chrome://StyleEditor/content/StyleEditorChrome.html"/>
 <script type="application/javascript"><![CDATA[
 Components.utils.import("chrome://StyleEditor/content/StyleEditorChrome.jsm");
 let chromeRoot = document.getElementById("style-editor-chrome");
