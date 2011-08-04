@@ -235,7 +235,12 @@ StyleEditor.prototype = {
       return this.savedFile.leafName;
     }
 
-    if (!this.styleSheet.href) {
+    if (this.hasFlag(StyleEditorFlags.NEW)) {
+      let index = this.styleSheetIndex + 1; // 0-indexing only works for devs
+      return _("newStyleSheet", index);
+    }
+
+    if (this.hasFlag(StyleEditorFlags.INLINE)) {
       let index = this.styleSheetIndex + 1; // 0-indexing only works for devs
       return _("inlineStyleSheet", index);
     }
