@@ -604,8 +604,8 @@ StyleEditor.prototype = {
           }
 
           let source = "";
-          let stream = entry.openInputStream(0);
-          let head = entry.getMetaDataElement("response-head");
+          let stream = aEntry.openInputStream(0);
+          let head = aEntry.getMetaDataElement("response-head");
 
           if (/Content-Encoding:\s*gzip/i.test(head)) {
             let converter = Cc["@mozilla.org/streamconv;1?from=gzip&to=uncompressed"]
@@ -626,7 +626,7 @@ StyleEditor.prototype = {
           }
 
           stream.close();
-          entry.close();
+          aEntry.close();
           this._onSourceLoad(source);
         }.bind(this)
       });
