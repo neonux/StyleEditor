@@ -149,9 +149,6 @@ StyleEditor.prototype = {
    */
   set inputElement(aElement)
   {
-    // set 'open' flag on this editor if we are attaching, clear otherwise
-    this.toggleFlag(aElement, StyleEditorFlags.OPEN);
-
     this._window = null;
 
     this._inputElement = aElement;
@@ -746,6 +743,5 @@ let StyleEditorFlags = {
   INLINE:        "inline",
   MODIFIED:      "modified",
   NEW:           "new",
-  OPEN:          "open",
   UNSAVED:       "unsaved"
 };
