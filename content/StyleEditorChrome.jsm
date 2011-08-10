@@ -165,7 +165,7 @@ StyleEditorChrome.prototype = {
    */
   forEachStyleSheet: function SEC_forEachStyleSheet(aCallback)
   {
-    this._view.forEachContent(function (aSummary, aDetails, aData) {
+    this._view.forEachItem(function (aSummary, aDetails, aData) {
       if (aCallback(aData.editor)) {
         return true;
       }
@@ -227,7 +227,8 @@ StyleEditorChrome.prototype = {
    *
    * @param StyleEditor aEditor
    * @param DOMElement aSummary
-   *        Optional.
+   *        Optional item's summary element to update. If none, item corresponding
+   *        to passed aEditor is used.
    */
   _updateSummaryForEditor: function SEC__updateSummaryForEditor(aEditor, aSummary)
   {
@@ -241,7 +242,7 @@ StyleEditorChrome.prototype = {
       });
     }
 
-    this._view.setContentClassName(summary, aEditor.flags);
+    this._view.setItemClassName(summary, aEditor.flags);
 
     text(summary, ".stylesheet-name", aEditor.getFriendlyName());
     text(summary, ".stylesheet-title", aEditor.styleSheet.title || "");
@@ -337,7 +338,7 @@ StyleEditorChrome.prototype = {
    */
   onLoad: function SEAL_onLoad(aEditor)
   {
-    this._view.appendContent(STYLE_EDITOR_TEMPLATE, {
+    let item = this._view.appendTemplatedItem(STYLE_EDITOR_TEMPLATE, {
       data: {
         editor: aEditor
       },

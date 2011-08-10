@@ -50,12 +50,13 @@ const BINDING_USERDATA = "splitview-binding";
  *
  * Initialize the adaptive split view UI on an existing DOM element.
  *
- * A split view organizes content with a summary list and a details view on the
- * side for the active/selected summary.
- * It is adaptive as it can show details on the side or embedded inside the
- * summary list when the container's aspect ratio is too narrow.
+ * A split view contains items, each of those having one summary and one details
+ * elements.
+ * It is adaptive as it behaves similarly to a richlistbox when there the aspect
+ * ratio is narrow or as a pair listbox-box otherwise.
  *
  * @param DOMElement aRoot
+ * @see appendItem
  */
 function AdaptiveSplitView(aRoot)
 {
@@ -73,13 +74,13 @@ function AdaptiveSplitView(aRoot)
   this._filter = aRoot.querySelector("input.splitview-filter");
   if (this._filter) {
     this._filter.search = function onFilterInput(evt) {
-      this.filterContentBy(this._filter.value);
+      this.filterItemsBy(this._filter.value);
     }.bind(this);
     this._filter.addEventListener("input", this._filter.search, false);
     this._filter.addEventListener("keyup", function onFilterKeyUp(aEvent) {
       if (aEvent.keyCode == aEvent.DOM_VK_ENTER ||
           aEvent.keyCode == aEvent.DOM_VK_RETURN) {
-        // autofocus matching content if there is only one
+        // autofocus matching item if there is only one
         let matches = this._nav.querySelectorAll("* > li:not(.splitview-filtered)");
         if (matches.length == 1) {
           this.activeSummary = matches[0];
@@ -153,14 +154,14 @@ AdaptiveSplitView.prototype = {
   get rootElement() this._root,
 
   /**
-    * Retrieve the active summary element or null if there is none.
+    * Retrieve the active item's summary element or null if there is none.
     *
     * @return DOMElement
     */
   get activeSummary() this._activeSummary,
 
   /**
-    * Set the active summary element.
+    * Set the active item's summary element.
     *
     * @param DOMElement aSummary
     */
@@ -201,7 +202,7 @@ AdaptiveSplitView.prototype = {
   },
 
   /**
-    * Retrieve the active details element or null if there is none.
+    * Retrieve the active item's details element or null if there is none.
     * @return DOMElement
     */
   get activeDetails()
@@ -214,93 +215,108 @@ AdaptiveSplitView.prototype = {
   },
 
   /**
-   * Append new content to the split view.
+   * Append an item to the split view according to two template elements
+   * (one for the item's summary and the other for the item's details).
    *
    * @param string aName
    *        Name of the template elements to instantiate.
-   *        There must be two elements with id "splitview-tpl-summary-" and
-   *        "splitview-tpl-details-" suffixed with 'name'.
-   *
+   *        Requires two (hidden) DOM elements with id "splitview-tpl-summary-"
+   *        and "splitview-tpl-details-" suffixed with aName.
    * @param object aOptions
-   *     Optional object that defines custom behavior and data for the content.
-   *     All properties are optional :
-   *     - function(DOMElement summary, DOMElement details, object data) onCreate
-   *         Called when the content has been added.
-   *     - function(summary, details, data) onShow
-   *         Called when the content is shown (active).
-   *     - function(summary, details, data) onHide
-   *         Called when the content is hidden (not active anymore).
-   *     - function(summary, details, data) onDestroy
-   *         Called when the content has been removed.
-   *     - function(summary, details, data, query) onFilterBy
-   *         Called when the user performs a filtering search.
-   *         If the function returns false, the content does not match query
-   *         string and will be hidden.
-   *     - object data
-   *         Object to pass to the callbacks above.
-   *     - boolean disableAnimations
-   *         If true there is no animation or scrolling when this content is
-   *         appended. Set this when batch appending (eg. initial population).
-   *     - number ordinal
-   *         Content with a lower ordinal is displayed before those with a
-   *         higher ordinal.
-   *
-   * @return tuple{summary:,details:}
-   *         A tuple with the new DOM elements created for summary and details.
+   *        Optional object that defines custom behavior and data for the item.
+   *        See appendItem for full description.
+   * @return object{summary:,details:}
+   *         Object with the new DOM elements created for summary and details.
+   * @see appendItem
    */
-  appendContent: function ASV_appendContent(aName, aOptions)
+  appendTemplatedItem: function ASV_appendTemplatedItem(aName, aOptions)
   {
-    let binding = aOptions || {};
+    aOptions = aOptions || {};
     let summary = this._root.querySelector("#splitview-tpl-summary-" + aName);
     let details = this._root.querySelector("#splitview-tpl-details-" + aName);
 
     summary = summary.cloneNode(true);
     summary.id = "";
-    if (binding.ordinal !== undefined) { // can be zero
-      summary.style.MozBoxOrdinalGroup = binding.ordinal;
+    if (aOptions.ordinal !== undefined) { // can be zero
+      summary.style.MozBoxOrdinalGroup = aOptions.ordinal;
     }
     details = details.cloneNode(true);
     details.id = "";
 
-    binding._summary = summary;
-    binding._details = details;
-    summary.setUserData(BINDING_USERDATA, binding, null);
+    this.appendItem(summary, details, aOptions);
+    return {summary: summary, details: details};
+  },
+
+  /**
+   * Append an item to the split view.
+   *
+   * @param DOMElement aSummary
+   *        The summary element for the item.
+   * @param DOMElement aDetails
+   *        The details element for the item.
+   * @param object aOptions
+   *     Optional object that defines custom behavior and data for the item.
+   *     All properties are optional :
+   *     - function(DOMElement summary, DOMElement details, object data) onCreate
+   *         Called when the item has been added.
+   *     - function(summary, details, data) onShow
+   *         Called when the item is shown/active.
+   *     - function(summary, details, data) onHide
+   *         Called when the item is hidden/inactive.
+   *     - function(summary, details, data) onDestroy
+   *         Called when the item has been removed.
+   *     - function(summary, details, data, query) onFilterBy
+   *         Called when the user performs a filtering search.
+   *         If the function returns false, the item does not match query
+   *         string and will be hidden.
+   *     - object data
+   *         Object to pass to the callbacks above.
+   *     - boolean disableAnimations
+   *         If true there is no animation or scrolling when this item is
+   *         appended. Set this when batch appending (eg. initial population).
+   *     - number ordinal
+   *         Items with a lower ordinal are displayed before those with a
+   *         higher ordinal.
+   */
+  appendItem: function ASV_appendItem(aSummary, aDetails, aOptions)
+  {
+    let binding = aOptions || {};
+
+    binding._summary = aSummary;
+    binding._details = aDetails;
+    aSummary.setUserData(BINDING_USERDATA, binding, null);
 
     if (!binding.disableAnimations) {
-      scheduleAnimation(summary, "splitview-slide", "splitview-flash");
+      scheduleAnimation(aSummary, "splitview-slide", "splitview-flash");
     }
-    this._nav.appendChild(summary);
+    this._nav.appendChild(aSummary);
 
-    summary.addEventListener("click", function onSummaryClick(evt) {
+    aSummary.addEventListener("click", function onSummaryClick(evt) {
       evt.stopPropagation();
-      this.activeSummary = summary;
+      this.activeSummary = aSummary;
     }.bind(this), false);
 
     let detailsContainer = (this.isLandscape)
                            ? this._side
-                           : summary.querySelector(".splitview-inline-details");
-    detailsContainer.appendChild(details);
+                           : aSummary.querySelector(".splitview-inline-details");
+    detailsContainer.appendChild(aDetails);
 
     if (binding.onCreate) {
-      binding.onCreate(summary, details, binding.data);
+      binding.onCreate(aSummary, aDetails, binding.data);
     }
 
     if (!binding.disableAnimations) {
-      summary.scrollIntoView();
+      aSummary.scrollIntoView();
     }
-
-    return {
-      summary: summary,
-      details: details
-    };
   },
 
   /**
-    * Remove content from the split view.
+    * Remove an item from the split view.
     *
     * @param DOMElement aSummary
+    *        Summary element of the item to remove.
     */
-  removeContent: function ASV_removeContent(aSummary)
+  removeItem: function ASV_removeItem(aSummary)
   {
     if (aSummary == this._activeSummary) {
       this.activeSummary = null;
@@ -316,27 +332,27 @@ AdaptiveSplitView.prototype = {
   },
 
   /**
-   * Remove all content from the split view.
+   * Remove all items from the split view.
    */
   removeAll: function ASV_removeAll()
   {
     while (this._nav.hasChildNodes()) {
-      this.removeContent(this._nav.firstChild);
+      this.removeItem(this._nav.firstChild);
     }
   },
 
   /**
-    * Filter content by given string.
-    * Matching is performed on every content by calling onFilterBy when defined
-    * and then by searching aQuery in the summary element's text content.
-    * Non-matching content is hidden.
+    * Filter items by given string.
+    * Matching is performed on every item by calling onFilterBy when defined
+    * and then by searching aQuery in the summary element's text item.
+    * Non-matching item is hidden.
     *
     * @param string aQuery
     *        The query string. Use null to reset (no filter).
     * @return number
-    *         The number of filtered (non-matching) content.
+    *         The number of filtered (non-matching) item.
     */
-  filterContentBy: function ASV_filterContentBy(aQuery)
+  filterItemsBy: function ASV_filterItemsBy(aQuery)
   {
     if (!this._nav.hasChildNodes()) {
       return 0;
@@ -387,12 +403,12 @@ AdaptiveSplitView.prototype = {
   },
 
   /**
-   * Iterates every available content in the view.
+   * Iterates every available item in the view.
    * Iteration stops if aCallback returns true.
    *
    * @param function aCallback(aSummary, aDetails, aData)
    */
-  forEachContent: function ASV_forEachContent(aCallback)
+  forEachItem: function ASV_forEachItem(aCallback)
   {
     for (let i = 0; i < this._nav.childNodes.length; ++i) {
       let binding = this._nav.childNodes[i].getUserData(BINDING_USERDATA);
@@ -404,16 +420,16 @@ AdaptiveSplitView.prototype = {
   },
 
   /**
-   * Set the content's CSS class name.
+   * Set the item's CSS class name.
    * This sets the class on both the summary and details elements, with respect
    * to any AdaptiveSplitView specific classes.
    *
    * @param DOMElement aSummary
-   *        Summary element for the content to set.
+   *        Summary element of the item to set.
    * @param string className
    *        One or more space-separated CSS classes.
    */
-  setContentClassName: function ASV_setContentClassName(aSummary, className)
+  setItemClassName: function ASV_setItemClassName(aSummary, className)
   {
     let binding = aSummary.getUserData(BINDING_USERDATA);
     let backup;
