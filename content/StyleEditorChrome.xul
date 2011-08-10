@@ -100,6 +100,7 @@
           <h3 class="stylesheet-stats">
             <span class="stylesheet-rule-count"></span>
           </h3>
+          <h3 class="stylesheet-error-message"></h3>
         </hgroup>
         <div class="toolbar">
           <a class="stylesheet-saveButton" href="#"

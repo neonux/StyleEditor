@@ -97,6 +97,13 @@ li:hover .stylesheet-enabled {
   color: gray;
 }
 
+.stylesheet-error-message {
+  display: none;
+}
+.error .stylesheet-error-message {
+  display: block;
+  color: red;
+}
 
 textarea {
   display: -moz-box;

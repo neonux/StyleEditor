@@ -260,6 +260,7 @@ StyleEditorChrome.prototype = {
     text(summary, ".stylesheet-rule-count",
          _("ruleCount.label", aEditor.styleSheet.cssRules.length));
 
+    text(summary, ".stylesheet-error-message", aEditor.errorMessage);
 /*TODO:
     if (styleSheet.scoped) {
       let scoped = this._xul("label", "stylesheet-scoped");

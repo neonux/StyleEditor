@@ -89,6 +89,8 @@ function StyleEditor(aDocument, aStyleSheet)
   this._flags = [];           // @see flags
   this._savedFile = null;     // @see savedFile
 
+  this._errorMessage = null;  // @see errorMessage
+
   // listeners for significant editor actions. @see addActionListener
   this._actionListeners = [];
 
@@ -205,6 +207,14 @@ StyleEditor.prototype = {
       this._loadSource();
     }.bind(this));
   },
+
+  /**
+    * Retrieve localized error message of last error condition, or null if none.
+    * This is set when the editor has flag StyleEditorFlags.ERROR.
+    *
+    * @see addActionListener
+    */
+  get errorMessage() this._errorMessage,
 
   /**
    * Load style sheet source into the editor, asynchronously.
@@ -677,7 +687,7 @@ StyleEditor.prototype = {
   /**
    * Signal an error to the user.
    *
-   * @param aErrorCode
+   * @param string aErrorCode
    *        String name for the localized error property in the string bundle.
    * @param ...rest
    *        Optional arguments to pass for message formatting.
@@ -685,28 +695,16 @@ StyleEditor.prototype = {
    */
   _signalError: function SE__signalError(aErrorCode)
   {
+    this._errorMessage = _.apply(null, arguments);
     this.setFlag(StyleEditorFlags.ERROR);
-
-    if (!_inputElement || _inputElement.parentNode != "notificationbox") {
-      return;
-    }
-
-    let notificationBox = _inputElement.parentNode;
-    let message = _.apply(null,
-                          [aErrorCode + ".label"].concat(arguments.slice(1)));
-    notificationBox.appendNotification(message,
-                                       aErrorCode,
-                                       "",
-                                       notificationBox.PRIORITY_WARNING_HIGH,
-                                       []);
   },
 
   /**
    * Trigger named action.
    *
-   * @param aName
+   * @param string aName
    *        Name of the action to trigger.
-   * @param aArgs
+   * @param Array aArgs
    *        Optional array of arguments to pass to the listener(s).
    * @see addActionListener
    */
