@@ -108,17 +108,18 @@ textarea {
   resize: none;
 }
 
-/* limited width mode (remove discoverable search bar) */
-@media (max-width: 350px) {
+/* limited width mode (hide discoverable search bar) */
+@media (max-width: 400px) {
   .splitview-filter {
     position: fixed;
-    margin-left: 5%;
-    width: 90%;
+    width: 100%;
     left: 0px;
-    top: -100px;
+    bottom: -2em;
+    -moz-transition-property: bottom;
+    -moz-transition-duration: 0.5s;
   }
   .splitview-filter:focus {
-    top: 0px;
+    bottom: 0em;
   }
   textarea {
     margin: 2px;
@@ -131,7 +132,7 @@ textarea {
     display: none;
   }
   textarea {
-    margin: 4px;
+    margin: 2px;
     min-height: 10em;
   }
 }
