@@ -101,11 +101,12 @@ function assert(aExpression, aMessage)
  * @param DOMElement aRoot
  *        The element to use for querySelector.
  * @param string aSelector
- *        Selector string for the element to set the attribute to.
- *        If there is no match, the call is ignored and returns null.
+ *        Selector string for the element to get/set the text content.
  * @param string aText
  *        Optional text to set.
  * @return string
+ *         Text content of matching element or null if there were no element
+ *         matching aSelector.
  */
 function text(aRoot, aSelector, aText)
 {
@@ -125,7 +126,7 @@ function text(aRoot, aSelector, aText)
  * Iterates _own_ properties of an object.
  *
  * @param aObject
- *        The object to iterate. If falsy the function returns immediately.
+ *        The object to iterate.
  * @param function aCallback(aKey, aValue)
  */
 function forEach(aObject, aCallback)
