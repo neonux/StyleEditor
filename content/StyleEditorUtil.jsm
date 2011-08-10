@@ -96,35 +96,6 @@ function assert(aExpression, aMessage)
 }
 
 /**
- * Retrieve or set the attribute value of an element.
- *
- * @param DOMElement aRoot
- *        The element to use for querySelector.
- * @param string aSelector
- *        Selector string for the element to set the attribute to.
- *        If there is no match, the call is ignored and returns null.
- * @param string aName
- *        The name of the attribute to set.
- * @param string aValue
- *        Optional value of the attribute.
- * @return object
- *         The value of the attribute, or null if the attribute does not exist.
- */
-function attr(aRoot, aSelector, aName, aValue)
-{
-  let element = aRoot.querySelector(aSelector);
-  if (!element) {
-    return null;
-  }
-
-  if (aValue === undefined) {
-    return element.getAttribute(aName);
-  }
-  element.setAttribute(aName, aValue);
-  return aValue;
-}
-
-/**
  * Retrieve or set the text content of an element.
  *
  * @param DOMElement aRoot
