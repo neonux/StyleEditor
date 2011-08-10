@@ -392,5 +392,16 @@ StyleEditorChrome.prototype = {
   onFlagChange: function SEAL_onFlagChange(aEditor, aFlagName)
   {
     this._updateSummaryForEditor(aEditor);
-  }
+  },
+
+  /**
+   * Called when  when changes have been committed/applied to the live DOM
+   * stylesheet.
+   *
+   * @param StyleEditor aEditor
+   */
+  onCommit: function SEAL_onCommit(aEditor)
+  {
+    this._updateSummaryForEditor(aEditor);
+  },
 };
