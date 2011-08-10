@@ -59,6 +59,8 @@ const BINDING_USERDATA = "splitview-binding";
  */
 function AdaptiveSplitView(aRoot)
 {
+  assert(aRoot, "Argument 'aRoot' is required to initialize AdaptiveSplitView.");
+
   this._root = aRoot;
   this._controller = aRoot.querySelector(".splitview-controller");
   this._nav = aRoot.querySelector(".splitview-nav");

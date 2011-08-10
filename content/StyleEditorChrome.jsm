@@ -68,7 +68,7 @@ const STYLE_EDITOR_TEMPLATE = "stylesheet";
  */
 function StyleEditorChrome(aRoot, aContentWindow)
 {
-  assert(aRoot, "Argument 'aRoot' is required.");
+  assert(aRoot, "Argument 'aRoot' is required to initialize StyleEditorChrome.");
 
   this._root = aRoot;
   this._document = this._root.ownerDocument;
