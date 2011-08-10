@@ -278,11 +278,11 @@ StyleEditor.prototype = {
    *                           Arguments: (editor, flagName)
    *                           @see setFlag
    *
-   *   onAttach:             Called when an input element has been attached.
+   *   onAttach:               Called when an input element has been attached.
    *                           Arguments: (editor)
    *                           @see inputElement
    *
-   *   onDetach:             Called when input element has been detached.
+   *   onDetach:               Called when input element has been detached.
    *                           Arguments: (editor)
    *                           @see inputElement
    *
