@@ -465,15 +465,13 @@ StyleEditor.prototype = {
    */
   updateStyleSheet: function SE_updateStyleSheet()
   {
-    let window = this.contentDocument.defaultView;
-
     if (this._updateTask) {
       // cancel previous queued task not executed within throttle delay
-      window.clearTimeout(this._updateTask);
+      this.window.clearTimeout(this._updateTask);
     }
 
-    this._updateTask = window.setTimeout(this._updateStyleSheet.bind(this),
-                                         UPDATE_STYLESHEET_THROTTLE_DELAY);
+    this._updateTask = this.window.setTimeout(this._updateStyleSheet.bind(this),
+                                              UPDATE_STYLESHEET_THROTTLE_DELAY);
   },
 
   /**
