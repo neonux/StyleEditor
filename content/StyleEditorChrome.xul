@@ -54,24 +54,34 @@
   <div class="splitview-controller">
     <div class="splitview-main">
       <div class="toolbar">
-        <button class="style-editor-newButton" accesskey="N">New stylesheet</button>
-        <button class="style-editor-importButton" accesskey="I">Import…</button>
+        <button class="style-editor-newButton"
+                accesskey="&newButton.accesskey;"
+                title="&newButton.tooltip;">&newButton.label;</button>
+        <button class="style-editor-importButton"
+                accesskey="&importButton.accesskey;"
+                title="&importButton.tooltip;">&importButton.label;</button>
         <div class="spacer"></div>
         <input class="splitview-filter"
                type="search"
-               title="Search through all stylesheets"
-               placeholder="Search stylesheets"/>
+               title="&searchInput.tooltip;"
+               placeholder="&searchInput.placeholder;"/>
       </div>
     </div>
     <div class="splitview-nav-container">
       <ol class="splitview-nav" tabindex="0"></ol>
       <div class="splitview-nav placeholder empty">
-        <h5>This page has no stylesheet.</h5>
-        <small>Perhaps you'd like to <a href="#" class="style-editor-newButton">append a new stylesheet</a>?</small>
+        <h5>&noStyleSheet.label;</h5>
+        <small>&noStyleSheet-tip-start.label;
+          <a href="#"
+             class="style-editor-newButton">&noStyleSheet-tip-action.label;</a>
+          &noStyleSheet-tip-end.label;</small>
       </div>
       <div class="splitview-nav placeholder all-filtered">
-        <h5>No results.</h5>
-        <small><a href="#" class="splitview-filter-clearButton">Clear</a></small>
+        <h5>&searchNoResults.label;</h5>
+        <small>
+          <a href="#"
+             class="splitview-filter-clearButton">&searchClearButton.label;</a>
+        </small>
       </div>
     </div> <!-- .splitview-nav-container -->
   </div>   <!-- .splitview-controller -->
@@ -81,21 +91,28 @@
   <div id="splitview-templates" hidden="true">
     <li id="splitview-tpl-summary-stylesheet" tabindex="0">
       <header>
-        <div class="stylesheet-enabled" tabindex="0"></div>
+        <a class="stylesheet-enabled" tabindex="0" href="#"
+           title="&visibilityToggle.tooltip;"
+           accesskey="&saveButton.accesskey;"></a>
         <hgroup>
-          <h1><a class="stylesheet-name" href="#">default.css</a></h1>
-          <h2 class="stylesheet-title">Untitled.</h2>
-          <h3 class="stylesheet-stats"><span class="stylesheet-rule-count">0 rules.</span></h3>
+          <h1><a class="stylesheet-name" href="#"></a></h1>
+          <h2 class="stylesheet-title"></h2>
+          <h3 class="stylesheet-stats">
+            <span class="stylesheet-rule-count"></span>
+          </h3>
         </hgroup>
         <div class="toolbar">
-          <a class="stylesheet-saveButton" href="#">Save</a>
+          <a class="stylesheet-saveButton" href="#"
+             title="&saveButton.tooltip;"
+             accesskey="&saveButton.accesskey;">&saveButton.label;</a>
         </div>
       </header>
       <div class="splitview-inline-details"></div>
     </li>
 
     <div id="splitview-tpl-details-stylesheet" class="splitview-details">
-      <textarea class="stylesheet-editor-input" placeholder="Type CSS here"></textarea>
+      <textarea class="stylesheet-editor-input"
+                placeholder="&editorTextbox.placeholder;"></textarea>
     </div>
   </div> <!-- #splitview-templates -->
 </div>   <!-- .splitview-root -->
@@ -107,4 +124,3 @@ let chrome = new StyleEditorChrome(chromeRoot);
 window.styleEditorChrome = chrome;
 ]]></xul:script>
 </xul:window>
-
