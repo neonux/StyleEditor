@@ -160,13 +160,13 @@ function log()
 }
 
 /**
- * Wire up element matching selector with attribute,s event listeners, etc.
+ * Wire up element(s) matching selector with attributes, event listeners, etc.
  *
  * @param DOMElement aRoot
- *        The element to use for querySelector.
+ *        The element to use for querySelectorAll.
  *        Can be null if aSelector is a DOMElement.
  * @param string|DOMElement aSelectorOrElement
- *        Selector string or DOMElement for the element to wire up.
+ *        Selector string or DOMElement for the element(s) to wire up.
  * @param object aDescriptor
  *        An object describing how to wire matching selector, supported properties
  *        are "events", "attributes" and "userData" taking objects themselves.
@@ -176,30 +176,30 @@ function log()
  *        respectively.
  *        If aDescriptor is a function, the argument is equivalent to :
  *        {events: {'click': aDescriptor}}
- * @return DOMElement
- *         The element that has been been wired up, or null if there were no
- *         element matching aSelector.
  */
 function wire(aRoot, aSelectorOrElement, aDescriptor)
 {
-  let element = aSelectorOrElement;
-  if (typeof(element) == "string") {
-    element = aRoot.querySelector(aSelectorOrElement);
-    if (!element) {
-      return null;
+  let matches;
+  if (typeof(aSelectorOrElement) == "string") { // selector
+    matches = aRoot.querySelectorAll(aSelectorOrElement);
+    if (!matches.length) {
+      return;
     }
+  } else {
+    matches = [aSelectorOrElement]; // element
   }
 
   if (typeof(aDescriptor) == "function") {
     aDescriptor = {events: {click: aDescriptor}};
   }
 
-  forEach(aDescriptor.events, function (aName, aHandler) {
-    element.addEventListener(aName, aHandler, false);
-  });
-  forEach(aDescriptor.attributes, element.setAttribute);
-  forEach(aDescriptor.userData, element.setUserData);
-
-  return element;
+  for (let i = 0; i < matches.length; ++i) {
+    let element = matches[i];
+    forEach(aDescriptor.events, function (aName, aHandler) {
+      element.addEventListener(aName, aHandler, false);
+    });
+    forEach(aDescriptor.attributes, element.setAttribute);
+    forEach(aDescriptor.userData, element.setUserData);
+  }
 }
 
