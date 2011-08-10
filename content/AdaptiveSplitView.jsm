@@ -77,8 +77,8 @@ function AdaptiveSplitView(aRoot)
     }.bind(this);
     this._filter.addEventListener("input", this._filter.search, false);
     this._filter.addEventListener("keyup", function onFilterKeyUp(aEvent) {
-      if (aEvent.keyCode == aEvent.DOM_VK_ENTER
-          || aEvent.keyCode == aEvent.DOM_VK_RETURN) {
+      if (aEvent.keyCode == aEvent.DOM_VK_ENTER ||
+          aEvent.keyCode == aEvent.DOM_VK_RETURN) {
         // autofocus matching content if there is only one
         let matches = this._nav.querySelectorAll("* > li:not(.splitview-filtered)");
         if (matches.length == 1) {
@@ -97,25 +97,25 @@ function AdaptiveSplitView(aRoot)
       return el || container;
     }
 
-    if (aEvent.target.tagName == "INPUT"
-        || aEvent.target.tagName == "TEXTAREA") {
+    if (aEvent.target.tagName == "INPUT" ||
+        aEvent.target.tagName == "TEXTAREA") {
       return; //TODO: more generic default handling
     }
 
     // handle keyboard navigation
     let focusNavDest;
-    if (aEvent.keyCode == aEvent.DOM_VK_PAGE_UP
-        || aEvent.keyCode == aEvent.DOM_VK_HOME) {
+    if (aEvent.keyCode == aEvent.DOM_VK_PAGE_UP ||
+        aEvent.keyCode == aEvent.DOM_VK_HOME) {
       focusNavDest = this._nav.firstChild;
-    } else if (aEvent.keyCode == aEvent.DOM_VK_PAGE_DOWN
-               || aEvent.keyCode == aEvent.DOM_VK_END) {
+    } else if (aEvent.keyCode == aEvent.DOM_VK_PAGE_DOWN ||
+               aEvent.keyCode == aEvent.DOM_VK_END) {
       focusNavDest = this._nav.lastChild;
     } else if (aEvent.keyCode == aEvent.DOM_VK_UP) {
-      focusNavDest = findFocusedElementIn(this._nav).previousElementSibling
-                     || this._nav.firstChild;
+      focusNavDest = findFocusedElementIn(this._nav).previousElementSibling ||
+                     this._nav.firstChild;
     } else if (aEvent.keyCode == aEvent.DOM_VK_DOWN) {
-      focusNavDest = findFocusedElementIn(this._nav).nextElementSibling
-                     || this._nav.lastChild;
+      focusNavDest = findFocusedElementIn(this._nav).nextElementSibling ||
+                     this._nav.lastChild;
     }
 
     if (focusNavDest) {
@@ -396,8 +396,8 @@ AdaptiveSplitView.prototype = {
   {
     for (let i = 0; i < this._nav.children.length; ++i) {
       let binding = this._nav.children[i].getUserData(BINDING_USERDATA);
-      if (binding
-          && aCallback(binding._summary, binding._details, binding.data)) {
+      if (binding &&
+          aCallback(binding._summary, binding._details, binding.data)) {
         return;
       }
     }

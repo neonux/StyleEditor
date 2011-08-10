@@ -365,8 +365,8 @@ StyleEditorChrome.prototype = {
         editor.inputElement.focus();
 
         // autofocus first or new stylesheet
-        if (editor.styleSheetIndex == 0
-            || editor.hasFlag(StyleEditorFlags.NEW)) {
+        if (editor.styleSheetIndex == 0 ||
+            editor.hasFlag(StyleEditorFlags.NEW)) {
           this._view.activeSummary = aSummary;
         }
       }.bind(this),
