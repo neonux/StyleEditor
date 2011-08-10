@@ -338,15 +338,15 @@ AdaptiveSplitView.prototype = {
     */
   filterContentBy: function ASV_filterContentBy(aQuery)
   {
-    if (!this._nav.children.length) {
+    if (!this._nav.hasChildNodes()) {
       return 0;
     }
     if (aQuery) {
       aQuery = aQuery.trim();
     }
     if (!aQuery) {
-      for (let i = 0; i < this._nav.children.length; ++i) {
-        this._nav.children[i].classList.remove("splitview-filtered");
+      for (let i = 0; i < this._nav.childNodes.length; ++i) {
+        this._nav.childNodes[i].classList.remove("splitview-filtered");
       }
       this._filter.classList.remove("splitview-all-filtered");
       this._nav.classList.remove("splitview-all-filtered");
@@ -355,8 +355,8 @@ AdaptiveSplitView.prototype = {
 
     let count = 0;
     let filteredCount = 0;
-    for (let i = 0; i < this._nav.children.length; ++i) {
-      let summary = this._nav.children[i];
+    for (let i = 0; i < this._nav.childNodes.length; ++i) {
+      let summary = this._nav.childNodes[i];
 
       let matches = false;
       let binding = summary.getUserData(BINDING_USERDATA);
@@ -394,8 +394,8 @@ AdaptiveSplitView.prototype = {
    */
   forEachContent: function ASV_forEachContent(aCallback)
   {
-    for (let i = 0; i < this._nav.children.length; ++i) {
-      let binding = this._nav.children[i].getUserData(BINDING_USERDATA);
+    for (let i = 0; i < this._nav.childNodes.length; ++i) {
+      let binding = this._nav.childNodes[i].getUserData(BINDING_USERDATA);
       if (binding &&
           aCallback(binding._summary, binding._details, binding.data)) {
         return;
@@ -432,8 +432,8 @@ AdaptiveSplitView.prototype = {
    */
   _onOrientationChange: function ASV__onOrientationChange()
   {
-    for (let i = 0; i < this._nav.children.length; ++i) {
-      let summary = this._nav.children[i];
+    for (let i = 0; i < this._nav.childNodes.length; ++i) {
+      let summary = this._nav.childNodes[i];
       let detailsContainer = (this.isLandscape)
                              ? this._side
                              : summary.querySelector(".splitview-inline-details");
