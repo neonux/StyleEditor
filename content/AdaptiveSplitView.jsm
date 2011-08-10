@@ -482,11 +482,9 @@ function scheduleAnimation(aElement)
 
   let window = aElement.ownerDocument.defaultView;
   window.mozRequestAnimationFrame(function triggerAnimation() {
-    window.setTimeout(function () {
-      for each (let klass in classes) {
-        aElement.classList.remove(klass);
-      }
-    }, 10);
+    for each (let klass in classes) {
+      aElement.classList.remove(klass);
+    }
   });
 }
 
