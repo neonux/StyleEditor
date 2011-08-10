@@ -714,7 +714,7 @@ StyleEditor.prototype = {
     if (!aArgs) {
       aArgs = [this];
     } else {
-      aArgs.splice(0, 0, this);
+      aArgs.unshift(this);
     }
 
     // trigger all listeners that have this action handler
