@@ -320,8 +320,8 @@ AdaptiveSplitView.prototype = {
    */
   removeAll: function ASV_removeAll()
   {
-    for (let i = 0; i < this._nav.children.length; ++i) {
-      this.removeContent(this._nav.children[i]);
+    while (this._nav.hasChildNodes()) {
+      this.removeContent(this._nav.firstChild);
     }
   },
 
