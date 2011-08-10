@@ -220,18 +220,18 @@ StyleEditorChrome.prototype = {
    *
    * @see contentWindow
    */
-//FIXME: HTML-ize
   _disableChrome: function SEC__disableChrome()
   {
-    function disableAll(aElement, aSelector) {
-      let matches = aElement.querySelectorAll(aSelector);
-      for (let i = 0; i < matches.length; ++i) {
-        matches[i].setAttribute("disabled", true);
-        matches[i].setAttribute("readonly", true);
-      }
+    let matches = this._root.querySelectorAll("button,input,select");
+    for (let i = 0; i < matches.length; ++i) {
+      matches[i].setAttribute("disabled", "disabled");
+    }
+    matches = this._root.querySelectorAll("textarea");
+    for (let i = 0; i < matches.length; ++i) {
+      matches[i].setAttribute("readonly", "readonly");
     }
 
-    disableAll(this._root, "button,input,textarea,select");
+    this._view.rootElement.setAttribute("disabled", "disabled");
   },
 
   /**
