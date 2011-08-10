@@ -486,7 +486,11 @@ StyleEditor.prototype = {
     if (this.styleSheet.disabled) {
       return;
     }
-    this._updateTask = null;
+
+    this._updateTask = null; // reset only if we actually perform an update
+                             // (stylesheet is enabled) so that 'missed' updates
+                             // while the stylesheet is disabled can be performed
+                             // when it is enabled back. @see enableStylesheet
 
     let source = this._driver.getText();
     let oldNode = this.styleSheet.ownerNode;
