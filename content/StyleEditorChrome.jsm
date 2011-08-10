@@ -156,17 +156,6 @@ StyleEditorChrome.prototype = {
       editor.addActionListener(this);
       editor.importFromFile(null, this._window);
     }.bind(this));
-
-    wire(this._view.rootElement, ".style-editor-saveAllButton", function onSaveAllButton() {
-      this.forEachStyleSheet(function saveIfUnsaved(aEditor) {
-        if (!aEditor.hasFlag(StyleEditorFlags.UNSAVED)) {
-          return;
-        }
-        if (aEditor.saveToFile(aEditor.savedFile)) {
-          this._unsavedCount--;
-        }
-      });
-    }.bind(this));
   },
 
   /**
@@ -403,13 +392,5 @@ StyleEditorChrome.prototype = {
   onFlagChange: function SEAL_onFlagChange(aEditor, aFlagName)
   {
     this._updateSummaryForEditor(aEditor);
-
-/*FIXME:
-    if (aFlagName == StyleEditorFlags.UNSAVED) {
-      // display Save All button when there is at least one unsaved editor
-      this._unsavedCount = this._unsavedCount || 0;
-      this._unsavedCount += aEditor.hasFlag(StyleEditorFlags.UNSAVED) ? 1 : -1;
-      this._UI.saveAllButton.className = this._unsavedCount ? "" : "hidden";
-    }*/
   }
 };

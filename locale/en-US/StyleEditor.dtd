@@ -27,11 +27,6 @@
      box and is visible only when a search term has been typed. -->
 <!ENTITY searchClearButton.label    "Clear">
 
-<!ENTITY saveAllButton.label        "Save all">
-<!ENTITY saveAllButton.tooltip      "Save all stylesheets with unsaved modifications">
-<!ENTITY saveAllButton.accesskey    "S">
-<!ENTITY saveAllButton.commandkey   "s">
-
 <!ENTITY visibilityToggle.tooltip   "Toggle stylesheet visibility">
 <!ENTITY visibilityToggle.accesskey "V">
 
