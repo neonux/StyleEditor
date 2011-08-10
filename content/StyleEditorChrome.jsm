@@ -223,6 +223,25 @@ StyleEditorChrome.prototype = {
   },
 
   /**
+   * Find the item summary element for a given editor.
+   *
+   * @param StyleEditor aEditor
+   * @return DOMElement
+   *         Item's summary element or null if not found.
+   * @see AdaptiveSplitView
+   */
+  _findSummaryForEditor: function SEC__findSummaryForEditor(aEditor) {
+    let summary = null;
+    this._view.forEachItem(function (aSummary, aDetails, aData) {
+      if (aData.editor == aEditor) {
+        summary = aSummary;
+        return true;
+      }
+    });
+    return summary;
+  },
+
+  /**
    * Update split view summary of given StyleEditor instance.
    *
    * @param StyleEditor aEditor
@@ -232,15 +251,7 @@ StyleEditorChrome.prototype = {
    */
   _updateSummaryForEditor: function SEC__updateSummaryForEditor(aEditor, aSummary)
   {
-    let summary = aSummary;
-    if (!summary) {
-      this._view.forEachContent(function (aSummary, aDetails, aData) {
-        if (aData.editor == aEditor) {
-          summary = aSummary;
-          return true;
-        }
-      });
-    }
+    let summary = aSummary || this._findSummaryForEditor(aEditor);
 
     this._view.setItemClassName(summary, aEditor.flags);
 
