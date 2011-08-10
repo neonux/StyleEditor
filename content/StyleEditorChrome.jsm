@@ -354,7 +354,7 @@ StyleEditorChrome.prototype = {
         editor: aEditor
       },
       ordinal: aEditor.styleSheetIndex,
-      onCreate: function ASV_onCreate(aSummary, aDetails, aData) {
+      onCreate: function ASV_onItemCreate(aSummary, aDetails, aData) {
         let editor = aData.editor;
 
         wire(aSummary, ".stylesheet-enabled", function onToggleEnabled(evt) {
@@ -382,11 +382,11 @@ StyleEditorChrome.prototype = {
           this._view.activeSummary = aSummary;
         }
       }.bind(this),
-      onShow: function ASV_onShow(aSummary, aDetails, aData) {
+      onShow: function ASV_onItemShow(aSummary, aDetails, aData) {
         let editor = aData.editor;
         editor.inputElement.focus();
       },
-      onFilterBy: function ASV_onFilterBy(aSummary, aDetails, aData, aQuery) {
+      onFilterBy: function ASV_onItemFilterBy(aSummary, aDetails, aData, aQuery) {
         let editor = aData.editor;
         return editor.inputElement.value.indexOf(aQuery) > -1;
       }
