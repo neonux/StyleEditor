@@ -47,6 +47,8 @@ const TAB_CHARS   = "\t";
 const INDENT_RE   = new RegExp("^", "gm");
 const UNINDENT_RE = new RegExp("^" + TAB_CHARS, "gm");
 
+const OS = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).OS;
+const LINE_SEPARATOR = /win/.test(OS) ? "\r\n" : "\n";
 
 /**
  * StyleEditorTextboxDriver constructor.
@@ -107,7 +109,7 @@ StyleEditorTextboxDriver.prototype = {
       }
 
       if (aElement) {
-        aElement.value = previousTextbox.value;
+        aElement.value = prettifyCSS(previousTextbox.value);
         aElement.setSelectionRange(previousTextbox.selectionStart,
                                    previousTextbox.selectionEnd);
       }
@@ -231,3 +233,72 @@ StyleEditorTextboxDriver.prototype = {
                               selectionEnd + caretAdjustment);
   }
 };
+
+
+/**
+ * Prettify minified CSS text.
+ * This prettify CSS code where there is no indentation in usual places while
+ * keeping original indentation as-is elsewhere.
+ *
+ * @param string aText
+ *        The CSS source to prettify.
+ * @return string
+ *         Prettified CSS source
+ */
+function prettifyCSS(aText)
+{
+let start = Date.now();
+  let parts = [];
+  let partStart = 0;
+  let indent = "";
+  let indentLevel = 0;
+
+  for (let i = 0; i < aText.length; i++) {
+    let c = aText[i];
+    let shouldIndent = false;
+
+    switch (c) {
+      case "}":
+        indent = repeat(TAB_CHARS, --indentLevel);
+        /* fallthrough */
+      case ";":
+      case "{":
+        shouldIndent = true;
+        break;
+    }
+
+    if (shouldIndent) {
+      let la = aText[i+1]; // one-character lookahead
+      if (!/\s/.test(la)) {
+        // following character should be a new line (or whitespace) but it isn't
+        // force indentation then
+        parts.push(indent + aText.substring(partStart, i + 1));
+        if (c == "}") {
+          parts.push(""); // for extra line separator
+        }
+        partStart = i + 1;
+      } else {
+        return aText; // assume it is not minified, early exit
+      }
+    }
+
+    if (c == "{") {
+      indent = repeat(TAB_CHARS, ++indentLevel);
+    }
+  }
+
+  return parts.join(LINE_SEPARATOR);
+}
+
+/**
+  * Return string that repeats aText for aCount times.
+  *
+  * @param string aText
+  * @param number aCount
+  * @return string
+  */
+function repeat(aText, aCount)
+{
+  return aCount > 0 ? (new Array(aCount + 1)).join(aText) : "";
+}
+
