@@ -74,17 +74,27 @@ function StyleEditorChrome(aRoot, aContentWindow)
   this._document = this._root.ownerDocument;
   this._window = this._document.defaultView;
 
-  let viewRoot = this._root.parentNode.querySelector(".splitview-root");
-  this._view = new AdaptiveSplitView(viewRoot);
-  this._setupChrome();
+  let initializeUI = function (aEvent) {
+    if (aEvent) {
+      this._window.removeEventListener("DOMContentLoaded", initializeUI, false);
+    }
 
-  // finally attach to the content window
-  this.contentWindow = aContentWindow || getCurrentBrowserTabContentWindow();
+    let viewRoot = this._root.parentNode.querySelector(".splitview-root");
+    this._view = new AdaptiveSplitView(viewRoot);
 
-  this.contentWindow.addEventListener("unload", function onContentUnload() {
-    this.contentWindow.removeEventListener("unload", onContentUnload, false);
-    this.contentWindow = null;
-  }.bind(this), false);
+    // attach to the content window
+    this.contentWindow = aContentWindow || getCurrentBrowserTabContentWindow();
+    this.contentWindow.addEventListener("unload", function onContentUnload() {
+      this.contentWindow.removeEventListener("unload", onContentUnload, false);
+      this.contentWindow = null;
+    }.bind(this), false);
+  }.bind(this);
+
+  if (this._document.readyState == "complete") {
+    initializeUI();
+  } else {
+    this._window.addEventListener("DOMContentLoaded", initializeUI, false);
+  }
 }
 
 StyleEditorChrome.prototype = {
@@ -373,9 +383,6 @@ StyleEditorChrome.prototype = {
 
         this._updateSummaryForEditor(editor, aSummary);
 
-        editor.inputElement = aDetails.querySelector(".stylesheet-editor-input");
-        editor.inputElement.focus();
-
         // autofocus first or new stylesheet
         if (editor.styleSheetIndex == 0 ||
             editor.hasFlag(StyleEditorFlags.NEW)) {
@@ -391,6 +398,12 @@ StyleEditorChrome.prototype = {
       }.bind(this),
       onShow: function ASV_onItemShow(aSummary, aDetails, aData) {
         let editor = aData.editor;
+
+        if (!editor.inputElement) {
+          // attach input element first time it is shown
+          editor.inputElement = aDetails.querySelector(".stylesheet-editor-input");
+        }
+
         editor.inputElement.focus();
       },
       onFilterBy: function ASV_onItemFilterBy(aSummary, aDetails, aData, aQuery) {
