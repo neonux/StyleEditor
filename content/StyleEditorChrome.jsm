@@ -381,6 +381,13 @@ StyleEditorChrome.prototype = {
             editor.hasFlag(StyleEditorFlags.NEW)) {
           this._view.activeSummary = aSummary;
         }
+
+        aSummary.addEventListener("focus", function onSummaryFocus(evt) {
+          if (evt.target == aSummary) {
+            // autofocus the stylesheet name
+            aSummary.querySelector(".stylesheet-name").focus();
+          }
+        }, false);
       }.bind(this),
       onShow: function ASV_onItemShow(aSummary, aDetails, aData) {
         let editor = aData.editor;

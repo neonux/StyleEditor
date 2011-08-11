@@ -71,6 +71,7 @@ function AdaptiveSplitView(aRoot)
   this._mql = aRoot.ownerDocument.defaultView.matchMedia(LANDSCAPE_MEDIA_QUERY);
   this._mql.addListener(this._onOrientationChange.bind(this));
 
+  // filter search box management
   this._filter = aRoot.querySelector("input.splitview-filter");
   if (this._filter) {
     this._filter.search = function onFilterInput(evt) {
@@ -89,21 +90,24 @@ function AdaptiveSplitView(aRoot)
     }.bind(this), false);
   }
 
+  // items list focus management
   this._nav.addEventListener("keydown", function onKeyCatchAll(aEvent) {
-    function findFocusedElementIn(container) {
-      let el = container.querySelector("*:focus");
-      while (el && el.parentNode != container) {
-        el = el.parentNode;
+    function getFocusedItem(nav) {
+      let node = nav.ownerDocument.activeElement;
+      while (node && node.parentNode != nav) {
+        node = node.parentNode;
       }
-      return el || container;
+      return node;
     }
 
-    if (aEvent.target.tagName == "INPUT" ||
-        aEvent.target.tagName == "TEXTAREA") {
-      return; //TODO: more generic default handling
+    switch (aEvent.target.tagName) {
+      case "input":
+      case "textarea":
+      case "textbox":
+        return false;
     }
 
-    // handle keyboard navigation
+    // handle keyboard navigation within items list
     let focusNavDest;
     if (aEvent.keyCode == aEvent.DOM_VK_PAGE_UP ||
         aEvent.keyCode == aEvent.DOM_VK_HOME) {
@@ -112,28 +116,23 @@ function AdaptiveSplitView(aRoot)
                aEvent.keyCode == aEvent.DOM_VK_END) {
       focusNavDest = this._nav.lastChild;
     } else if (aEvent.keyCode == aEvent.DOM_VK_UP) {
-      focusNavDest = findFocusedElementIn(this._nav).previousElementSibling ||
+      focusNavDest = getFocusedItem(this._nav).previousElementSibling ||
                      this._nav.firstChild;
     } else if (aEvent.keyCode == aEvent.DOM_VK_DOWN) {
-      focusNavDest = findFocusedElementIn(this._nav).nextElementSibling ||
+      focusNavDest = getFocusedItem(this._nav).nextElementSibling ||
                      this._nav.lastChild;
     }
 
     if (focusNavDest) {
       aEvent.stopPropagation();
-      if (!focusNavDest.tabIndex) {
-        focusNavDest = focusNavDest.querySelector("a");
-      }
       focusNavDest.focus();
       return false;
     }
 
-    // handle search-on-type auto-focus
-    if (this._filter) {
-      let isChar = String.fromCharCode(aEvent.which).trim().length;
-      if (isChar) {
-        this._filter.focus();
-      }
+    // type-on-search for any non-whitespace character
+    if (this._filter &&
+        !/\s/.test(String.fromCharCode(aEvent.which))) {
+      this._filter.focus();
     }
   }.bind(this), false);
 }
