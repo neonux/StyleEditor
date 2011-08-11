@@ -367,16 +367,16 @@ StyleEditorChrome.prototype = {
       onCreate: function ASV_onItemCreate(aSummary, aDetails, aData) {
         let editor = aData.editor;
 
-        wire(aSummary, ".stylesheet-enabled", function onToggleEnabled(evt) {
-          evt.stopPropagation();
-          evt.target.blur();
+        wire(aSummary, ".stylesheet-enabled", function onToggleEnabled(aEvent) {
+          aEvent.stopPropagation();
+          aEvent.target.blur();
 
           editor.enableStyleSheet(editor.styleSheet.disabled);
         });
 
-        wire(aSummary, ".stylesheet-saveButton", function onSaveButton(evt) {
-          evt.stopPropagation();
-          evt.target.blur();
+        wire(aSummary, ".stylesheet-saveButton", function onSaveButton(aEvent) {
+          aEvent.stopPropagation();
+          aEvent.target.blur();
 
           editor.saveToFile(editor.savedFile);
         });
@@ -389,8 +389,8 @@ StyleEditorChrome.prototype = {
           this._view.activeSummary = aSummary;
         }
 
-        aSummary.addEventListener("focus", function onSummaryFocus(evt) {
-          if (evt.target == aSummary) {
+        aSummary.addEventListener("focus", function onSummaryFocus(aEvent) {
+          if (aEvent.target == aSummary) {
             // autofocus the stylesheet name
             aSummary.querySelector(".stylesheet-name").focus();
           }

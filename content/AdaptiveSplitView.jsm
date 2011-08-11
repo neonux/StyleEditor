@@ -74,7 +74,7 @@ function AdaptiveSplitView(aRoot)
   // filter search box management
   this._filter = aRoot.querySelector("input.splitview-filter");
   if (this._filter) {
-    this._filter.search = function onFilterInput(evt) {
+    this._filter.search = function onFilterInput(aEvent) {
       this.filterItemsBy(this._filter.value);
     }.bind(this);
     this._filter.addEventListener("input", this._filter.search, false);
@@ -290,8 +290,8 @@ AdaptiveSplitView.prototype = {
     }
     this._nav.appendChild(aSummary);
 
-    aSummary.addEventListener("click", function onSummaryClick(evt) {
-      evt.stopPropagation();
+    aSummary.addEventListener("click", function onSummaryClick(aEvent) {
+      aEvent.stopPropagation();
       this.activeSummary = aSummary;
     }.bind(this), false);
 
