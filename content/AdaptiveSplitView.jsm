@@ -88,6 +88,18 @@ function AdaptiveSplitView(aRoot)
         }
       }
     }.bind(this), false);
+
+    let filterClearButtons = aRoot.querySelector(".splitview-filter-clearButton");
+    for (let i = 0; i < filterClearButtons.length; ++i) {
+      filterClearButtons.addEventListener("click", function onFilterClear(aEvent) {
+        this._filter.value = '';
+        this._filter.focus();
+        this._filter.search();
+
+        aEvent.stopPropagation();
+        return false;
+      }, false);
+    }
   }
 
   // items list focus management
