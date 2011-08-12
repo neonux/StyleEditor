@@ -259,6 +259,10 @@ let start = Date.now();
 
     switch (c) {
       case "}":
+        if (i - partStart > 1) { // should be on its own line
+          parts.push(indent + aText.substring(partStart, i));
+          partStart = i;
+        }
         indent = repeat(TAB_CHARS, --indentLevel);
         /* fallthrough */
       case ";":
