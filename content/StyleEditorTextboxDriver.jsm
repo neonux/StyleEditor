@@ -50,6 +50,7 @@ const UNINDENT_RE = new RegExp("^" + TAB_CHARS, "gm");
 const OS = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).OS;
 const LINE_SEPARATOR = /win/.test(OS) ? "\r\n" : "\n";
 
+
 /**
  * StyleEditorTextboxDriver constructor.
  *

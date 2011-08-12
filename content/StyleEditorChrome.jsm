@@ -76,7 +76,7 @@ function StyleEditorChrome(aRoot, aContentWindow)
 
   let initializeUI = function (aEvent) {
     if (aEvent) {
-      this._window.removeEventListener("DOMContentLoaded", initializeUI, false);
+      this._window.removeEventListener("load", initializeUI, false);
     }
 
     let viewRoot = this._root.parentNode.querySelector(".splitview-root");
@@ -95,7 +95,7 @@ function StyleEditorChrome(aRoot, aContentWindow)
   if (this._document.readyState == "complete") {
     initializeUI();
   } else {
-    this._window.addEventListener("DOMContentLoaded", initializeUI, false);
+    this._window.addEventListener("load", initializeUI, false);
   }
 }
 
