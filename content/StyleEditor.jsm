@@ -54,8 +54,8 @@ Cu.import(STYLE_EDITOR_CONTENT + "StyleEditorTextboxDriver.jsm");
 const LOAD_ERROR = "error-load";
 const SAVE_ERROR = "error-save";
 
-// update at most every 250ms (avoid potential typing lag and/or flicker)
-const UPDATE_STYLESHEET_THROTTLE_DELAY = 250;
+// max update frequency in ms (avoid potential typing lag and/or flicker)
+const UPDATE_STYLESHEET_THROTTLE_DELAY = 500;
 
 
 /**
