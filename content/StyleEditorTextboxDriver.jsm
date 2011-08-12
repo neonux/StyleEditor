@@ -209,7 +209,6 @@ StyleEditorTextboxDriver.prototype = {
     this._parent.updateStyleSheet();
   },
 
-
   /**
    * Replace text at caret or within selection.
    *
