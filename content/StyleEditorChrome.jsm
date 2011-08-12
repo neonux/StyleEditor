@@ -82,6 +82,8 @@ function StyleEditorChrome(aRoot, aContentWindow)
     let viewRoot = this._root.parentNode.querySelector(".splitview-root");
     this._view = new AdaptiveSplitView(viewRoot);
 
+    this._setupChrome();
+
     // attach to the content window
     this.contentWindow = aContentWindow || getCurrentBrowserTabContentWindow();
     this.contentWindow.addEventListener("unload", function onContentUnload() {
