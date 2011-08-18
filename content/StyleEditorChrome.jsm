@@ -74,6 +74,8 @@ function StyleEditorChrome(aRoot, aContentWindow)
   this._document = this._root.ownerDocument;
   this._window = this._document.defaultView;
 
+  this._editors = [];
+
   let initializeUI = function (aEvent) {
     if (aEvent) {
       this._window.removeEventListener("load", initializeUI, false);
@@ -144,8 +146,10 @@ StyleEditorChrome.prototype = {
   get editors()
   {
     let editors = [];
-    this.forEachStyleSheet(function (aEditor) {
-      editors[aEditor.styleSheetIndex] = aEditor;
+    this._editors.forEach(function (aEditor) {
+      if (aEditor.styleSheetIndex >= 0) {
+        editors[aEditor.styleSheetIndex] = aEditor;
+      }
     });
     return editors;
   },
@@ -158,30 +162,17 @@ StyleEditorChrome.prototype = {
     // wire up UI elements
     wire(this._view.rootElement, ".style-editor-newButton", function onNewButton() {
       let editor = new StyleEditor(this.contentDocument);
+      this._editors.push(editor);
       editor.addActionListener(this);
       editor.load();
     }.bind(this));
 
     wire(this._view.rootElement, ".style-editor-importButton", function onImportButton() {
       let editor = new StyleEditor(this.contentDocument);
+      this._editors.push(editor);
       editor.addActionListener(this);
       editor.importFromFile(null, this._window);
     }.bind(this));
-  },
-
-  /**
-   * Iterates every StyleEditor instance for each stylesheet in content document.
-   * Iteration stops if aCallback returns true.
-   *
-   * @param function aCallback(aEditor)
-   */
-  forEachStyleSheet: function SEC_forEachStyleSheet(aCallback)
-  {
-    this._view.forEachItem(function (aSummary, aDetails, aData) {
-      if (aCallback(aData.editor)) {
-        return true;
-      }
-    });
   },
 
   /**
@@ -189,6 +180,11 @@ StyleEditorChrome.prototype = {
    */
   _resetChrome: function SEC__resetChrome()
   {
+    this._editors.forEach(function (aEditor) {
+      aEditor.removeActionListener(this);
+    }.bind(this));
+    this._editors = [];
+
     this._view.removeAll();
   },
 
@@ -210,7 +206,14 @@ StyleEditorChrome.prototype = {
 
       let editor = new StyleEditor(document, styleSheet);
       editor.addActionListener(this);
-      editor.load();
+      this._editors.push(editor);
+
+      // Queue editors loading so that ContentAttach is consistently triggered
+      // right after all editor instances are available but NOT loaded/ready yet.
+      // Also, if there's many heavy stylsheets, it can improve UI responsivity.
+      this._window.setTimeout(function queuedStyleSheetLoad() {
+        editor.load();
+      }, 0);
     }
   },
 
