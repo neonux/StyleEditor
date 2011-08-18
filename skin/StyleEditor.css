@@ -115,7 +115,7 @@ li:hover .stylesheet-enabled {
 }
 
 /* limited height mode */
-@media (max-height: 400px) {
+@media (max-height: 250px) {
   .stylesheet-title, .stylesheet-stats {
     display: none;
   }
