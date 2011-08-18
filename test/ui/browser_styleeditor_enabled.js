@@ -6,66 +6,77 @@ const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
 
-let gChromeWindow; //StyleEditorChrome window
-
-
 function test()
 {
   registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
-  gBrowser.selectedTab = gBrowser.addTab();
-  gBrowser.selectedBrowser.addEventListener("load", function onLoad() {
-    gBrowser.selectedBrowser.removeEventListener("load", onLoad, false);
-
-    gChromeWindow = StyleEditor.openChrome();
-    gChromeWindow.addEventListener("load", run, false);
-  }, true);
+  addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
+    aChrome.addChromeListener({
+      onEditorAdded: run
+    });
+  });
 
   content.location = TESTCASE_URI;
 }
 
-function run()
+function run(aChrome, aEditor)
 {
-  gChromeWindow.removeEventListener("load", run, false);
+  if (aEditor.styleSheetIndex != 0) {
+    return; // we want to test against the first stylesheet
+  }
 
-  let SEC = gChromeWindow.styleEditorChrome;
-  let document = gChromeWindow.document;
+  is(aEditor, aChrome.editors[0],
+     "stylesheet with index 0 is the first stylesheet listed in the UI");
 
-  let list = document.querySelector("#style-editor-styleSheetList");
-  let openButton = document.querySelector("#style-editor-openButton");
-  let enabledButton = document.querySelector("#style-editor-enabledButton");
+  let firstStyleSheetEditor = aEditor;
+  let firstStyleSheetUI = aChrome.getSummaryElementForEditor(aEditor);
 
-  // those buttons are hidden when there is no stylesheet selected
-  is(list.selectedIndex, -1, "no stylesheet is initially selected");
-  is(openButton.hidden, true,
-     "open button is hidden when no stylesheet is selected");
-  is(enabledButton.hidden, true,
-     "enabled button is hidden when no stylesheet is selected");
+  is(firstStyleSheetEditor.contentDocument.styleSheets[0].disabled, false,
+     "first stylesheet is initially enabled");
+  is(firstStyleSheetEditor.hasFlag("disabled"), false,
+     "first stylesheet is initially enabled, it does not have DISABLED flag");
+  is(firstStyleSheetUI.classList.contains("disabled"), false,
+     "first stylesheet is initially enabled, UI does not have DISABLED class");
 
-  // select first stylesheet, check buttons are now visible
-  list.selectedIndex = 0;
-  executeSoon(function () {
-    is(openButton.hidden, false,
-       "open button is visible when a stylesheet is selected");
-    is(enabledButton.hidden, false,
-       "enabled button is visible when a stylesheet is selected");
+  let disabledToggleCount = 0;
+  firstStyleSheetEditor.addActionListener({
+    onFlagChange: function (aEditor, aFlagName) {
+      if (aFlagName != "disabled") {
+        return;
+      }
+      disabledToggleCount++;
 
-    is(SEC.contentDocument.styleSheets[0].disabled, false,
-       "selected stylesheet is initially enabled");
-    is(enabledButton.checked, true,
-       "selected stylesheet is initially enabled, button is checked");
+      if (disabledToggleCount == 1) {
+        is(firstStyleSheetEditor, aEditor,
+           "FlagChange handler triggered for DISABLED flag on the first editor");
+        is(firstStyleSheetEditor.styleSheet.disabled, true,
+           "first stylesheet is now disabled");
+        is(firstStyleSheetEditor.hasFlag("disabled"), true,
+           "first stylesheet is now disabled, it has DISABLED flag");
+        is(firstStyleSheetUI.classList.contains("disabled"), true,
+           "first stylesheet is now disabled, UI has DISABLED class");
 
-    enabledButton.click(); // toggle stylesheet
+        // now toggle it back to enabled
+        let enabledToggle = firstStyleSheetUI.querySelector(".stylesheet-enabled");
+        EventUtils.sendMouseEvent({type: "click"}, enabledToggle, gChromeWindow);
+        return;
+      }
 
-    executeSoon(function () {
-      is(SEC.contentDocument.styleSheets[0].disabled, true,
-         "selected stylesheet is now disabled");
-      is(enabledButton.checked, false,
-         "selected stylesheet is now disabled, button is unchecked");
+      // disabledToggleCount == 2
+      is(firstStyleSheetEditor, aEditor,
+         "FlagChange handler triggered for DISABLED flag on the first editor (2)");
+      is(firstStyleSheetEditor.styleSheet.disabled, false,
+         "first stylesheet is now enabled again");
+      is(firstStyleSheetEditor.hasFlag("disabled"), false,
+         "first stylesheet is now enabled again, it does not have DISABLED flag");
+      is(firstStyleSheetUI.classList.contains("disabled"), false,
+         "first stylesheet is now enabled again, UI does not have DISABLED class");
 
       finish();
-    });
+    }
   });
-}
 
+  let enabledToggle = firstStyleSheetUI.querySelector(".stylesheet-enabled");
+  EventUtils.sendMouseEvent({type: "click"}, enabledToggle, gChromeWindow);
+}

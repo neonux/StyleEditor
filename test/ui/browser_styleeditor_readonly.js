@@ -5,54 +5,60 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
-let gChromeWindow; //StyleEditorChrome window
-
 
 function test()
 {
   registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
-  gBrowser.addTab(); // because we'll close the next ones
-  gBrowser.selectedTab = gBrowser.addTab();
-  gBrowser.selectedBrowser.addEventListener("load", function onLoad() {
-    gBrowser.selectedBrowser.removeEventListener("load", onLoad, false);
-    gChromeWindow = StyleEditor.openChrome();
-    gChromeWindow.addEventListener("load", run, false);
-  }, true);
+  gBrowser.addTab(); // because we'll close the next one
+  addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
+    let editorAddedCount = 0;
+    aChrome.addChromeListener({
+      onEditorAdded: function continueWhenAllAreLoaded(aChrome, aEditor) {
+        editorAddedCount++;
+
+        if (editorAddedCount == aChrome.editors.length) {
+          // all editors have been loaded, close the content tab
+          gBrowser.removeCurrentTab();
+        }
+      },
+
+      onContentDetach: function (aChrome) {
+        // check that the UI has switched to read-only
+        run(aChrome);
+      }
+    });
+  });
 
   content.location = TESTCASE_URI;
 }
 
-function run()
+function run(aChrome)
 {
-  gChromeWindow.removeEventListener("load", run, false);
-
-  let SEC = gChromeWindow.styleEditorChrome;
   let document = gChromeWindow.document;
+  let disabledCount;
+  let elements;
 
-  // check that the stylesheet list is enabled
-  let listBox = document.querySelector("richlistbox");
-  is(listBox.disabled, false, "stylesheet list is initially enabled");
-
-  document.querySelector("#style-editor-newButton").click();
-  let editor = SEC.editors[SEC.editors.length - 1];
-
-  editor.addActionListener({
-    onAttach: function () {
-      ok(!editor.inputElement.getAttribute("readonly"),
-         "editor is not read-only initially");
-
-      gBrowser.removeCurrentTab();
-
-      is(editor.inputElement.getAttribute("readonly"), "true",
-         "editor is read-only after content has been closed");
-
-      is(listBox.disabled, true,
-         "stylesheet list is disabled after contnet has been closed");
-
-      finish();
+  disabledCount = 0;
+  elements = document.querySelectorAll("button,input,select");
+  for (let i = 0; i < elements.length; ++i) {
+    if (elements[i].hasAttribute("disabled")) {
+      disabledCount++;
     }
-  });
-}
+  }
+  ok(elements.length && disabledCount == elements.length,
+     "all buttons, input and select elements are disabled");
 
+  disabledCount = 0;
+  elements = document.querySelectorAll("textarea,textbox");
+  for (let i = 0; i < elements.length; ++i) {
+    if (elements[i].hasAttribute("readonly")) {
+      disabledCount++;
+    }
+  }
+  ok(elements.length && disabledCount == elements.length,
+     "all textarea and textbox elements are read-only");
+
+  finish();
+}

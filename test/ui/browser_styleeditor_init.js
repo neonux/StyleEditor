@@ -5,70 +5,114 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
-let gStyleEditor;  //StyleEditor object in browser window
-let gChromeWindow; //StyleEditorChrome window
-
 
 function test()
 {
   registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
-  gBrowser.selectedTab = gBrowser.addTab();
-  gBrowser.selectedBrowser.addEventListener("load", function onLoad() {
-    gBrowser.selectedBrowser.removeEventListener("load", onLoad, false);
-
-    ok(StyleEditor, "StyleEditor object exists in browser window");
-    gStyleEditor = StyleEditor; // keep to test singleton behavior later
-
-    gChromeWindow = StyleEditor.openChrome();
-    gChromeWindow.addEventListener("load", run, false);
-  }, true);
+  addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
+    aChrome.addChromeListener({
+      onContentAttach: run,
+      onEditorAdded: testEditorAdded
+    });
+    if (aChrome.isContentAttached) {
+      run(aChrome);
+    }
+  });
 
   content.location = TESTCASE_URI;
 }
 
-function run()
+function run(aChrome)
 {
-  gChromeWindow.removeEventListener("load", run, false);
-
   let SEC = gChromeWindow.styleEditorChrome;
-  ok(SEC, "StyleEditorChrome object exists in new window");
+  is(SEC, aChrome, "StyleEditorChrome object exists as new window property");
 
-  // check forEachStyleSheet API
-  let apiCount = 0;
-  let list = SEC.forEachStyleSheet(function styleSheet(editor, listItem) {
-    ok(editor.load, "first arg is instance of StyleEditor");
-    ok(listItem.tagName == "richlistitem", "second arg is a list item");
-    apiCount++;
-  });
-  is(apiCount, 2, "iterated 2 stylesheets");
+  ok(gChromeWindow.document.title.indexOf("simple testcase") >= 0,
+     "the Style Editor window title contains the document's title");
 
-  // check editors API
-  is(SEC.editors.length, 2, "got 2 editors");
+  // check editors are instantiated
+  is(SEC.editors.length, 2,
+     "there is two StyleEditor instances managed");
+  ok(SEC.editors[0].styleSheetIndex < SEC.editors[1].styleSheetIndex,
+     "editors are ordered by styleSheetIndex");
 
-  // check we got document's style sheets in the list
-  let listBox = gChromeWindow.document.querySelector("richlistbox");
-  let listItems = listBox.querySelectorAll("richlistitem");
-  is(listItems.length, 2, "2 stylesheets are listed in Stylesheets panel");
-
-  // check flags
-  let isInline = listItems[0].className.indexOf("inline") >= 0;
-  ok(!isInline, "first stylesheet does not have 'inline' flag");
-
-  isInline = listItems[1].className.indexOf("inline") >= 0;
-  ok(isInline, "second stylesheet has 'inline' flag");
-
-  // check rule counts
-  let ruleCount = listItems[0].querySelector(".stylesheet-rule-count").value;
-  is(parseInt(ruleCount), 1, "first stylesheet list item counts 1 rule");
-
-  ruleCount = listItems[1].querySelector(".stylesheet-rule-count").value;
-  is(parseInt(ruleCount), 3, "second stylesheet list item counts 3 rules");
-
+  // check StyleEditorChrome is a singleton wrt to the same DOMWindow
   let chromeWindow = gStyleEditor.openChrome();
   is(chromeWindow, gChromeWindow,
      "attempt to edit the same document returns the same Style Editor window");
+}
 
-  finish();
+let gEditorAddedCount = 0;
+function testEditorAdded(aChrome, aEditor)
+{
+  if (aEditor.styleSheetIndex == 0) {
+    gEditorAddedCount++;
+    testFirstStyleSheetEditor(aChrome, aEditor);
+  }
+  if (aEditor.styleSheetIndex == 1) {
+    gEditorAddedCount++;
+    testSecondStyleSheetEditor(aChrome, aEditor);
+  }
+
+  if (gEditorAddedCount == 2) {
+    finish();
+  }
+}
+
+function testFirstStyleSheetEditor(aChrome, aEditor)
+{
+  //testing TESTCASE's simple.css stylesheet
+  is(aEditor.styleSheetIndex, 0,
+     "first stylesheet is at index 0");
+
+  ok(aEditor == aChrome.editors[0],
+     "first stylesheet corresponds to StyleEditorChrome.editors[0]");
+
+  ok(!aEditor.hasFlag("inline"),
+     "first stylesheet does not have INLINE flag");
+
+  let summary = aChrome.getSummaryElementForEditor(aEditor);
+  ok(!summary.classList.contains("inline"),
+     "first stylesheet UI does not have INLINE class");
+
+  let name = summary.querySelector(".stylesheet-name").textContent;
+  is(name, "simple.css",
+     "first stylesheet's name is `simple.css`");
+
+  let ruleCount = summary.querySelector(".stylesheet-rule-count").textContent;
+  is(parseInt(ruleCount), 1,
+     "first stylesheet UI shows rule count as 1");
+
+  ok(summary.classList.contains("splitview-active"),
+     "first stylesheet UI is focused/active");
+}
+
+function testSecondStyleSheetEditor(aChrome, aEditor)
+{
+  //testing TESTCASE's inline stylesheet
+  is(aEditor.styleSheetIndex, 1,
+     "second stylesheet is at index 1");
+
+  is(aEditor, aChrome.editors[1],
+     "second stylesheet corresponds to StyleEditorChrome.editors[1]");
+
+  ok(aEditor.hasFlag("inline"),
+     "second stylesheet has INLINE flag");
+
+  let summary = aChrome.getSummaryElementForEditor(aEditor);
+  ok(summary.classList.contains("inline"),
+     "second stylesheet UI has INLINE class");
+
+  let name = summary.querySelector(".stylesheet-name").textContent;
+  ok(/^<.*>$/.test(name),
+     "second stylesheet's name is surrounded by `<>`");
+
+  let ruleCount = summary.querySelector(".stylesheet-rule-count").textContent;
+  is(parseInt(ruleCount), 3,
+     "second stylesheet UI shows rule count as 3");
+
+  ok(!summary.classList.contains("splitview-active"),
+     "second stylesheet UI is NOT focused/active");
 }

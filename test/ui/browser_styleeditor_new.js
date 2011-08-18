@@ -6,71 +6,96 @@ const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
 
-let gChromeWindow; //StyleEditorChrome window
-
-
 function test()
 {
   registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
-  gBrowser.selectedTab = gBrowser.addTab();
-  gBrowser.selectedBrowser.addEventListener("load", function onLoad() {
-    gBrowser.selectedBrowser.removeEventListener("load", onLoad, false);
-
-    gChromeWindow = StyleEditor.openChrome();
-    gChromeWindow.addEventListener("load", run, false);
-  }, true);
+  addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
+    aChrome.addChromeListener({
+      onContentAttach: run,
+      onEditorAdded: testEditorAdded
+    });
+    if (aChrome.isContentAttached) {
+      run(aChrome);
+    }
+  });
 
   content.location = TESTCASE_URI;
 }
 
-function run()
-{
-  gChromeWindow.removeEventListener("load", run, false);
+let gInitialStyleSheetCount= 0;
 
-  let SEC = gChromeWindow.styleEditorChrome;
+function run(aChrome)
+{
   let document = gChromeWindow.document;
 
-  let countBeforeNew = SEC.editors.length;
+  gInitialStyleSheetCount = aChrome.editors.length;
 
   // create a new style sheet
-  let newButton = document.querySelector("#style-editor-newButton");
+  let newButton = document.querySelector(".style-editor-newButton");
   newButton.click();
+}
 
-  is(SEC.editors.length, countBeforeNew + 1,
-     "new style sheet added one more editor");
-  let newEditor = SEC.editors[SEC.editors.length - 1];
-  ok(newEditor, "got the new editor instance");
+let gNewEditor;
+function testEditorAdded(aChrome, aEditor)
+{
+  if (aEditor.styleSheetIndex != gInitialStyleSheetCount) {
+    return; // this is not the new stylesheet
+  }
 
-  let gotLoadEvent;
+  ok(!gNewEditor, "creating a new stylesheet triggers one EditorAdded event");
+  gNewEditor = aEditor; // above test will fail if we get a duplicate event
 
-  newEditor.addActionListener({
-    onLoad: function () {
-      gotLoadEvent = true;
+  is(aChrome.editors.length, gInitialStyleSheetCount + 1,
+     "creating a new stylesheet added a new StyleEditor instance");
+
+  let listener = {
+    onAttach: function (aEditor) {
+      ok(aEditor.isLoaded,
+         "new editor is loaded when attached");
+      ok(aEditor.hasFlag("new"),
+         "new editor has NEW flag");
+      ok(!aEditor.hasFlag("unsaved"),
+         "new editor does not have UNSAVED flag");
+
+      ok(aEditor.inputElement,
+         "new editor has an input element attached");
+      ok(gChromeWindow.document.activeElement = aEditor.inputElement,
+         "new editor has focus");
+
+      let summary = aChrome.getSummaryElementForEditor(aEditor);
+      let ruleCount = summary.querySelector(".stylesheet-rule-count").textContent;
+      is(parseInt(ruleCount), 0,
+         "new editor initially shows 0 rules");
+
+      let computedStyle = content.getComputedStyle(content.document.body, null);
+      is(computedStyle.backgroundColor, "rgb(255, 255, 255)",
+         "content's background color is initially white");
+
+      EventUtils.sendString("body{background-color:red;}", aEditor.inputElement);
     },
 
-    onAttach: function () {
-      ok(gotLoadEvent, "load event got fired to new action listener");
+    onCommit: function (aEditor) {
+      ok(aEditor.hasFlag("new"),
+         "new editor still has NEW flag");
+      ok(aEditor.hasFlag("unsaved"),
+         "new editor has UNSAVED flag after modification");
 
-      ok(newEditor.inputElement, "editor is opened and input element attached");
+      let summary = aChrome.getSummaryElementForEditor(aEditor);
+      let ruleCount = summary.querySelector(".stylesheet-rule-count").textContent;
+      is(parseInt(ruleCount), 1,
+         "new editor shows 1 rule after modification");
 
-      executeSoon(function () {
-        let focused = newEditor.window.document.commandDispatcher.focusedElement;
-        ok(focused, "editor has focus");
-
-        //FIXME: should rather use EventUtils.sendString but it depends on jQuery!?
-        newEditor.inputElement.value = "body{background-color:red;}";
-        newEditor.updateStyleSheet();
-      });
-    },
-
-    onCommit: function () {
       let computedStyle = content.getComputedStyle(content.document.body, null);
       is(computedStyle.backgroundColor, "rgb(255, 0, 0)",
-         "background color has been updated to red");
+         "content's background color has been updated to red");
 
       finish();
     }
-  });
+  };
+  aEditor.addActionListener(listener);
+  if (aEditor.inputElement) {
+    listener.onAttach(aEditor);
+  }
 }
