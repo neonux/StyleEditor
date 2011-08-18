@@ -90,10 +90,6 @@ function StyleEditorChrome(aRoot, aContentWindow)
 
     // attach to the content window
     this.contentWindow = aContentWindow || getCurrentBrowserTabContentWindow();
-    this.contentWindow.addEventListener("unload", function onContentUnload() {
-      this.contentWindow.removeEventListener("unload", onContentUnload, false);
-      this.contentWindow = null;
-    }.bind(this), false);
   }.bind(this);
 
   if (this._document.readyState == "complete") {
@@ -113,17 +109,38 @@ StyleEditorChrome.prototype = {
 
   /**
    * Set the content window attached to this chrome.
+   * Content attach or detach events/notifications are triggered after the
+   * operation is complete (possibly asynchronous if the content is not fully
+   * loaded yet).
    *
    * @param DOMWindow aContentWindow
+   * @see addChromeListener
    */
   set contentWindow(aContentWindow)
   {
     if (this._contentWindow == aContentWindow) {
       return; // no change
     }
+
     this._contentWindow = aContentWindow;
+
     if (aContentWindow) {
-      this._populateChrome();
+      if (aContentWindow.document.readyState == "complete") {
+        this._populateChrome();
+      } else {
+        aContentWindow.addEventListener("readystatechange", function onContentReady() {
+          if (this.contentDocument.readyState != "complete") {
+            return false;
+          }
+          aContentWindow.removeEventListener("readystatechange", onContentReady, false);
+          this._populateChrome();
+        }.bind(this), false);
+      }
+
+      aContentWindow.addEventListener("unload", function onContentUnload() {
+        aContentWindow.removeEventListener("unload", onContentUnload, false);
+        this.contentWindow = null; // detach
+      }.bind(this), false);
     } else {
       this._disableChrome();
     }
