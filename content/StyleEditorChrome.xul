@@ -112,8 +112,8 @@
     </li>
 
     <div id="splitview-tpl-details-stylesheet" class="splitview-details">
-      <div class="stylesheet-editor-input"
-           data-placeholder="&editorTextbox.placeholder;" tabindex="0"></div>
+      <div class="stylesheet-editor-input textbox" tabindex="0"
+           data-placeholder="&editorTextbox.placeholder;"></div>
     </div>
   </div> <!-- #splitview-templates -->
 </div>   <!-- .splitview-root -->

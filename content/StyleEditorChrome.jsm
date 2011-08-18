@@ -448,7 +448,7 @@ StyleEditorChrome.prototype = {
       },
       onFilterBy: function ASV_onItemFilterBy(aSummary, aDetails, aData, aQuery) {
         let editor = aData.editor;
-        return editor.inputElement.value.indexOf(aQuery) > -1;
+        return editor._text.indexOf(aQuery) > -1;
       }
     });
   },

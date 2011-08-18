@@ -112,11 +112,18 @@ function AdaptiveSplitView(aRoot)
       return node;
     }
 
+    // do not steal focus from iframes or textboxes
+    if (aEvent.target.ownerDocument != this._nav.ownerDocument) {
+      return false;
+    }
     switch (aEvent.target.tagName) {
       case "input":
       case "textarea":
       case "textbox":
         return false;
+    }
+    if (aEvent.target.classList.contains("textbox")) {
+      return false;
     }
 
     // handle keyboard navigation within items list
