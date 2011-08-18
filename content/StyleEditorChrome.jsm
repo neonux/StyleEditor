@@ -334,10 +334,10 @@ StyleEditorChrome.prototype = {
     for (let i = 0; i < matches.length; ++i) {
       matches[i].setAttribute("disabled", "disabled");
     }
-    matches = this._root.querySelectorAll("textarea");
-    for (let i = 0; i < matches.length; ++i) {
-      matches[i].setAttribute("readonly", "readonly");
-    }
+
+    this.editors.forEach(function onReadOnly(aEditor) {
+      aEditor.readOnly = true;
+    });
 
     this._view.rootElement.setAttribute("disabled", "disabled");
 

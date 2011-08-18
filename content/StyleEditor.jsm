@@ -165,6 +165,8 @@ StyleEditor.prototype = {
         // save existing state
         this._text = this._driver.getText();
         this._selection = this._driver.getSelection();
+        this._readOnly = this._driver.readOnly;
+        this._driver = null;
       }
 
       this._inputElement.removeEventListener("focus", this._onInputElementFocusBinding, false);
@@ -180,7 +182,8 @@ StyleEditor.prototype = {
       let config = {
 //        placeholderText: aElement.getAttribute("data-placeholder"),
         showLineNumbers: true,
-        mode: SourceEditor.MODES.CSS
+        mode: SourceEditor.MODES.CSS,
+        readOnly: this._readOnly
       };
 
       sourceEditor.init(aElement, config, function onSourceEditorReady() {
@@ -224,6 +227,30 @@ StyleEditor.prototype = {
    * @return nsIFile
    */
   get savedFile() this._savedFile,
+
+  /**
+   * Setter for the read-only state of the editor.
+   *
+   * @param boolean aValue
+   *        Tells if you want the editor to read-only or not.
+   */
+  set readOnly(aValue)
+  {
+    this._readOnly = aValue;
+    if (this._driver) {
+      this._driver.readOnly = aValue;
+    }
+  },
+
+  /**
+   * Getter for the read-only state of the editor.
+   *
+   * @type boolean
+   */
+  get readOnly()
+  {
+    return this._readOnly;
+  },
 
   /**
    * Import style sheet from file and load it into the editor asynchronously.
@@ -713,6 +740,7 @@ StyleEditor.prototype = {
   {
     this._text = prettifyCSS(aSourceText);
     this._selection = {start: 0, end: 0};
+    this._readOnly = false;
 
     this._loaded = true;
     this._triggerAction("Load");
