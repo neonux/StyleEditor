@@ -191,7 +191,8 @@ StyleEditor.prototype = {
    * @param nsIWindow aParentWindow
    *        Optional parent window for the file picker.
    */
-  importFromFile: function SE_import(aFile, aParentWindow) {
+  importFromFile: function SE_import(aFile, aParentWindow)
+  {
     aFile = this._showFilePicker(aFile, false, aParentWindow);
     if (!aFile) {
       return;
@@ -487,7 +488,7 @@ StyleEditor.prototype = {
   },
 
   /**
-   * Update style sheet with new source.
+   * Update live style sheet according to modifications.
    */
   _updateStyleSheet: function SE__updateStyleSheet()
   {
