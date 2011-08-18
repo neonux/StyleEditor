@@ -470,17 +470,26 @@ StyleEditor.prototype = {
   },
 
   /**
-   * Queue a throttled task to update style sheet with new source.
+   * Queue a throttled task to update the live style sheet.
+   *
+   * @param boolean aImmediate
+   *        Optional. If true the update is performed immediately.
    */
-  updateStyleSheet: function SE_updateStyleSheet()
+  updateStyleSheet: function SE_updateStyleSheet(aImmediate)
   {
+    let window = this.window;
+
     if (this._updateTask) {
       // cancel previous queued task not executed within throttle delay
-      this.window.clearTimeout(this._updateTask);
+      window.clearTimeout(this._updateTask);
     }
 
-    this._updateTask = this.window.setTimeout(this._updateStyleSheet.bind(this),
-                                              UPDATE_STYLESHEET_THROTTLE_DELAY);
+    if (aImmediate) {
+      this._updateStyleSheet();
+    } else {
+      this._updateTask = window.setTimeout(this._updateStyleSheet.bind(this),
+                                           UPDATE_STYLESHEET_THROTTLE_DELAY);
+    }
   },
 
   /**
