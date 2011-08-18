@@ -17,27 +17,6 @@
   min-height: 0.8em;
 }
 
-.stylesheet-media {
-  border: 1px dotted gray;
-  border-radius: 4px;
-  text-align:center;
-  min-width: 4em;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-  color: gray;
-  font-style: italic;
-}
-.stylesheet-media[disabled=false] {
-  border-style: solid;
-  border-color: black;
-  color: black;
-  font-style: normal;
-}
-.stylesheet-media-invalid {
-  color: red;
-}
-
-
 .splitview-nav > li > header > .toolbar {
   visibility: hidden;
   float: right;
