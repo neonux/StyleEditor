@@ -4,7 +4,7 @@ XPI="build/StyleEditor-${VERSION}.xpi"
 export TEST_PATH=browser/base/content/test/StyleEditor
 
 export COVERAGE_PROJECT=Style Editor
-export COVERAGE_FILTER=*/StyleEditor.jsm */StyleEditorChrome.jsm */StyleEditorUtil.jsm */StyleEditorTextboxDriver.jsm */AdaptiveSplitView.jsm
+export COVERAGE_FILTER=*/StyleEditor.jsm */StyleEditorChrome.jsm */StyleEditorUtil.jsm */AdaptiveSplitView.jsm
 COVERAGE_DIR="build/coverage/${VERSION}"
 
 .PHONY: xpi test testcoverage
