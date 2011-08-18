@@ -75,6 +75,8 @@ function StyleEditorChrome(aRoot, aContentWindow)
   this._window = this._document.defaultView;
 
   this._editors = [];
+  this._listeners = []; // @see addChromeListener
+  this._isContentAttached = false;
 
   let initializeUI = function (aEvent) {
     if (aEvent) {
@@ -138,7 +140,16 @@ StyleEditorChrome.prototype = {
   },
 
   /**
-   * Retrieve an array with the StyleEditor instance for each style sheet,
+    * Retrieve whether the content has been attached and StyleEditor instances
+    * exist for all of its stylesheets.
+    *
+    * @return boolean
+    * @see addChromeListener
+    */
+  get isContentAttached() this._isContentAttached,
+
+  /**
+   * Retrieve an array with the StyleEditor instance for each live style sheet,
    * ordered by style sheet index.
    *
    * @return Array<StyleEditor>
@@ -152,6 +163,81 @@ StyleEditorChrome.prototype = {
       }
     });
     return editors;
+  },
+
+  /**
+   * Add a listener for StyleEditorChrome events.
+   *
+   * The listener implements IStyleEditorChromeListener := {
+   *   onContentAttach:        Called when a content window has been attached.
+   *                           All editors are instantiated, though they might
+   *                           not be loaded yet.
+   *                           Arguments: (StyleEditorChrome aChrome)
+   *                           @see contentWindow
+   *                           @see StyleEditor.isLoaded
+   *                           @see StyleEditor.addActionListener
+   *
+   *   onContentDetach:        Called when the content window has been detached.
+   *                           Arguments: (StyleEditorChrome aChrome)
+   *                           @see contentWindow
+   *
+   *   onEditorAdded:          Called when a stylesheet (therefore a StyleEditor
+   *                           instance) has been added to the UI.
+   *                           Arguments (StyleEditorChrome aChrome,
+   *                                      StyleEditor aEditor)
+   * }
+   *
+   * A listener does not have to implement all of the interface above, events
+   * whose handler is not a function are ignored.
+   *
+   * @param IStyleEditorChromeListener aListener
+   * @see removeChromeListener
+   */
+  addChromeListener: function SEC_addChromeListener(aListener)
+  {
+    this._listeners.push(aListener);
+  },
+
+  /**
+   * Remove a listener for Chrome events from the current list of listeners.
+   *
+   * @param IStyleEditorChromeListener aListener
+   * @see addChromeListener
+   */
+  removeChromeListener: function SEC_removeChromeListener(aListener)
+  {
+    let index = this._listeners.indexOf(aListener);
+    if (index != -1) {
+      this._listeners.splice(index, 1);
+    }
+  },
+
+  /**
+   * Trigger named handlers in StyleEditorChrome listeners.
+   *
+   * @param string aName
+   *        Name of the event to trigger.
+   * @param Array aArgs
+   *        Optional array of arguments to pass to the listener(s).
+   * @see addActionListener
+   */
+  _triggerChromeListeners: function SE__triggerChromeListeners(aName, aArgs)
+  {
+    // insert the origin Chrome instance as first argument
+    if (!aArgs) {
+      aArgs = [this];
+    } else {
+      aArgs.unshift(this);
+    }
+
+    // trigger all listeners that have this named handler
+    for (let i = 0; i < this._listeners.length; ++i) {
+      let listener = this._listeners[i];
+      let handler = listener["on" + aName];
+      if (handler) {
+        handler.apply(listener, aArgs);
+      }
+    }
   },
 
   /**
@@ -215,6 +301,8 @@ StyleEditorChrome.prototype = {
         editor.load();
       }, 0);
     }
+
+    this._triggerChromeListeners("ContentAttach");
   },
 
   /**
@@ -322,6 +410,8 @@ StyleEditorChrome.prototype = {
             aSummary.querySelector(".stylesheet-name").focus();
           }
         }, false);
+
+        this._triggerChromeListeners("EditorAdded", [editor]);
       }.bind(this),
       onShow: function ASV_onItemShow(aSummary, aDetails, aData) {
         let editor = aData.editor;
