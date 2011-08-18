@@ -430,8 +430,14 @@ StyleEditorChrome.prototype = {
 
         this._triggerChromeListeners("EditorAdded", [editor]);
       }.bind(this),
-      onShow: function ASV_onItemShow(aSummary, aDetails, aData) {
+      onShow: function ASV_onItemShow(aSummary, aDetails, aData, aIsOrientationChange) {
         let editor = aData.editor;
+
+        if (aIsOrientationChange) {
+          // force detach of SourceEditor (see bug 254144)
+          // it is then reattached below
+          editor.inputElement = null;
+        }
 
         if (!editor.inputElement) {
           // attach input element first time it is shown

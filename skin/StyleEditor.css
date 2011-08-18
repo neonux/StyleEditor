@@ -84,14 +84,16 @@ li:hover .stylesheet-enabled {
   color: red;
 }
 
-textarea {
+.stylesheet-editor-input {
   display: -moz-box;
   -moz-box-flex: 1;
-  margin: 4px;
   min-height: 18em;
-  font-family: monospace;
-  white-space: nowrap;
-  resize: none;
+  margin: 4px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border: 1px inset black;
+  border-radius: 4px;
+  background: white;
 }
 
 /* limited width mode (hide discoverable search bar) */

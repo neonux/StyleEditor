@@ -49,7 +49,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import(STYLE_EDITOR_CONTENT + "StyleEditorUtil.jsm");
-Cu.import(STYLE_EDITOR_CONTENT + "StyleEditorTextboxDriver.jsm");
+Cu.import("resource:///modules/source-editor.jsm");
 
 const LOAD_ERROR = "error-load";
 const SAVE_ERROR = "error-save";
@@ -96,8 +96,8 @@ function StyleEditor(aDocument, aStyleSheet)
   // listeners for significant editor actions. @see addActionListener
   this._actionListeners = [];
 
-  // wire up with the underlying textbox/editor
-  this._driver = new StyleEditorTextboxDriver(this);
+  this._onInputElementFocusBinding = this._onInputElementFocus.bind(this);
+  this._focusOnDriverReady = false;
 }
 
 StyleEditor.prototype = {
@@ -153,12 +153,56 @@ StyleEditor.prototype = {
    */
   set inputElement(aElement)
   {
-    this._window = null;
+    if (aElement == this._inputElement) {
+      return; // no change;
+    }
+
+    this._window = null; // reset cached window
+
+    if (this._inputElement) {
+      // detach
+      if (this._driver) {
+        // save existing state
+        this._text = this._driver.getText();
+        this._selection = this._driver.getSelection();
+      }
+
+      this._inputElement.removeEventListener("focus", this._onInputElementFocusBinding, false);
+      this._inputElement.innerHTML = "";
+      this._triggerAction("Detach");
+    }
+
+    if (aElement) {
+      // attach
+      this._focusOnDriverReady = false;
+
+      let sourceEditor = new SourceEditor();
+      let config = {
+//        placeholderText: aElement.getAttribute("data-placeholder"),
+        showLineNumbers: true,
+        mode: SourceEditor.MODES.CSS
+      };
+
+      sourceEditor.init(aElement, config, function onSourceEditorReady() {
+        sourceEditor.setText(this._text);
+        sourceEditor.setSelection(this._selection.start, this._selection.end);
+
+        if (this._focusOnDriverReady) {
+          sourceEditor.focus();
+        }
+
+        sourceEditor.addEventListener("TextChanged", function onTextChanged() {
+          this.updateStyleSheet();
+        }.bind(this));
+
+        this._triggerAction("Attach");
+      }.bind(this));
+
+      this._driver = sourceEditor;
+      aElement.addEventListener("focus", this._onInputElementFocusBinding, false);
+    }
 
     this._inputElement = aElement;
-    this._driver.inputElement = aElement; // attach to the input driver
-
-    this._triggerAction(aElement ? "Attach" : "Detach");
   },
 
   /**
@@ -667,8 +711,9 @@ StyleEditor.prototype = {
    */
   _onSourceLoad: function SE__onSourceLoad(aSourceText)
   {
-    this._driver.setText(aSourceText);
-    this._driver.setCaretPosition(0);
+    this._text = aSourceText
+    this._selection = {start: 0, end: 0};
+
     this._loaded = true;
     this._triggerAction("Load");
   },
@@ -735,6 +780,20 @@ StyleEditor.prototype = {
       if (actionHandler) {
         actionHandler.apply(listener, aArgs);
       }
+    }
+  },
+
+  /**
+    * Focus event handler to automatically proxy inputElement's focus event to
+    * SourceEditor whenever it is ready.
+    * SourceEditor should probably have a command buffer so that timing issues
+    * related to iframe implementation details are handled by itself rather than
+    * by all its users.
+    */
+  _onInputElementFocus: function () {
+    this._focusOnDriverReady = true;
+    if (this._driver) {
+      this._driver.focus();
     }
   }
 };

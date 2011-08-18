@@ -158,14 +158,14 @@ StyleEditorTextboxDriver.prototype = {
   },
 
   /**
-   * Set the caret position.
+   * Set the caret offset.
    *
-   * @param number aPosition
+   * @param number aOffset
    *        Position to set the caret to (in characters).
    */
-  setCaretPosition: function SETD_setCaretPosition(aPosition)
+  setCaretOffset: function SETD_setCaretOffset(aOffset)
   {
-    this.inputElement.setSelectionRange(aPosition, aPosition);
+    this.inputElement.setSelectionRange(aOffset, aOffset);
   },
 
   /**
