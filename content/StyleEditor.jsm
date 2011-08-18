@@ -317,18 +317,14 @@ StyleEditor.prototype = {
    * Remove a listener for editor actions from the current list of listeners.
    *
    * @param IStyleEditorActionListener aListener
-   * @return boolean
-   *         True if listener has been found and removed, false otherwise.
    * @see addActionListener
    */
   removeActionListener: function SE_removeActionListener(aListener)
   {
     let index = this._actionListeners.indexOf(aListener);
-    if (index == -1) {
-      return false;
+    if (index != -1) {
+      this._actionListeners.splice(index, 1);
     }
-    this._actionListeners.splice(index, 1);
-    return true;
   },
 
   /**
