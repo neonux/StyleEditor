@@ -232,25 +232,21 @@ StyleEditorChrome.prototype = {
     }
 
     this._view.rootElement.setAttribute("disabled", "disabled");
+
+    this._triggerChromeListeners("ContentDetach");
   },
 
   /**
-   * Find the item summary element for a given editor.
+   * Retrieve the summary element for a given editor.
    *
    * @param StyleEditor aEditor
    * @return DOMElement
    *         Item's summary element or null if not found.
    * @see AdaptiveSplitView
    */
-  _findSummaryForEditor: function SEC__findSummaryForEditor(aEditor) {
-    let summary = null;
-    this._view.forEachItem(function (aSummary, aDetails, aData) {
-      if (aData.editor == aEditor) {
-        summary = aSummary;
-        return true;
-      }
-    });
-    return summary;
+  getSummaryElementForEditor: function SEC_getSummaryElementForEditor(aEditor) {
+    return this._view.rootElement.querySelector(
+      ".splitview-nav > li[data-ordinal='" + aEditor.styleSheetIndex + "']");
   },
 
   /**
@@ -263,7 +259,7 @@ StyleEditorChrome.prototype = {
    */
   _updateSummaryForEditor: function SEC__updateSummaryForEditor(aEditor, aSummary)
   {
-    let summary = aSummary || this._findSummaryForEditor(aEditor);
+    let summary = aSummary || this.getSummaryElementForEditor(aEditor);
 
     this._view.setItemClassName(summary, aEditor.flags);
 

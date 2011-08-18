@@ -250,6 +250,7 @@ AdaptiveSplitView.prototype = {
     summary.id = "";
     if (aOptions.ordinal !== undefined) { // can be zero
       summary.style.MozBoxOrdinalGroup = aOptions.ordinal;
+      summary.setAttribute("data-ordinal", aOptions.ordinal);
     }
     details = details.cloneNode(true);
     details.id = "";
@@ -516,4 +517,3 @@ function scheduleAnimation(aElement)
     }
   });
 }
-
