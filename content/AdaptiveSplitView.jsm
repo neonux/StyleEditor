@@ -188,7 +188,7 @@ AdaptiveSplitView.prototype = {
       binding._details.classList.remove("splitview-active");
 
       if (binding.onHide) {
-        binding.onHide(this._activeSummary, binding._details, binding.data);
+        binding.onHide(this._activeSummary, binding._details, binding.data, false);
       }
     }
 
@@ -203,7 +203,7 @@ AdaptiveSplitView.prototype = {
     this._activeSummary = aSummary;
 
     if (binding.onShow) {
-      binding.onShow(aSummary, binding._details, binding.data);
+      binding.onShow(aSummary, binding._details, binding.data, false);
     }
 
     if (!this.isLandscape) {
@@ -271,9 +271,9 @@ AdaptiveSplitView.prototype = {
    *     All properties are optional :
    *     - function(DOMElement summary, DOMElement details, object data) onCreate
    *         Called when the item has been added.
-   *     - function(summary, details, data) onShow
+   *     - function(summary, details, data, isOrientationChange) onShow
    *         Called when the item is shown/active.
-   *     - function(summary, details, data) onHide
+   *     - function(summary, details, data, isOrientationChange) onHide
    *         Called when the item is hidden/inactive.
    *     - function(summary, details, data) onDestroy
    *         Called when the item has been removed.
@@ -460,6 +460,22 @@ AdaptiveSplitView.prototype = {
    */
   _onOrientationChange: function ASV__onOrientationChange()
   {
+    let activeBinding;
+
+    if (this.activeSummary) {
+      activeBinding = this.activeSummary.getUserData(BINDING_USERDATA);
+      if (activeBinding.onHide) {
+        // signal orientation change by hiding first (last argument is true)
+        // this allows user code to implement special handing for this if needed
+        // (eg. with iframes until Mozilla bug 254144 is fixed)
+        activeBinding.onHide(activeBinding._summary,
+                             activeBinding._details,
+                             activeBinding.data,
+                             true);
+      }
+    }
+
+    // move details nodes as needed
     for (let i = 0; i < this._nav.childNodes.length; ++i) {
       let summary = this._nav.childNodes[i];
       let detailsContainer = (this.isLandscape)
@@ -467,11 +483,15 @@ AdaptiveSplitView.prototype = {
                              : summary.querySelector(".splitview-inline-details");
       let binding = summary.getUserData(BINDING_USERDATA);
       detailsContainer.appendChild(binding._details);
+    }
 
-      // we are re-showing details
-      if (binding.onShow) {
-        binding.onShow(summary, binding._details, binding.data);
-      }
+    // we are re-showing the active details
+    if (activeBinding && activeBinding.onShow) {
+      // signal orientation change by showing again (last argument is true)
+      activeBinding.onShow(activeBinding._summary,
+                           activeBinding._details,
+                           activeBinding.data,
+                           true);
     }
   }
 };
