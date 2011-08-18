@@ -86,6 +86,8 @@ function StyleEditor(aDocument, aStyleSheet)
   this._styleSheet = aStyleSheet;
   this._styleSheetIndex = -1; // unknown for now, will be set after load
 
+  this._loaded = false;
+
   this._flags = [];           // @see flags
   this._savedFile = null;     // @see savedFile
 
@@ -217,8 +219,15 @@ StyleEditor.prototype = {
   get errorMessage() this._errorMessage,
 
   /**
+   * Retrieve whether the stylesheet has been loaded and ready for modifications.
+   *
+   * @return boolean
+   */
+  get isLoaded() this._loaded,
+
+  /**
    * Load style sheet source into the editor, asynchronously.
-   * "Load" action triggers when complete.
+   * "Load" handler triggers when complete.
    *
    * @see addActionListener
    */
@@ -272,23 +281,24 @@ StyleEditor.prototype = {
    * The listener implements IStyleEditorActionListener := {
    *   onLoad:                 Called when the style sheet has been loaded and
    *                           parsed.
-   *                           Arguments: (editor)
+   *                           Arguments: (StyleEditor editor)
+   *                           @see load
    *
    *   onFlagChange:           Called when a flag has been set or cleared.
-   *                           Arguments: (editor, flagName)
+   *                           Arguments: (StyleEditor editor, string flagName)
    *                           @see setFlag
    *
    *   onAttach:               Called when an input element has been attached.
-   *                           Arguments: (editor)
+   *                           Arguments: (StyleEditor editor)
    *                           @see inputElement
    *
    *   onDetach:               Called when input element has been detached.
-   *                           Arguments: (editor)
+   *                           Arguments: (StyleEditor editor)
    *                           @see inputElement
    *
    *   onCommit:               Called when changes have been committed/applied
    *                           to the live DOM style sheet.
-   *                           Arguments: (editor)
+   *                           Arguments: (StyleEditor editor)
    * }
    *
    * A listener does not have to implement all of the interface above, actions
@@ -300,11 +310,6 @@ StyleEditor.prototype = {
   addActionListener: function SE_addActionListener(aListener)
   {
     this._actionListeners.push(aListener);
-    if (this._loaded) { // trigger load event when already loaded
-      if (aListener.onLoad) {
-        aListener.onLoad(this);
-      }
-    }
   },
 
   /**
@@ -658,8 +663,8 @@ StyleEditor.prototype = {
   {
     this._driver.setText(aSourceText);
     this._driver.setCaretPosition(0);
-    this._triggerAction("Load");
     this._loaded = true;
+    this._triggerAction("Load");
   },
 
   /**
@@ -700,7 +705,7 @@ StyleEditor.prototype = {
   },
 
   /**
-   * Trigger named action.
+   * Trigger named action handler in listeners.
    *
    * @param string aName
    *        Name of the action to trigger.
