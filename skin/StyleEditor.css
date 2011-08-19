@@ -13,24 +13,20 @@
   content: "* ";
 }
 
-.stylesheet-title {
-  min-height: 0.8em;
-}
-
+/* stylesheet toolbar only visible for the active/focused/hovered stylesheets */
 .splitview-nav > li > header > .toolbar {
   visibility: hidden;
   float: right;
   font-size: 0.8em;
   margin-right: 20px;
 }
-.splitview-nav > li > header > .toolbar > a {
-  color: black;
-}
-
 .splitview-nav > li:hover > header > .toolbar,
 .splitview-nav > li:focus > header > .toolbar,
 .splitview-nav > li.splitview-active > header > .toolbar {
   visibility: visible;
+}
+.toolbar > a {
+  color: black;
 }
 
 li hgroup {
@@ -42,6 +38,8 @@ h1, h2, h3 {
   font-weight: normal;
   margin: 0;
   padding: 0;
+}
+h1 {
   font-size: 0.9em;
 }
 h2, h3 {
@@ -57,22 +55,18 @@ h2, h3 {
   background-image: url(gimp-eye.png);
   background-position: center center;
   background-repeat: no-repeat;
-  cursor: pointer;
 }
-
 .disabled .stylesheet-enabled {
   background-image: none;
 }
 
-.stylesheet-enabled:focus,
-li:hover .stylesheet-enabled {
+.stylesheet-enabled:focus, li:hover .stylesheet-enabled {
   outline: 0;
   border: 1px inset black;
   margin-right: 6px;
 }
 
 .stylesheet-title {
-  font-size: 0.8em;
   color: gray;
 }
 
@@ -96,7 +90,18 @@ li:hover .stylesheet-enabled {
   background: white;
 }
 
-/* limited width mode (hide discoverable search bar) */
+/* limited height mode */
+@media (max-height: 250px) {
+  .stylesheet-title, .stylesheet-stats {
+    display: none;
+  }
+  .stylesheet-editor-input {
+    margin: 0px;
+    min-height: 10em;
+  }
+}
+
+/* limited width mode (hide search unless it has focus [search-on-type]) */
 @media (max-width: 400px) {
   .splitview-filter {
     position: fixed;
@@ -109,19 +114,7 @@ li:hover .stylesheet-enabled {
   .splitview-filter:focus {
     bottom: 0em;
   }
-  textarea {
-    margin: 2px;
+  .stylesheet-editor-input {
+    margin: 0px;
   }
 }
-
-/* limited height mode */
-@media (max-height: 250px) {
-  .stylesheet-title, .stylesheet-stats {
-    display: none;
-  }
-  textarea {
-    margin: 2px;
-    min-height: 10em;
-  }
-}
-
