@@ -352,7 +352,8 @@ StyleEditorChrome.prototype = {
    *         Item's summary element or null if not found.
    * @see AdaptiveSplitView
    */
-  getSummaryElementForEditor: function SEC_getSummaryElementForEditor(aEditor) {
+  getSummaryElementForEditor: function SEC_getSummaryElementForEditor(aEditor)
+  {
     return this._view.rootElement.querySelector(
       ".splitview-nav > li[data-ordinal='" + aEditor.styleSheetIndex + "']");
   },

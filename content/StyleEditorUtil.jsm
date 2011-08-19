@@ -143,7 +143,8 @@ function forEach(aObject, aCallback)
  *
  * @return DOMWindow
  */
-function getCurrentBrowserTabContentWindow() {
+function getCurrentBrowserTabContentWindow()
+{
   let mostRecentWindow = Services.wm.getMostRecentWindow("navigator:browser");
   return mostRecentWindow.gBrowser.selectedBrowser.contentWindow;
 }

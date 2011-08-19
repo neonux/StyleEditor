@@ -44,7 +44,8 @@
   <script type="application/javascript"><![CDATA[
   var StyleEditor = {
     prefEnabledName: "devtools.style_editor.enabled",
-    openChrome: function SE_openChrome() {
+    openChrome: function SE_openChrome()
+    {
       const CHROME_URL = "chrome://StyleEditor/content/StyleEditorChrome.xul";
       const CHROME_WINDOW_TYPE = "Tools:StyleEditor";
       const CHROME_WINDOW_FLAGS = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";

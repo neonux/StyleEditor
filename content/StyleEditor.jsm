@@ -820,7 +820,8 @@ StyleEditor.prototype = {
     * related to iframe implementation details are handled by itself rather than
     * by all its users.
     */
-  _onInputElementFocus: function () {
+  _onInputElementFocus: function SE__onInputElementFocus()
+  {
     this._focusOnDriverReady = true;
     if (this._driver) {
       this._driver.focus();
@@ -862,7 +863,7 @@ const LINE_SEPARATOR = /win/.test(OS) ? "\r\n" : "\n";
  */
 function prettifyCSS(aText)
 {
-let start = Date.now();
+  let start = Date.now();
   let parts = [];
   let partStart = 0;
   let indent = "";
