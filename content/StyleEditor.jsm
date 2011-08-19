@@ -80,7 +80,6 @@ function StyleEditor(aDocument, aStyleSheet)
   assert(aDocument, "Argument 'aDocument' is required.");
 
   this._document = aDocument; // @see contentDocument
-  this._window = null;        // @see window
   this._inputElement = null;  // @see inputElement
   this._sourceEditor = null;  // @see sourceEditor
 
@@ -167,8 +166,6 @@ StyleEditor.prototype = {
       return; // no change
     }
 
-    this._window = null; // reset cached window
-
     if (this._inputElement) {
       // detach from current input element
       if (this._sourceEditor) {
@@ -238,10 +235,10 @@ StyleEditor.prototype = {
    */
   get window()
   {
-    if (!this._window && this.inputElement) {
-      this._window = this.inputElement.ownerDocument.defaultView;
+    if (!this.inputElement) {
+      return null;
     }
-    return this._window;
+    return this.inputElement.ownerDocument.defaultView;
   },
 
   /**
