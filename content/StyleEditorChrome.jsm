@@ -335,8 +335,8 @@ StyleEditorChrome.prototype = {
       matches[i].setAttribute("disabled", "disabled");
     }
 
-    this.editors.forEach(function onReadOnly(aEditor) {
-      aEditor.readOnly = true;
+    this.editors.forEach(function onEnterReadOnlyMode(aEditor) {
+      aEditor.sourceEditor.readOnly = true;
     });
 
     this._view.rootElement.setAttribute("disabled", "disabled");

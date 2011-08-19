@@ -82,6 +82,13 @@ function StyleEditor(aDocument, aStyleSheet)
   this._document = aDocument; // @see contentDocument
   this._window = null;        // @see window
   this._inputElement = null;  // @see inputElement
+  this._sourceEditor = null;  // @see sourceEditor
+
+  this._state = {             // state to handle inputElement attach/detach
+    text: "",                 // seamlessly
+    selection: {start: 0, end: 0},
+    readOnly: false
+  };
 
   this._styleSheet = aStyleSheet;
   this._styleSheetIndex = -1; // unknown for now, will be set after load
@@ -96,6 +103,7 @@ function StyleEditor(aDocument, aStyleSheet)
   // listeners for significant editor actions. @see addActionListener
   this._actionListeners = [];
 
+  // this is to proxies the focus event to underlying SourceEditor
   this._onInputElementFocusBinding = this._onInputElementFocus.bind(this);
   this._focusOnDriverReady = false;
 }
@@ -140,6 +148,8 @@ StyleEditor.prototype = {
 
   /**
    * Retrieve the input element that handles display and input for this editor.
+   * Can be null if the editor is detached/headless, which means that this
+   * StyleEditor is not attached to an input element.
    *
    * @return DOMElement
    */
@@ -154,20 +164,22 @@ StyleEditor.prototype = {
   set inputElement(aElement)
   {
     if (aElement == this._inputElement) {
-      return; // no change;
+      return; // no change
     }
 
     this._window = null; // reset cached window
 
     if (this._inputElement) {
-      // detach
-      if (this._driver) {
-        // save existing state
-        this._text = this._driver.getText();
-        this._selection = this._driver.getSelection();
-        this._readOnly = this._driver.readOnly;
-        this._driver.destroy();
-        this._driver = null;
+      // detach from current input element
+      if (this._sourceEditor) {
+        // save existing state first (for seamless reattach)
+        this._state = {
+          text: this._sourceEditor.getText(),
+          selection: this._sourceEditor.getSelection(),
+          readOnly: this._sourceEditor.readOnly
+        };
+        this._sourceEditor.destroy();
+        this._sourceEditor = null;
       }
 
       this._inputElement.removeEventListener("focus",
@@ -176,42 +188,51 @@ StyleEditor.prototype = {
       this._triggerAction("Detach");
     }
 
-    if (aElement) {
-      // attach
-      this._focusOnDriverReady = false;
-
-      let sourceEditor = new SourceEditor();
-      let config = {
-//        placeholderText: aElement.getAttribute("data-placeholder"),
-        showLineNumbers: true,
-        mode: SourceEditor.MODES.CSS,
-        readOnly: this._readOnly
-      };
-
-      sourceEditor.init(aElement, config, function onSourceEditorReady() {
-        sourceEditor.setText(this._text);
-        sourceEditor.setSelection(this._selection.start, this._selection.end);
-
-        if (this._focusOnDriverReady) {
-          sourceEditor.focus();
-        }
-
-        sourceEditor.addEventListener("TextChanged", function onTextChanged() {
-          this.updateStyleSheet();
-        }.bind(this));
-
-        this._triggerAction("Attach");
-      }.bind(this));
-
-      this._driver = sourceEditor;
-      aElement.addEventListener("focus", this._onInputElementFocusBinding, false);
+    this._inputElement = aElement;
+    if (!aElement) {
+      return;
     }
 
-    this._inputElement = aElement;
+    // attach to new input element
+    this._focusOnDriverReady = false;
+    aElement.addEventListener("focus", this._onInputElementFocusBinding, false);
+
+    this._sourceEditor = new SourceEditor();
+    let config = {
+//    placeholderText: aElement.getAttribute("data-placeholder"),
+      showLineNumbers: true,
+      mode: SourceEditor.MODES.CSS,
+      readOnly: this._state.readOnly
+    };
+
+    this._sourceEditor.init(aElement, config, function onSourceEditorReady() {
+      this._sourceEditor.setText(this._state.text);
+      this._sourceEditor.setSelection(this._state.selection.start,
+                                      this._state.selection.end);
+
+      if (this._focusOnDriverReady) {
+        this._sourceEditor.focus();
+      }
+
+      this._sourceEditor.addEventListener("TextChanged", function onChanged() {
+        this.updateStyleSheet();
+      }.bind(this));
+
+      this._triggerAction("Attach");
+    }.bind(this));
   },
 
   /**
+   * Retrieve the underlying SourceEditor instance for this StyleEditor.
+   * Can be null if the editor is detached/headless.
+   *
+   * @return SourceEditor
+   */
+  get sourceEditor() this._sourceEditor,
+
+  /**
    * Retrieve the window that contains the editor.
+   * Can be null if the editor is detached/headless.
    *
    * @return DOMWindow
    */
@@ -229,30 +250,6 @@ StyleEditor.prototype = {
    * @return nsIFile
    */
   get savedFile() this._savedFile,
-
-  /**
-   * Setter for the read-only state of the editor.
-   *
-   * @param boolean aValue
-   *        Tells if you want the editor to read-only or not.
-   */
-  set readOnly(aValue)
-  {
-    this._readOnly = aValue;
-    if (this._driver) {
-      this._driver.readOnly = aValue;
-    }
-  },
-
-  /**
-   * Getter for the read-only state of the editor.
-   *
-   * @type boolean
-   */
-  get readOnly()
-  {
-    return this._readOnly;
-  },
 
   /**
    * Import style sheet from file and load it into the editor asynchronously.
@@ -529,7 +526,7 @@ StyleEditor.prototype = {
     let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
                       .createInstance(Ci.nsIScriptableUnicodeConverter);
     converter.charset = "UTF-8";
-    let istream = converter.convertToInputStream(this._driver.getText());
+    let istream = converter.convertToInputStream(this._sourceEditor.getText());
 
     NetUtil.asyncCopy(istream, ostream, function SE_onStreamCopied(status) {
       if (!Components.isSuccessCode(status)) {
@@ -581,7 +578,7 @@ StyleEditor.prototype = {
                              // while the stylesheet is disabled can be performed
                              // when it is enabled back. @see enableStylesheet
 
-    let source = this._driver.getText();
+    let source = this._sourceEditor.getText();
     let oldNode = this.styleSheet.ownerNode;
     let oldIndex = this.styleSheetIndex;
 
@@ -740,10 +737,7 @@ StyleEditor.prototype = {
    */
   _onSourceLoad: function SE__onSourceLoad(aSourceText)
   {
-    this._text = prettifyCSS(aSourceText);
-    this._selection = {start: 0, end: 0};
-    this._readOnly = false;
-
+    this._state.text = aSourceText;
     this._loaded = true;
     this._triggerAction("Load");
   },
@@ -823,8 +817,8 @@ StyleEditor.prototype = {
   _onInputElementFocus: function SE__onInputElementFocus()
   {
     this._focusOnDriverReady = true;
-    if (this._driver) {
-      this._driver.focus();
+    if (this._sourceEditor) {
+      this._sourceEditor.focus();
     }
   }
 };
