@@ -166,11 +166,13 @@ StyleEditor.prototype = {
         this._text = this._driver.getText();
         this._selection = this._driver.getSelection();
         this._readOnly = this._driver.readOnly;
+        this._driver.destroy();
         this._driver = null;
       }
 
-      this._inputElement.removeEventListener("focus", this._onInputElementFocusBinding, false);
-      this._inputElement.innerHTML = "";
+      this._inputElement.removeEventListener("focus",
+                                             this._onInputElementFocusBinding,
+                                             false);
       this._triggerAction("Detach");
     }
 
