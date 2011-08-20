@@ -1,11 +1,23 @@
+# To build an xpi of current HEAD in build/:
+# $ make
+#
+# Env var OBJDIR is required for 'test' and 'testcoverage' targets.
+# Env var MOZILLA_SRC is required for 'testcoverage' target.
+#
+# On Linux you probably want to 'test' or 'testcoverage' with :
+# $ nice xvfb-run make test
+# So that the desktop is not monopolized by the tests.
+
+PWD=`pwd`
 VERSION=`git describe --tags --dirty | tail -c +2`
-XPI="build/StyleEditor-${VERSION}.xpi"
+XPI="${PWD}/build/StyleEditor-${VERSION}.xpi"
+COVERAGE_DIR="${PWD}/build/coverage/${VERSION}"
 
 export TEST_PATH=browser/base/content/test/StyleEditor
 
 export COVERAGE_PROJECT=Style Editor
 export COVERAGE_FILTER=*/StyleEditor.jsm */StyleEditorChrome.jsm */StyleEditorUtil.jsm */AdaptiveSplitView.jsm
-COVERAGE_DIR="build/coverage/${VERSION}"
+COVERAGE_DIR="${PWD}/build/coverage/${VERSION}"
 
 .PHONY: xpi test testcoverage
 
@@ -20,7 +32,8 @@ test:
 
 testcoverage:
 	@ln -sfT `pwd`/test/ui ${OBJDIR}/_tests/testing/mochitest/browser/${TEST_PATH}
-	-@COVERAGE=1 make -C ${OBJDIR} mochitest-browser-chrome
 	@mkdir -p ${COVERAGE_DIR}
-	@python ${MOZILLA_SRC}/tools/coverage/aggregate.py ~/coverage.json > ${COVERAGE_DIR}/coverage.json
-	@cd ${COVERAGE_DIR}; COVERAGE_VERSION=${VERSION} python ${MOZILLA_SRC}/tools/coverage/report.py coverage.json
+	-@COVERAGE=1 COVERAGE_OUTPUT="${COVERAGE_DIR}/coverage_raw.json" make -C ${OBJDIR} mochitest-browser-chrome
+	@python ${MOZILLA_SRC}/testing/tools/coverage/aggregate.py ${COVERAGE_DIR}/coverage_raw.json > ${COVERAGE_DIR}/coverage.json
+	@cd ${COVERAGE_DIR}; COVERAGE_VERSION=${VERSION} python ${MOZILLA_SRC}/testing/tools/coverage/report.py coverage.json
+	@echo "Test coverage report ready: ${COVERAGE_DIR}/index.html"
