@@ -48,7 +48,7 @@
     {
       const CHROME_URL = "chrome://StyleEditor/content/StyleEditorChrome.xul";
       const CHROME_WINDOW_TYPE = "Tools:StyleEditor";
-      const CHROME_WINDOW_FLAGS = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
+      const CHROME_WINDOW_FLAGS = "chrome,centerscreen,resizable,dependent";
 
       // focus currently open Style Editor window for this document, if any
       let contentWindow = Services.wm.getMostRecentWindow("navigator:browser")
@@ -62,8 +62,10 @@
         }
       }
 
-      return Services.ww.openWindow(null, CHROME_URL, "_blank",
-                                    CHROME_WINDOW_FLAGS, null);
+      let chromeWindow = Services.ww.openWindow(null, CHROME_URL, "_blank",
+                                                CHROME_WINDOW_FLAGS, null);
+      chromeWindow.focus();
+      return chromeWindow;
     }
   };
   ]]></script>
