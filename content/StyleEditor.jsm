@@ -276,7 +276,7 @@ StyleEditor.prototype = {
   },
 
   /**
-   * Retrieve the last nsIFile this editor has been saved to or null if none.
+   * Retrieve the last file this editor has been saved to or null if none.
    *
    * @return nsIFile
    */
@@ -681,7 +681,6 @@ StyleEditor.prototype = {
       case "resource":
         this._loadSourceFromFile(this.styleSheet.href);
         break;
-
       default:
         this._loadSourceFromCache(this.styleSheet.href);
         break;
@@ -942,7 +941,6 @@ function prettifyCSS(aText)
       indent = repeat(TAB_CHARS, ++indentLevel);
     }
   }
-
   return parts.join(LINE_SEPARATOR);
 }
 

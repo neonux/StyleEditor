@@ -435,11 +435,9 @@ StyleEditorChrome.prototype = {
         let editor = aData.editor;
 
         if (aIsOrientationChange) {
-          // force detach of SourceEditor (see bug 254144)
-          // it is then reattached below
+          // force detach of SourceEditor then reattach (see bug 254144)
           editor.inputElement = null;
         }
-
         if (!editor.inputElement) {
           // attach input element first time it is shown
           editor.inputElement = aDetails.querySelector(".stylesheet-editor-input");
