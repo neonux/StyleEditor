@@ -558,13 +558,16 @@ StyleEditor.prototype = {
     if (!aFile) {
       return;
     }
-    this._savedFile = aFile; // remember filename
+
+    if (this._sourceEditor) {
+      this._state.text = this._sourceEditor.getText();
+    }
 
     let ostream = FileUtils.openSafeFileOutputStream(aFile);
     let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
                       .createInstance(Ci.nsIScriptableUnicodeConverter);
     converter.charset = "UTF-8";
-    let istream = converter.convertToInputStream(this._sourceEditor.getText());
+    let istream = converter.convertToInputStream(this._state.text);
 
     NetUtil.asyncCopy(istream, ostream, function SE_onStreamCopied(status) {
       if (!Components.isSuccessCode(status)) {
@@ -574,6 +577,10 @@ StyleEditor.prototype = {
       this.clearFlag(StyleEditorFlags.UNSAVED);
     }.bind(this));
 
+    // remember filename for next save if any
+    this._friendlyName = null;
+    this._savedFile = aFile;
+    this._persistExpando();
     return aFile;
   },
 
@@ -626,6 +633,7 @@ StyleEditor.prototype = {
     oldNode.parentNode.replaceChild(newNode, oldNode);
 
     this._styleSheet = this.contentDocument.styleSheets[oldIndex];
+    this._persistExpando();
 
     this._triggerAction("Commit");
   },
@@ -774,7 +782,8 @@ StyleEditor.prototype = {
    */
   _onSourceLoad: function SE__onSourceLoad(aSourceText)
   {
-    this._state.text = aSourceText;
+    this._restoreExpando();
+    this._state.text = prettifyCSS(aSourceText);
     this._loaded = true;
     this._triggerAction("Load");
   },
@@ -842,6 +851,11 @@ StyleEditor.prototype = {
         actionHandler.apply(listener, aArgs);
       }
     }
+
+    // when a flag got changed, user-facing state need to be persisted
+    if (aName == "FlagChange") {
+      this._persistExpando();
+    }
   },
 
   /**
@@ -867,6 +881,44 @@ StyleEditor.prototype = {
       this._sourceEditor.focus();
     } else {
       this._focusOnSourceEditorReady = true;
+    }
+  },
+
+  /**
+    * Persist StyleEditor-specific to the attached DOM stylesheet expando.
+    * The expando on the DOM stylesheet is used to restore  user-facing state
+    * when the StyleEditor is closed and then reopened again.
+    *
+    * @see styleSheet
+    */
+  _persistExpando: function SE__persistExpando() {
+    if (!this._styleSheet) {
+      return; // not loaded
+    }
+    let name = "$styleeditor$stylesheet$" + this.styleSheetIndex;
+    let expando = this.contentDocument.getUserData(name);
+    if (!expando) {
+      expando = {};
+      this.contentDocument.setUserData(name , expando, null);
+    }
+    expando._flags = this._flags;
+    expando._savedFile = this._savedFile;
+  },
+
+  /**
+    * Restore the attached DOM stylesheet expando into this editor state.
+    *
+    * @see styleSheet
+    */
+  _restoreExpando: function SE__restoreExpando() {
+    if (!this._styleSheet) {
+      return; // not loaded
+    }
+    let name = "$styleeditor$stylesheet$" + this.styleSheetIndex;
+    let expando = this.contentDocument.getUserData(name);
+    if (expando) {
+      this._flags = expando._flags;
+      this._savedFile = expando._savedFile;
     }
   }
 };
