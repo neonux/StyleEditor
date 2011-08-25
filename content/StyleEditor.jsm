@@ -102,6 +102,8 @@ function StyleEditor(aDocument, aStyleSheet)
   // listeners for significant editor actions. @see addActionListener
   this._actionListeners = [];
 
+  // this is to perform pending updates before editor closing
+  this._onWindowUnloadBinding = this._onWindowUnload.bind(this);
   // this is to proxies the focus event to underlying SourceEditor
   this._onInputElementFocusBinding = this._onInputElementFocus.bind(this);
   this._focusOnDriverReady = false;
@@ -179,6 +181,8 @@ StyleEditor.prototype = {
         this._sourceEditor = null;
       }
 
+      this.window.removeEventListener("unload",
+                                      this._onWindowUnloadBinding, false);
       this._inputElement.removeEventListener("focus",
                                              this._onInputElementFocusBinding,
                                              false);
@@ -191,6 +195,7 @@ StyleEditor.prototype = {
     }
 
     // attach to new input element
+    this.window.addEventListener("unload", this._onWindowUnloadBinding, false);
     this._focusOnDriverReady = false;
     aElement.addEventListener("focus", this._onInputElementFocusBinding, false);
 
@@ -801,6 +806,16 @@ StyleEditor.prototype = {
       if (actionHandler) {
         actionHandler.apply(listener, aArgs);
       }
+    }
+  },
+
+  /**
+    * Unload event handler to perform any pending update before closing
+    */
+  _onWindowUnload: function SE__onWindowUnload(aEvent)
+  {
+    if (this._updateTask) {
+      this.updateStyleSheet(true);
     }
   },
 
