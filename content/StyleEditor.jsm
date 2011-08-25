@@ -365,12 +365,19 @@ StyleEditor.prototype = {
 
     if (!this._friendlyName) {
       let sheetURI = this.styleSheet.href;
-      let contentURI = this.contentDocument.defaultView.location.href;
-      let sheetURIIsRelativeToContentURI = (sheetURI.indexOf(contentURI) == 0);
+      let contentURI = this.contentDocument.baseURIObject;
+      let contentURIScheme = contentURI.scheme;
+      let contentURILeafIndex = contentURI.specIgnoringRef.lastIndexOf("/");
+      contentURI = contentURI.specIgnoringRef;
 
-      // avoid verbose repetition of absolute URI when the style sheet
-      // URI is relative to the content URI
-      this._friendlyName = (sheetURIIsRelativeToContentURI)
+      // get content base URI without leaf name (if any)
+      if (contentURILeafIndex > contentURIScheme.length) {
+        contentURI = contentURI.substring(0, contentURILeafIndex + 1);
+      }
+
+      // avoid verbose repetition of absolute URI when the style sheet URI
+      // is relative to the content URI
+      this._friendlyName = (sheetURI.indexOf(contentURI) == 0)
                            ? sheetURI.substring(contentURI.length)
                            : sheetURI;
     }
