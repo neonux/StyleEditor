@@ -235,6 +235,33 @@ StyleEditor.prototype = {
   get sourceEditor() this._sourceEditor,
 
   /**
+   * Setter for the read-only state of the editor.
+   *
+   * @param boolean aValue
+   *        Tells if you want the editor to read-only or not.
+   */
+  set readOnly(aValue)
+  {
+    this._state.readOnly = aValue;
+    if (this._sourceEditor) {
+      this._sourceEditor.readOnly = aValue;
+    }
+  },
+
+  /**
+   * Getter for the read-only state of the editor.
+   *
+   * @return boolean
+   */
+  get readOnly()
+  {
+    if (this._sourceEditor) {
+      this._state.readOnly = this._sourceEditor.readOnly;
+    }
+    return this._state.readOnly;
+  },
+
+  /**
    * Retrieve the window that contains the editor.
    * Can be null if the editor is detached/headless.
    *
