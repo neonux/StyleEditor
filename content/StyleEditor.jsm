@@ -106,7 +106,7 @@ function StyleEditor(aDocument, aStyleSheet)
   this._onWindowUnloadBinding = this._onWindowUnload.bind(this);
   // this is to proxies the focus event to underlying SourceEditor
   this._onInputElementFocusBinding = this._onInputElementFocus.bind(this);
-  this._focusOnDriverReady = false;
+  this._focusOnSourceEditorReady = false;
 }
 
 StyleEditor.prototype = {
@@ -184,8 +184,7 @@ StyleEditor.prototype = {
       this.window.removeEventListener("unload",
                                       this._onWindowUnloadBinding, false);
       this._inputElement.removeEventListener("focus",
-                                             this._onInputElementFocusBinding,
-                                             false);
+        this._onInputElementFocusBinding, true);
       this._triggerAction("Detach");
     }
 
@@ -196,10 +195,12 @@ StyleEditor.prototype = {
 
     // attach to new input element
     this.window.addEventListener("unload", this._onWindowUnloadBinding, false);
-    this._focusOnDriverReady = false;
-    aElement.addEventListener("focus", this._onInputElementFocusBinding, false);
+    this._focusOnSourceEditorReady = false;
+    aElement.addEventListener("focus", this._onInputElementFocusBinding, true);
 
-    this._sourceEditor = new SourceEditor();
+    this._sourceEditor = null; // set it only when ready (safe to use)
+
+    let sourceEditor = new SourceEditor();
     let config = {
 //    placeholderText: aElement.getAttribute("data-placeholder"),
       showLineNumbers: true,
@@ -207,26 +208,27 @@ StyleEditor.prototype = {
       readOnly: this._state.readOnly
     };
 
-    this._sourceEditor.init(aElement, config, function onSourceEditorReady() {
-      this._sourceEditor.setText(this._state.text);
-      this._sourceEditor.setSelection(this._state.selection.start,
-                                      this._state.selection.end);
+    sourceEditor.init(aElement, config, function onSourceEditorReady() {
+      sourceEditor.setText(this._state.text);
+      sourceEditor.setSelection(this._state.selection.start,
+                                this._state.selection.end);
 
-      if (this._focusOnDriverReady) {
-        this._sourceEditor.focus();
+      if (this._focusOnSourceEditorReady) {
+        sourceEditor.focus();
       }
 
-      this._sourceEditor.addEventListener("TextChanged", function onChanged() {
+      sourceEditor.addEventListener("TextChanged", function onTextChanged() {
         this.updateStyleSheet();
       }.bind(this));
 
+      this._sourceEditor = sourceEditor;
       this._triggerAction("Attach");
     }.bind(this));
   },
 
   /**
    * Retrieve the underlying SourceEditor instance for this StyleEditor.
-   * Can be null if the editor is detached/headless.
+   * Can be null if not ready or Style Editor is detached/headless.
    *
    * @return SourceEditor
    */
@@ -826,11 +828,12 @@ StyleEditor.prototype = {
     * related to iframe implementation details are handled by itself rather than
     * by all its users.
     */
-  _onInputElementFocus: function SE__onInputElementFocus()
+  _onInputElementFocus: function SE__onInputElementFocus(aEvent)
   {
-    this._focusOnDriverReady = true;
     if (this._sourceEditor) {
       this._sourceEditor.focus();
+    } else {
+      this._focusOnSourceEditorReady = true;
     }
   }
 };
