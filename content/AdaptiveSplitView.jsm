@@ -440,26 +440,26 @@ AdaptiveSplitView.prototype = {
 
   /**
    * Set the item's CSS class name.
-   * This sets the class on both the summary and details elements, with respect
-   * to any AdaptiveSplitView specific classes.
+   * This sets the class on both the summary and details elements, retaining
+   * any AdaptiveSplitView-specific classes.
    *
    * @param DOMElement aSummary
    *        Summary element of the item to set.
-   * @param string className
+   * @param string aClassName
    *        One or more space-separated CSS classes.
    */
-  setItemClassName: function ASV_setItemClassName(aSummary, className)
+  setItemClassName: function ASV_setItemClassName(aSummary, aClassName)
   {
     let binding = aSummary.getUserData(BINDING_USERDATA);
-    let backup;
+    let viewSpecific;
 
-    backup = aSummary.className.match(/(splitview\-[\w-]+)/);
-    backup = backup ? backup.slice(1).join(" ") : "";
-    aSummary.className = backup + " " + className;
-/*
-    backup = binding._details.className.match(/(splitview\-[\w-]+)/);
-    backup = backup ? backup.slice(1).join(" ") : "";
-    binding._details.className = backup + " " + className;*/
+    viewSpecific = aSummary.className.match(/(splitview\-[\w-]+)/);
+    viewSpecific = viewSpecific ? viewSpecific.slice(1).join(" ") : "";
+    aSummary.className = viewSpecific + " " + aClassName;
+
+    viewSpecific = binding._details.className.match(/(splitview\-[\w-]+)/);
+    viewSpecific = viewSpecific ? viewSpecific.slice(1).join(" ") : "";
+    binding._details.className = viewSpecific + " " + aClassName;
   },
 
   /**
