@@ -2,8 +2,11 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
+// http rather than chrome to improve coverage
+const TEST_BASE = "http://example.com/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
+
+Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
 
 function test()
@@ -18,7 +21,7 @@ function test()
           return; // we want to test against the first stylesheet
         }
 
-        if (aEditor.inputElement) {
+        if (aEditor.sourceEditor) {
           run(aEditor); // already attached to input element
         } else {
           aEditor.addActionListener({
@@ -32,47 +35,59 @@ function test()
   content.location = TESTCASE_URI;
 }
 
+let gWindowListener = {
+  onCloseWindow: function () {
+    Services.wm.removeListener(gWindowListener);
+
+    waitForFocus(function () {
+      // wait that browser has focus again
+      // open StyleEditorChrome again (a new one since we closed the previous one)
+      launchStyleEditorChrome(function (aChrome) {
+        ok(gChromeWindow != gOldChromeWindow,
+           "opened a completely new StyleEditorChrome window");
+        gOldChromeWindow = null;
+
+        aChrome.addChromeListener({
+          onEditorAdded: function (aChrome, aEditor) {
+            if (aEditor.styleSheetIndex != 0) {
+              return; // we want to test against the first stylesheet
+            }
+
+            if (aEditor.sourceEditor) {
+              testNewChrome(aEditor); // already attached to input element
+            } else {
+              aEditor.addActionListener({
+                onAttach: testNewChrome
+              });
+            }
+          }
+        });
+      });
+    });
+  }
+};
+
 let gFilename;
 
 function run(aEditor)
 {
-  gFilename = Components.classes["@mozilla.org/file/directory_service;1"]
-               .getService(Components.interfaces.nsIProperties)
-               .get("TmpD", Components.interfaces.nsIFile);
-  gFilename.append("styleeditor-test.css");
-  gFilename.createUnique(gFilename.NORMAL_FILE_TYPE, 0600);
+  gFilename = FileUtils.getFile("ProfD", ["styleeditor-test.css"])
 
   aEditor.saveToFile(gFilename);
 
-  // insert space so it has the UNSAVED flag
-  EventUtils.synthesizeKey("VK_SPACE", {}, aEditor.window);
+  is(aEditor.getFriendlyName(), gFilename.leafName,
+     "stylesheet's friendly name has its saved filename");
 
-  let oldChromeWindow = gChromeWindow;
-  gChromeWindow.close();
+  let sourceEditorWindow = aEditor.sourceEditor.editorElement.contentWindow
+                           || gChromeWindow;
+  waitForFocus(function () {
+    // insert char so that this stylesheet has the UNSAVED flag
+    EventUtils.synthesizeKey("x", {}, gChromeWindow);
 
-  // open StyleEditorChrome again (a new one since we closed the previous one)
-  gChromeWindow = StyleEditor.openChrome();
-  ok(gChromeWindow != oldChromeWindow,
-     "opening a completely new StyleEditorChrome window");
-
-  gChromeWindow.addEventListener("load", function onChromeLoad() {
-    gChromeWindow.removeEventListener("load", onChromeLoad, false);
-    gChromeWindow.styleEditorChrome.addChromeListener({
-      onEditorAdded: function (aChrome, aEditor) {
-        if (aEditor.styleSheetIndex != 0) {
-          return; // we want to test against the first stylesheet
-        }
-
-        if (aEditor.inputElement) {
-          testNewChrome(aEditor); // already attached to input element
-        } else {
-          aEditor.addActionListener({
-            onAttach: testNewChrome
-          });
-        }
-      }
-    });
-  }, false);
+    gOldChromeWindow = gChromeWindow;
+    Services.wm.addListener(gWindowListener);
+    gChromeWindow.close();
+  }, sourceEditorWindow);
 }
 
 function testNewChrome(aEditor)
@@ -80,7 +95,7 @@ function testNewChrome(aEditor)
   ok(aEditor.savedFile,
      "first stylesheet editor will save directly into the same file");
 
-  is(aEditor.getFriendlyName(), gFilename.path,
+  is(aEditor.getFriendlyName(), gFilename.leafName,
      "first stylesheet still has the filename as it was saved");
 
   ok(aEditor.hasFlag("unsaved"),
@@ -88,6 +103,12 @@ function testNewChrome(aEditor)
 
   ok(!aEditor.hasFlag("inline"),
      "first stylesheet does not have INLINE flag (though it is technically inline but that's an implementation detail)");
+
+  ok(!aEditor.hasFlag("error"),
+     "editor does not have error flag initially");
+  aEditor.saveToFile("Z:\\I_DO_NOT_EXIST_42\\bogus.css");
+  ok(aEditor.hasFlag("error"),
+     "editor has error flag after attempting to save with invalid path");
 
   finish();
 }

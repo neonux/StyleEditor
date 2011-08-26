@@ -2,7 +2,8 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
+// https rather than chrome to improve coverage
+const TEST_BASE = "https://example.com/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
 
@@ -13,7 +14,21 @@ function test()
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
     aChrome.addChromeListener({
-      onEditorAdded: run
+      onEditorAdded: function (aChrome, aEditor) {
+        if (aEditor.styleSheetIndex != 0) {
+          return; // we want to test against the first stylesheet
+        }
+
+        if (!aEditor.sourceEditor) {
+          aEditor.addActionListener({
+            onAttach: function (aEditor) {
+              run(aChrome, aEditor);
+            }
+          });
+        } else {
+          run(aChrome, aEditor);
+        }
+      }
     });
   });
 
@@ -22,10 +37,6 @@ function test()
 
 function run(aChrome, aEditor)
 {
-  if (aEditor.styleSheetIndex != 0) {
-    return; // we want to test against the first stylesheet
-  }
-
   is(aEditor, aChrome.editors[0],
      "stylesheet with index 0 is the first stylesheet listed in the UI");
 
@@ -59,7 +70,7 @@ function run(aChrome, aEditor)
 
         // now toggle it back to enabled
         let enabledToggle = firstStyleSheetUI.querySelector(".stylesheet-enabled");
-        EventUtils.sendMouseEvent({type: "click"}, enabledToggle, gChromeWindow);
+        EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
         return;
       }
 
@@ -78,5 +89,5 @@ function run(aChrome, aEditor)
   });
 
   let enabledToggle = firstStyleSheetUI.querySelector(".stylesheet-enabled");
-  EventUtils.sendMouseEvent({type: "click"}, enabledToggle, gChromeWindow);
+  EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
 }

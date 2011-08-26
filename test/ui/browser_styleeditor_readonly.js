@@ -6,6 +6,29 @@ const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
 
+let gEditorAddedCount = 0;
+let gEditorReadOnlyCount = 0;
+let gChromeListener = {
+  onEditorAdded: function continueWhenAllAreLoaded(aChrome, aEditor) {
+    gEditorAddedCount++;
+    if (aEditor.readOnly) {
+      gEditorReadOnlyCount++;
+    }
+
+    if (gEditorAddedCount == aChrome.editors.length) {
+      is(gEditorReadOnlyCount, 0,
+         "all editors are NOT read-only initially");
+
+      // all editors have been loaded, close the content tab
+      gBrowser.removeCurrentTab();
+    }
+  },
+  onContentDetach: function (aChrome) {
+    // check that the UI has switched to read-only
+    run(aChrome);
+  }
+};
+
 function test()
 {
   registerCleanupFunction(cleanup);
@@ -13,22 +36,7 @@ function test()
 
   gBrowser.addTab(); // because we'll close the next one
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
-    let editorAddedCount = 0;
-    aChrome.addChromeListener({
-      onEditorAdded: function continueWhenAllAreLoaded(aChrome, aEditor) {
-        editorAddedCount++;
-
-        if (editorAddedCount == aChrome.editors.length) {
-          // all editors have been loaded, close the content tab
-          gBrowser.removeCurrentTab();
-        }
-      },
-
-      onContentDetach: function (aChrome) {
-        // check that the UI has switched to read-only
-        run(aChrome);
-      }
-    });
+    aChrome.addChromeListener(gChromeListener);
   });
 
   content.location = TESTCASE_URI;
@@ -51,14 +59,14 @@ function run(aChrome)
      "all buttons, input and select elements are disabled");
 
   disabledCount = 0;
-  elements = document.querySelectorAll("textarea,textbox");
-  for (let i = 0; i < elements.length; ++i) {
-    if (elements[i].hasAttribute("readonly")) {
+  aChrome.editors.forEach(function (aEditor) {
+    if (aEditor.readOnly) {
       disabledCount++;
     }
-  }
-  ok(elements.length && disabledCount == elements.length,
-     "all textarea and textbox elements are read-only");
+  });
+  ok(aChrome.editors.length && disabledCount == aChrome.editors.length,
+     "all editors are read-only");
 
+  aChrome.removeChromeListener(gChromeListener);
   finish();
 }

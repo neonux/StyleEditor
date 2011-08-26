@@ -15,65 +15,82 @@ function test()
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
     aChrome.addChromeListener({
-      onContentAttach: function (aChrome) {
-        // create a new stylesheet for the test
-        let document = gChromeWindow.document;
-        document.querySelector(".style-editor-newButton").click();
-      },
+      onContentAttach: run,
       onEditorAdded: function (aChrome, aEditor) {
         if (!aEditor.hasFlag("new")) {
           // we want to test against the new stylesheet we created for this test
           return;
         }
-        if (aEditor.inputElement) {
-          run(aEditor); // already attached to input element
+
+        if (aEditor.sourceEditor) {
+          testEditor(aEditor); // already attached to input element
         } else {
           aEditor.addActionListener({
-            onAttach: run
+            onAttach: testEditor
           });
         }
       }
     });
+    if (aChrome.isContentAttached) {
+      run(aChrome);
+    }
   });
 
   content.location = TESTCASE_URI;
 }
 
-function run(aEditor)
+function run(aChrome) {
+  waitForFocus(function () {
+    // create a new stylesheet for the test
+    let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
+    EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
+  }, gChromeWindow);
+}
+
+function testEditor(aEditor)
 {
-  let source = "line 1\nline 2\nline 3" + NOT_INDENTED;
-  let indentedSource1 = "\tline 1\n\tline 2\n\tline 3" + NOT_INDENTED;
-  let indentedSource2 = "\t\tline 1\n\t\tline 2\n\t\tline 3" + NOT_INDENTED;
-  let indentedSource3 = "\tline 1\nline 2\nline 3" + NOT_INDENTED;
+  let sourceEditorWindow = aEditor.sourceEditor.editorElement.contentWindow
+                           || gChromeWindow;
+  waitForFocus(function () {
+    let lines = ["line 1", "line 2", "line 3"];
+    let source = lines.join("\n") + NOT_INDENTED;
+    let indentedSource1 = "    " + lines.join("\n    ") + NOT_INDENTED;
+    let indentedSource2 = "        " + lines.join("\n        ") + NOT_INDENTED;
+    let indentedSourceFirstLine = "    " + lines.join("\n") + NOT_INDENTED;
 
-  aEditor.inputElement.value = source;
-  aEditor.inputElement.focus();
+    aEditor.sourceEditor.setText(source);
 
-  // select all but NOT_INDENTED
-  aEditor.inputElement.selectionStart = 0;
-  aEditor.inputElement.selectionEnd =
-    aEditor.inputElement.value.length - NOT_INDENTED.length;
+    // select all except NOT_INDENTED
+    aEditor.sourceEditor.setSelection(0,
+      aEditor.sourceEditor.getCharCount() - NOT_INDENTED.length);
 
-  EventUtils.synthesizeKey("VK_TAB", {}, aEditor.window);
-  is(aEditor.inputElement.value, indentedSource1, "Block has been indented");
+    EventUtils.synthesizeKey("VK_TAB", {}, gChromeWindow);
+    is(aEditor.sourceEditor.getText(), indentedSource1,
+       "Block has been indented");
 
-  is(aEditor.inputElement.selectionStart, 0, "selectionStart has not changed");
-  is(aEditor.inputElement.selectionEnd,
-     aEditor.inputElement.value.length - NOT_INDENTED.length,
-     "selectionEnd has been changed to include tabs");
+    is(aEditor.sourceEditor.getSelection().start, 0,
+       "selectionStart has not changed");
+    is(aEditor.sourceEditor.getSelection().end,
+       aEditor.sourceEditor.getCharCount() - NOT_INDENTED.length,
+       "selectionEnd has been changed to include new indentation");
 
-  EventUtils.synthesizeKey("VK_TAB", {}, aEditor.window);
-  is(aEditor.inputElement.value, indentedSource2, "Block has been indented again");
+    EventUtils.synthesizeKey("VK_TAB", {}, gChromeWindow);
+    is(aEditor.sourceEditor.getText(), indentedSource2,
+       "Block has been indented again");
 
-  EventUtils.synthesizeKey("VK_TAB", {shiftKey: true}, aEditor.window);
-  is(aEditor.inputElement.value, indentedSource1, "Block has been unindented");
+    EventUtils.synthesizeKey("VK_TAB", {shiftKey: true}, gChromeWindow);
+    is(aEditor.sourceEditor.getText(), indentedSource1,
+       "Block has been unindented");
 
-  EventUtils.synthesizeKey("VK_TAB", {shiftKey: true}, aEditor.window);
-  is(aEditor.inputElement.value, source, "Block has been unindented again");
+    EventUtils.synthesizeKey("VK_TAB", {shiftKey: true}, gChromeWindow);
+    is(aEditor.sourceEditor.getText(), source,
+       "Block has been unindented again");
 
-  aEditor.inputElement.selectionStart = aEditor.inputElement.selectionEnd = 0;
-  EventUtils.synthesizeKey("VK_TAB", {}, aEditor.window);
-  is(aEditor.inputElement.value, indentedSource3, "Line 1 has been indented");
+    aEditor.sourceEditor.setSelection(0, 0);
+    EventUtils.synthesizeKey("VK_TAB", {}, gChromeWindow);
+    is(aEditor.sourceEditor.getText(), indentedSourceFirstLine,
+       "Line 1 has been indented");
 
-  finish();
+    finish();
+  }, sourceEditorWindow);
 }

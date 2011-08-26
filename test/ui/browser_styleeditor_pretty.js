@@ -14,16 +14,13 @@ function test()
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
     aChrome.addChromeListener({
       onEditorAdded: function (aChrome, aEditor) {
-        if (aEditor.inputElement) {
+        if (aEditor.sourceEditor) {
           run(aEditor); // already attached to input element
         } else {
           aEditor.addActionListener({
             onAttach: run
           });
         }
-
-        // make sure to activate the editor if needed (lazy attach)
-        aChrome.getSummaryElementForEditor(aEditor).click();
       }
     });
   });
@@ -37,14 +34,17 @@ function run(aEditor)
   if (aEditor.styleSheetIndex == 0) {
     let prettifiedSource = "body{\n\tbackground:white;\n}\n\ndiv{\n\tfont-size:4em;\n\tcolor:red\n}\n";
 
-    is(aEditor.inputElement.value, prettifiedSource,
+    is(aEditor.sourceEditor.getText(), prettifiedSource,
        "minified source has been prettified automatically");
     editorTestedCount++;
+    let chrome = gChromeWindow.styleEditorChrome;
+    let summary = chrome.getSummaryElementForEditor(chrome.editors[1]);
+    EventUtils.synthesizeMouseAtCenter(summary, {}, gChromeWindow);
   }
 
   if (aEditor.styleSheetIndex == 1) {
     let originalSource = "body { background: red; }\ndiv {\nfont-size: 5em;\ncolor: red\n}";
-    is(aEditor.inputElement.value, originalSource,
+    is(aEditor.sourceEditor.getText(), originalSource,
        "non-minified source has been left untouched");
     editorTestedCount++;
   }

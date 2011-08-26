@@ -24,30 +24,30 @@ function test()
   content.location = TESTCASE_URI;
 }
 
-let gInitialStyleSheetCount= 0;
-
 function run(aChrome)
 {
-  let document = gChromeWindow.document;
+  is(aChrome.editors.length, 2,
+     "there is 2 stylesheets initially");
 
-  gInitialStyleSheetCount = aChrome.editors.length;
-
-  // create a new style sheet
-  let newButton = document.querySelector(".style-editor-newButton");
-  newButton.click();
+  waitForFocus(function () {
+    // create a new style sheet
+    let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
+    EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
+  }, gChromeWindow);
 }
 
-let gNewEditor;
+let gNewEditor;       // to make sure only one new stylesheet got created
+let gCommitCount = 0; // to make sure only one Commit event is triggered
 function testEditorAdded(aChrome, aEditor)
 {
-  if (aEditor.styleSheetIndex != gInitialStyleSheetCount) {
+  if (aEditor.styleSheetIndex != 2) {
     return; // this is not the new stylesheet
   }
 
   ok(!gNewEditor, "creating a new stylesheet triggers one EditorAdded event");
   gNewEditor = aEditor; // above test will fail if we get a duplicate event
 
-  is(aChrome.editors.length, gInitialStyleSheetCount + 1,
+  is(aChrome.editors.length, 3,
      "creating a new stylesheet added a new StyleEditor instance");
 
   let listener = {
@@ -61,22 +61,31 @@ function testEditorAdded(aChrome, aEditor)
 
       ok(aEditor.inputElement,
          "new editor has an input element attached");
-      ok(gChromeWindow.document.activeElement = aEditor.inputElement,
-         "new editor has focus");
 
-      let summary = aChrome.getSummaryElementForEditor(aEditor);
-      let ruleCount = summary.querySelector(".stylesheet-rule-count").textContent;
-      is(parseInt(ruleCount), 0,
-         "new editor initially shows 0 rules");
+      let sourceEditorWindow = aEditor.sourceEditor.editorElement.contentWindow
+                               || gChromeWindow;
+      waitForFocus(function () {
+        ok(aEditor.sourceEditor.hasFocus(),
+           "new editor has focus");
 
-      let computedStyle = content.getComputedStyle(content.document.body, null);
-      is(computedStyle.backgroundColor, "rgb(255, 255, 255)",
-         "content's background color is initially white");
+        let summary = aChrome.getSummaryElementForEditor(aEditor);
+        let ruleCount = summary.querySelector(".stylesheet-rule-count").textContent;
+        is(parseInt(ruleCount), 0,
+           "new editor initially shows 0 rules");
 
-      EventUtils.sendString("body{background-color:red;}", aEditor.inputElement);
+        let computedStyle = content.getComputedStyle(content.document.body, null);
+        is(computedStyle.backgroundColor, "rgb(255, 255, 255)",
+           "content's background color is initially white");
+
+        for each (let c in "body{background-color:red;}") {
+          EventUtils.synthesizeKey(c, {}, gChromeWindow);
+        }
+      }, sourceEditorWindow) ;
     },
 
     onCommit: function (aEditor) {
+      gCommitCount++;
+
       ok(aEditor.hasFlag("new"),
          "new editor still has NEW flag");
       ok(aEditor.hasFlag("unsaved"),
@@ -91,11 +100,17 @@ function testEditorAdded(aChrome, aEditor)
       is(computedStyle.backgroundColor, "rgb(255, 0, 0)",
          "content's background color has been updated to red");
 
-      finish();
+      executeSoon(function () {
+        is(gCommitCount, 1, "received only one Commit event (throttle)");
+
+        aEditor.removeActionListener(listener);
+        finish();
+      });
     }
   };
+
   aEditor.addActionListener(listener);
-  if (aEditor.inputElement) {
+  if (aEditor.sourceEditor) {
     listener.onAttach(aEditor);
   }
 }
