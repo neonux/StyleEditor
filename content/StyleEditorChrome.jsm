@@ -319,7 +319,10 @@ StyleEditorChrome.prototype = {
       }, 0);
     }
 
-    this._triggerChromeListeners("ContentAttach");
+    // Queue ContentAttach to make sure DOM is sync
+    this._window.setTimeout(function () {
+      this._triggerChromeListeners("ContentAttach");
+    }.bind(this), 0);
   },
 
   /**
