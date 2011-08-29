@@ -308,7 +308,6 @@ StyleEditor.prototype = {
       aStream.close();
 
       this._appendNewStyleSheet(source);
-      this._loadSource();
     }.bind(this));
   },
 
@@ -654,8 +653,13 @@ StyleEditor.prototype = {
   _showFilePicker: function SE__showFilePicker(aFile, aSave, aParentWindow)
   {
     if (typeof(aFile) == "string") {
-      let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
-      file.initWithPath(aFile);
+      try {
+        let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
+        file.initWithPath(aFile);
+      } catch (ex) {
+        this._signalError(aSave ? SAVE_ERROR : LOAD_ERROR);
+        return null;
+      }
       return file;
     }
     if (aFile) {
@@ -796,8 +800,6 @@ StyleEditor.prototype = {
    */
   _appendNewStyleSheet: function SE__appendNewStyleSheet(aText)
   {
-    this.setFlag(aText ? StyleEditorFlags.IMPORTED : StyleEditorFlags.NEW);
-
     let document = this.contentDocument;
     let parent = document.body;
     let style = document.createElement("style");
@@ -808,6 +810,10 @@ StyleEditor.prototype = {
     parent.appendChild(style);
 
     this._styleSheet = document.styleSheets[document.styleSheets.length - 1];
+    this._flags.push(aText ? StyleEditorFlags.IMPORTED : StyleEditorFlags.NEW);
+    if (aText) {
+      this._onSourceLoad(aText);
+    }
   },
 
   /**

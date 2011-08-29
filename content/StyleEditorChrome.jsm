@@ -274,7 +274,7 @@ StyleEditorChrome.prototype = {
       let editor = new StyleEditor(this.contentDocument);
       this._editors.push(editor);
       editor.addActionListener(this);
-      editor.importFromFile(null, this._window);
+      editor.importFromFile(this._mockImportFile || null, this._window);
     }.bind(this));
   },
 
