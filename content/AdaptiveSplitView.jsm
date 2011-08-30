@@ -424,12 +424,12 @@ AdaptiveSplitView.prototype = {
     let binding = aSummary.getUserData(BINDING_USERDATA);
     let viewSpecific;
 
-    viewSpecific = aSummary.className.match(/(splitview\-[\w-]+)/);
-    viewSpecific = viewSpecific ? viewSpecific.slice(1).join(" ") : "";
+    viewSpecific = aSummary.className.match(/(splitview\-[\w-]+)/g);
+    viewSpecific = viewSpecific ? viewSpecific.join(" ") : "";
     aSummary.className = viewSpecific + " " + aClassName;
 
-    viewSpecific = binding._details.className.match(/(splitview\-[\w-]+)/);
-    viewSpecific = viewSpecific ? viewSpecific.slice(1).join(" ") : "";
+    viewSpecific = binding._details.className.match(/(splitview\-[\w-]+)/g);
+    viewSpecific = viewSpecific ? viewSpecific.join(" ") : "";
     binding._details.className = viewSpecific + " " + aClassName;
   },
 
