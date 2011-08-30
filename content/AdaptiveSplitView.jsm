@@ -422,23 +422,6 @@ AdaptiveSplitView.prototype = {
   },
 
   /**
-   * Iterates every available item in the view.
-   * Iteration stops if aCallback returns true.
-   *
-   * @param function aCallback(aSummary, aDetails, aData)
-   */
-  forEachItem: function ASV_forEachItem(aCallback)
-  {
-    for (let i = 0; i < this._nav.childNodes.length; ++i) {
-      let binding = this._nav.childNodes[i].getUserData(BINDING_USERDATA);
-      if (binding &&
-          aCallback(binding._summary, binding._details, binding.data)) {
-        return;
-      }
-    }
-  },
-
-  /**
    * Set the item's CSS class name.
    * This sets the class on both the summary and details elements, retaining
    * any AdaptiveSplitView-specific classes.
