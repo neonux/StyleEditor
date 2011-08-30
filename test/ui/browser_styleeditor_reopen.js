@@ -4,7 +4,7 @@
 
 // http rather than chrome to improve coverage
 const TEST_BASE = "http://example.com/browser/browser/base/content/test/StyleEditor/";
-const TESTCASE_URI = TEST_BASE + "simple.html";
+const TESTCASE_URI = TEST_BASE + "simple.gz.html";
 
 Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
