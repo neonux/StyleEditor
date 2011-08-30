@@ -205,7 +205,8 @@ StyleEditor.prototype = {
 //    placeholderText: aElement.getAttribute("data-placeholder"),
       showLineNumbers: true,
       mode: SourceEditor.MODES.CSS,
-      readOnly: this._state.readOnly
+      readOnly: this._state.readOnly,
+      keys: this._getKeyBindings()
     };
 
     sourceEditor.init(aElement, config, function onSourceEditorReady() {
@@ -926,6 +927,36 @@ StyleEditor.prototype = {
       this._flags = expando._flags;
       this._savedFile = expando._savedFile;
     }
+  },
+
+  /**
+    * Retrieve custom key bindings objects as expected by SourceEditor.
+    * SourceEditor action names are not displayed to the user.
+    *
+    * @return Array
+    */
+  _getKeyBindings: function () {
+    let bindings = [];
+
+    bindings.push({
+      action: "StyleEditor.save",
+      code: _("saveStyleSheet.accessKey"),
+      accel: true,
+      callback: function save() {
+        this.saveToFile(this._savedFile);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.saveAs",
+      code: _("saveStyleSheet.accessKey"),
+      accel: true,
+      shift: true,
+      callback: function saveAs() {
+        this.saveToFile();
+      }.bind(this)
+    });
+
+    return bindings;
   }
 };
 
