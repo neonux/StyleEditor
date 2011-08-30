@@ -76,9 +76,9 @@ function AdaptiveSplitView(aRoot)
     this._setupFilterBox();
   }
 
-  // items list focus management
+  // items list focus and search-on-type handling
   this._nav.addEventListener("keydown", function onKeyCatchAll(aEvent) {
-    function getFocusedItem(nav) {
+    function getFocusedItemWithin(nav) {
       let node = nav.ownerDocument.activeElement;
       while (node && node.parentNode != nav) {
         node = node.parentNode;
@@ -86,43 +86,41 @@ function AdaptiveSplitView(aRoot)
       return node;
     }
 
-    // do not steal focus from iframes or textboxes
-    if (aEvent.target.ownerDocument != this._nav.ownerDocument) {
-      return false;
-    }
-    switch (aEvent.target.tagName) {
-      case "input":
-      case "textarea":
-      case "textbox":
-        return false;
-    }
-    if (aEvent.target.classList.contains("textbox")) {
+    // do not steal focus from inside iframes or textboxes
+    if (aEvent.target.ownerDocument != this._nav.ownerDocument ||
+        aEvent.target.tagName == "input" ||
+        aEvent.target.tagName == "textbox" ||
+        aEvent.target.tagName == "textarea" ||
+        aEvent.target.classList.contains("textbox")) {
       return false;
     }
 
-    // handle keyboard navigation within items list
-    let focusNavDest;
+    // handle keyboard navigation within the items list
+    let newFocusOrdinal;
     if (aEvent.keyCode == aEvent.DOM_VK_PAGE_UP ||
         aEvent.keyCode == aEvent.DOM_VK_HOME) {
-      focusNavDest = this._nav.firstChild;
+      newFocusOrdinal = 0;
     } else if (aEvent.keyCode == aEvent.DOM_VK_PAGE_DOWN ||
                aEvent.keyCode == aEvent.DOM_VK_END) {
-      focusNavDest = this._nav.lastChild;
+      newFocusOrdinal = this._nav.childNodes.length - 1;
     } else if (aEvent.keyCode == aEvent.DOM_VK_UP) {
-      focusNavDest = getFocusedItem(this._nav).previousElementSibling ||
-                     this._nav.firstChild;
+      newFocusOrdinal = getFocusedItemWithin(this._nav).getAttribute("data-ordinal");
+      newFocusOrdinal--;
     } else if (aEvent.keyCode == aEvent.DOM_VK_DOWN) {
-      focusNavDest = getFocusedItem(this._nav).nextElementSibling ||
-                     this._nav.lastChild;
+      newFocusOrdinal = getFocusedItemWithin(this._nav).getAttribute("data-ordinal");
+      newFocusOrdinal++;
     }
-
-    if (focusNavDest) {
+    if (newFocusOrdinal !== undefined) {
       aEvent.stopPropagation();
-      focusNavDest.focus();
+      let el = this.getSummaryElementByOrdinal(newFocusOrdinal);
+      if (el) {
+        el.focus();
+      }
       return false;
     }
 
-    // type-on-search for any non-whitespace character
+    // search-on-type when any non-whitespace character is pressed while list
+    // has the focus
     if (this._filter &&
         !/\s/.test(String.fromCharCode(aEvent.which))) {
       this._filter.focus();
