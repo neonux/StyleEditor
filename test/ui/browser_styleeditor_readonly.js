@@ -19,8 +19,10 @@ let gChromeListener = {
       is(gEditorReadOnlyCount, 0,
          "all editors are NOT read-only initially");
 
-      // all editors have been loaded, close the content tab
-      gBrowser.removeCurrentTab();
+      // all editors have been loaded, queue closing the content tab
+      executeSoon(function () {
+        gBrowser.removeCurrentTab();
+      });
     }
   },
   onContentDetach: function (aChrome) {
