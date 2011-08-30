@@ -203,6 +203,7 @@ StyleEditor.prototype = {
     let sourceEditor = new SourceEditor();
     let config = {
 //    placeholderText: aElement.getAttribute("data-placeholder"),
+      placeholderText: this._state.text, //! this is initialText (bug 680371)
       showLineNumbers: true,
       mode: SourceEditor.MODES.CSS,
       readOnly: this._state.readOnly,
@@ -210,7 +211,6 @@ StyleEditor.prototype = {
     };
 
     sourceEditor.init(aElement, config, function onSourceEditorReady() {
-      sourceEditor.setText(this._state.text);
       sourceEditor.setSelection(this._state.selection.start,
                                 this._state.selection.end);
 
