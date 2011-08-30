@@ -104,20 +104,19 @@ li.splitview-active .splitview-inline-details {
 }
 
 .splitview-nav:empty,
-.splitview-nav.all-filtered,
+.splitview-nav.splitview-all-filtered,
 .splitview-nav + .splitview-nav.placeholder,
 .splitview-filter-bar {
   display: none;
 }
-.splitview-nav.all-filtered ~ .splitview-nav.placeholder.all-filtered,
+.splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered,
 .splitview-nav:empty ~ .splitview-nav.placeholder.empty {
   display: -moz-box;
   -moz-box-flex: 0;
   text-align: center;
   font-size: 0.9em;
 }
-.splitview-nav.all-filtered ~ .splitview-nav.placeholder.all-filtered {
-  -moz-box-flex: 1;
+.splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered {
   background-color: peachpuff;
 }
 
@@ -202,4 +201,3 @@ a {
   color: -moz-hyperlinktext;
   text-decoration: underline;
 }
-

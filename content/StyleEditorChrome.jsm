@@ -447,10 +447,6 @@ StyleEditorChrome.prototype = {
         }
 
         editor.inputElement.focus();
-      },
-      onFilterBy: function ASV_onItemFilterBy(aSummary, aDetails, aData, aQuery) {
-        let editor = aData.editor;
-        return editor._text.indexOf(aQuery) > -1;
       }
     });
   },

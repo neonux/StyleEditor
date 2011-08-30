@@ -340,6 +340,9 @@ AdaptiveSplitView.prototype = {
     * and then by searching aQuery in the summary element's text item.
     * Non-matching item is hidden.
     *
+    * If no item matches, 'splitview-all-filtered' class is set on the filter
+    * input element and the splitview-nav element.
+    *
     * @param string aQuery
     *        The query string. Use null to reset (no filter).
     * @return number
