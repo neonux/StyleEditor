@@ -71,35 +71,9 @@ function AdaptiveSplitView(aRoot)
   this._mql = aRoot.ownerDocument.defaultView.matchMedia(LANDSCAPE_MEDIA_QUERY);
   this._mql.addListener(this._onOrientationChange.bind(this));
 
-  // filter search box management
   this._filter = aRoot.querySelector("input.splitview-filter");
   if (this._filter) {
-    this._filter.search = function onFilterInput(aEvent) {
-      this.filterItemsBy(this._filter.value);
-    }.bind(this);
-    this._filter.addEventListener("input", this._filter.search, false);
-    this._filter.addEventListener("keyup", function onFilterKeyUp(aEvent) {
-      if (aEvent.keyCode == aEvent.DOM_VK_ENTER ||
-          aEvent.keyCode == aEvent.DOM_VK_RETURN) {
-        // autofocus matching item if there is only one
-        let matches = this._nav.querySelectorAll("* > li:not(.splitview-filtered)");
-        if (matches.length == 1) {
-          this.activeSummary = matches[0];
-        }
-      }
-    }.bind(this), false);
-
-    let filterClearButtons = aRoot.querySelector(".splitview-filter-clearButton");
-    for (let i = 0; i < filterClearButtons.length; ++i) {
-      filterClearButtons.addEventListener("click", function onFilterClear(aEvent) {
-        this._filter.value = '';
-        this._filter.focus();
-        this._filter.search();
-
-        aEvent.stopPropagation();
-        return false;
-      }, false);
-    }
+    this._setupFilterBox();
   }
 
   // items list focus management
@@ -482,6 +456,41 @@ AdaptiveSplitView.prototype = {
                            activeBinding._details,
                            activeBinding.data,
                            true);
+    }
+  },
+
+  /**
+   * Set up filter search box.
+   */
+  _setupFilterBox: function ASV__setupFilterBox()
+  {
+    let clearFilter = function clearFilter(aEvent) {
+      this._filter.value = "";
+      this.filterItemsBy("");
+      return false;
+    }.bind(this);
+
+    this._filter.addEventListener("input", function onFilterInput(aEvent) {
+      this.filterItemsBy(this._filter.value);
+    }.bind(this), false);
+
+    this._filter.addEventListener("keyup", function onFilterKeyUp(aEvent) {
+      if (aEvent.keyCode == aEvent.DOM_VK_ESCAPE) {
+        clearFilter();
+      }
+      if (aEvent.keyCode == aEvent.DOM_VK_ENTER ||
+          aEvent.keyCode == aEvent.DOM_VK_RETURN) {
+        // autofocus matching item if there is only one
+        let matches = this._nav.querySelectorAll("* > li:not(.splitview-filtered)");
+        if (matches.length == 1) {
+          this.activeSummary = matches[0];
+        }
+      }
+    }.bind(this), false);
+
+    let clearButtons = this._root.querySelectorAll(".splitview-filter-clearButton");
+    for (let i = 0; i < clearButtons.length; ++i) {
+      clearButtons[i].addEventListener("click", clearFilter, false);
     }
   }
 };
