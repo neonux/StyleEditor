@@ -3,7 +3,7 @@
 # ADDITIONS ONLY
 
 # update content JAR manifest with added files
-for FILE in `git status --porcelain | grep "^A" | grep -o -E "browser/base/content/StyleEditor/.*$"`
+for FILE in `git status --porcelain | grep "^A" | grep -o -E "browser/devtools/styleeditor/.*$"`
 do
   FILE=`echo $FILE | cut -d " " -f 2`
   FILE=`basename $FILE`

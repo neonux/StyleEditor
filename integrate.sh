@@ -27,7 +27,7 @@ EXCLUDES="content/browser_overlay.xul"
 
 CONTENT_URL_ADDON="chrome://StyleEditor/content/"
 CONTENT_URL_ADDON_SED=$(echo $CONTENT_URL_ADDON | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')
-CONTENT_URL_BROWSER="chrome://browser/content/StyleEditor/"
+CONTENT_URL_BROWSER="chrome://browser/devtools/styleeditor/"
 CONTENT_URL_BROWSER_SED=$(echo $CONTENT_URL_BROWSER | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')
 BASE_URL_ADDON="chrome://StyleEditor/"
 BASE_URL_ADDON_SED=$(echo $BASE_URL_ADDON | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')
@@ -39,14 +39,14 @@ do
   if [ $FILE == $EXCLUDES ]; then
     continue
   fi
-  mkdir -p browser/base/content/StyleEditor
-  BROWSER_FILE=browser/base/content/StyleEditor/`basename $FILE`
+  mkdir -p browser/devtools/styleeditor
+  BROWSER_FILE=browser/devtools/styleeditor/`basename $FILE`
   git show $ADDON:$FILE > $BROWSER_FILE
   sed -i -e s/$CONTENT_URL_ADDON_SED/$CONTENT_URL_BROWSER_SED/g \
          -e s/$BASE_URL_ADDON_SED/$BASE_URL_BROWSER_SED/g \
       $BROWSER_FILE
 done
-git add browser/base/content/StyleEditor
+git add browser/devtools/styleeditor
 
 
 for FILE in `git ls-tree -r --name-only $ADDON locale/en-US/`
@@ -81,24 +81,23 @@ insert_tests()
   done
 }
 
-mkdir -p browser/base/content/test/StyleEditor
+mkdir -p browser/devtools/styleeditor/test
 if [ -x tests.tmp ]; then
   rm tests.tmp
 fi
 
 for FILE in `git ls-tree -r --name-only $ADDON test/ui/`
 do
-  BROWSER_FILE=browser/base/content/test/StyleEditor/`basename $FILE`
+  BROWSER_FILE=browser/devtools/styleeditor/test/`basename $FILE`
   git show $ADDON:$FILE > $BROWSER_FILE
   FILE=`basename $FILE`
   #if [[ $FILE == browser_*.js ]]; then
   echo "                 $FILE \\" >> tests.tmp
   #fi
 done
-insert_tests < test.Makefile.in.in > browser/base/content/test/StyleEditor/Makefile.in
+insert_tests < test.Makefile.in.in > browser/devtools/styleeditor/test/Makefile.in
 rm tests.tmp
 
-git add browser/base/content/test/StyleEditor
+git add browser/browser/devtools/styleeditor/test
 
 echo "Done! Now fix up index if needed and run update.sh"
-
