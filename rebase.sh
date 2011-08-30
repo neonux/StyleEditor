@@ -18,8 +18,8 @@ GIT_REV=`git show-ref --abbrev --head -d HEAD | cut -d " " -f 1`
 HG_REV=`git show-hg-rev $GIT_REV | head -c 7`
 
 if [ -z "$HG_REV" ]; then
-  echo "No HG revision found! Abort."
-  exit 1
+  echo "No HG revision found! Using -dirty-$GIT_REV instead."
+  HG_REV="dirty-${GIT_REV}"
 fi
 
 MESSAGE="Rebase browser hg=$HG_REV git=$GIT_REV."
@@ -30,9 +30,9 @@ FILES="\
 browser/base/content/browser-appmenu.inc \
 browser/base/content/browser-sets.inc \
 browser/base/content/browser-menubar.inc \
-browser/base/content/test/Makefile.in \
 browser/base/content/browser.js \
-browser/base/jar.mn \
+browser/devtools/Makefile.in \
+browser/devtools/jar.mn \
 browser/locales/en-US/chrome/browser/browser.dtd \
 browser/locales/jar.mn \
 browser/themes/pinstripe/browser/jar.mn \
@@ -56,4 +56,3 @@ git add browser
 git commit -m "$MESSAGE"
 
 echo "Done! Now fix up index if needed and run integrate.sh <addon-branch>"
-
