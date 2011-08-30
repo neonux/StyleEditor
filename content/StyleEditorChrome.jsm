@@ -357,8 +357,7 @@ StyleEditorChrome.prototype = {
    */
   getSummaryElementForEditor: function SEC_getSummaryElementForEditor(aEditor)
   {
-    return this._view.rootElement.querySelector(
-      ".splitview-nav > li[data-ordinal='" + aEditor.styleSheetIndex + "']");
+    return this._view.getSummaryElementByOrdinal(aEditor.styleSheetIndex);
   },
 
   /**

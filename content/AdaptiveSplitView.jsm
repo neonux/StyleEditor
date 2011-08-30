@@ -207,37 +207,16 @@ AdaptiveSplitView.prototype = {
   },
 
   /**
-   * Append an item to the split view according to two template elements
-   * (one for the item's summary and the other for the item's details).
+   * Retrieve the summary element for a given ordinal.
    *
-   * @param string aName
-   *        Name of the template elements to instantiate.
-   *        Requires two (hidden) DOM elements with id "splitview-tpl-summary-"
-   *        and "splitview-tpl-details-" suffixed with aName.
-   * @param object aOptions
-   *        Optional object that defines custom behavior and data for the item.
-   *        See appendItem for full description.
-   * @return object{summary:,details:}
-   *         Object with the new DOM elements created for summary and details.
+   * @param number aOrdinal
+   * @return DOMElement
+   *         Summary element with given ordinal or null if not found.
    * @see appendItem
    */
-  appendTemplatedItem: function ASV_appendTemplatedItem(aName, aOptions)
+  getSummaryElementByOrdinal: function SEC_getSummaryElementByOrdinal(aOrdinal)
   {
-    aOptions = aOptions || {};
-    let summary = this._root.querySelector("#splitview-tpl-summary-" + aName);
-    let details = this._root.querySelector("#splitview-tpl-details-" + aName);
-
-    summary = summary.cloneNode(true);
-    summary.id = "";
-    if (aOptions.ordinal !== undefined) { // can be zero
-      summary.style.MozBoxOrdinalGroup = aOptions.ordinal;
-      summary.setAttribute("data-ordinal", aOptions.ordinal);
-    }
-    details = details.cloneNode(true);
-    details.id = "";
-
-    this.appendItem(summary, details, aOptions);
-    return {summary: summary, details: details};
+    return this._nav.querySelector("* > li[data-ordinal='" + aOrdinal + "']");
   },
 
   /**
@@ -301,6 +280,40 @@ AdaptiveSplitView.prototype = {
     if (!binding.disableAnimations) {
       aSummary.scrollIntoView();
     }
+  },
+
+  /**
+   * Append an item to the split view according to two template elements
+   * (one for the item's summary and the other for the item's details).
+   *
+   * @param string aName
+   *        Name of the template elements to instantiate.
+   *        Requires two (hidden) DOM elements with id "splitview-tpl-summary-"
+   *        and "splitview-tpl-details-" suffixed with aName.
+   * @param object aOptions
+   *        Optional object that defines custom behavior and data for the item.
+   *        See appendItem for full description.
+   * @return object{summary:,details:}
+   *         Object with the new DOM elements created for summary and details.
+   * @see appendItem
+   */
+  appendTemplatedItem: function ASV_appendTemplatedItem(aName, aOptions)
+  {
+    aOptions = aOptions || {};
+    let summary = this._root.querySelector("#splitview-tpl-summary-" + aName);
+    let details = this._root.querySelector("#splitview-tpl-details-" + aName);
+
+    summary = summary.cloneNode(true);
+    summary.id = "";
+    if (aOptions.ordinal !== undefined) { // can be zero
+      summary.style.MozBoxOrdinalGroup = aOptions.ordinal;
+      summary.setAttribute("data-ordinal", aOptions.ordinal);
+    }
+    details = details.cloneNode(true);
+    details.id = "";
+
+    this.appendItem(summary, details, aOptions);
+    return {summary: summary, details: details};
   },
 
   /**
