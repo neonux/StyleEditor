@@ -256,9 +256,6 @@ StyleEditor.prototype = {
    */
   get readOnly()
   {
-    if (this._sourceEditor) {
-      this._state.readOnly = this._sourceEditor.readOnly;
-    }
     return this._state.readOnly;
   },
 
@@ -623,7 +620,10 @@ StyleEditor.prototype = {
                              // while the stylesheet is disabled can be performed
                              // when it is enabled back. @see enableStylesheet
 
-    let source = this._sourceEditor.getText();
+    if (this.sourceEditor) {
+      this._state.text = this.sourceEditor.getText();
+    }
+    let source = this._state.text;
     let oldNode = this.styleSheet.ownerNode;
     let oldIndex = this.styleSheetIndex;
 
