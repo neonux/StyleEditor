@@ -994,9 +994,8 @@ const LINE_SEPARATOR = /win/.test(OS) ? "\r\n" : "\n";
  */
 function prettifyCSS(aText)
 {
-  let start = Date.now();
-  let parts = [];
-  let partStart = 0;
+  let parts = [];    // indented parts
+  let partStart = 0; // start offset of currently parsed part
   let indent = "";
   let indentLevel = 0;
 
@@ -1006,7 +1005,8 @@ function prettifyCSS(aText)
 
     switch (c) {
       case "}":
-        if (i - partStart > 1) { // should be on its own line
+        if (i - partStart > 1) {
+          // there's more than just } on the line, add line
           parts.push(indent + aText.substring(partStart, i));
           partStart = i;
         }
