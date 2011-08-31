@@ -433,18 +433,19 @@ StyleEditorChrome.prototype = {
 
         this._triggerChromeListeners("EditorAdded", [editor]);
       }.bind(this),
-      onShow: function ASV_onItemShow(aSummary, aDetails, aData, aIsOrientationChange) {
+      onHide: function ASV_onItemShow(aSummary, aDetails, aData, aIsOrientationChange) {
         let editor = aData.editor;
-
         if (aIsOrientationChange) {
-          // force detach of SourceEditor then reattach (see bug 254144)
+          // force detach (see bug 254144)
           editor.inputElement = null;
         }
+      },
+      onShow: function ASV_onItemShow(aSummary, aDetails, aData, aIsOrientationChange) {
+        let editor = aData.editor;
         if (!editor.inputElement) {
           // attach input element first time it is shown
           editor.inputElement = aDetails.querySelector(".stylesheet-editor-input");
         }
-
         editor.inputElement.focus();
       }
     });

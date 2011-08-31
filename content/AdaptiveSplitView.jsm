@@ -440,21 +440,6 @@ AdaptiveSplitView.prototype = {
    */
   _onOrientationChange: function ASV__onOrientationChange()
   {
-    let activeBinding;
-
-    if (this.activeSummary) {
-      activeBinding = this.activeSummary.getUserData(BINDING_USERDATA);
-      if (activeBinding.onHide) {
-        // signal orientation change by hiding first (last argument is true)
-        // this allows user code to implement special handing for this if needed
-        // (eg. with iframes until Mozilla bug 254144 is fixed)
-        activeBinding.onHide(activeBinding._summary,
-                             activeBinding._details,
-                             activeBinding.data,
-                             true);
-      }
-    }
-
     // move details nodes as needed
     for (let i = 0; i < this._nav.childNodes.length; ++i) {
       let summary = this._nav.childNodes[i];
@@ -462,16 +447,28 @@ AdaptiveSplitView.prototype = {
                              ? this._side
                              : summary.querySelector(".splitview-inline-details");
       let binding = summary.getUserData(BINDING_USERDATA);
+      if (binding.onHide) {
+        // signal orientation change by hiding explicitly (last argument is true)
+        // this allows user code to implement special handing for this if needed
+        // (eg. with iframes until Mozilla bug 254144 is fixed)
+        binding.onHide(binding._summary,
+                       binding._details,
+                       binding.data,
+                       true);
+      }
       detailsContainer.appendChild(binding._details);
     }
 
-    // we are re-showing the active details
-    if (activeBinding && activeBinding.onShow) {
-      // signal orientation change by showing again (last argument is true)
-      activeBinding.onShow(activeBinding._summary,
-                           activeBinding._details,
-                           activeBinding.data,
-                           true);
+    // we are re-showing the active item
+    if (this.activeSummary) {
+      let binding = this.activeSummary.getUserData(BINDING_USERDATA);
+      if (binding.onShow) {
+        // signal orientation change by showing again (last argument is true)
+        binding.onShow(binding._summary,
+                       binding._details,
+                       binding.data,
+                       true);
+      }
     }
   },
 
