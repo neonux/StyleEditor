@@ -29,11 +29,13 @@ function run(aChrome)
   is(aChrome.editors.length, 2,
      "there is 2 stylesheets initially");
 
-  waitForFocus(function () {
-    // create a new style sheet
-    let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
-    EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
-  }, gChromeWindow);
+  executeSoon(function () {
+    waitForFocus(function () {
+      // create a new style sheet
+      let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
+      EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
+    }, gChromeWindow);
+  });
 }
 
 let gNewEditor;       // to make sure only one new stylesheet got created

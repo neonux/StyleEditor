@@ -37,6 +37,13 @@ function test()
 
 function run(aChrome, aEditor)
 {
+  waitForFocus(function () {
+    testEnabledToggle(aChrome, aEditor);
+  }, gChromeWindow);
+}
+
+function testEnabledToggle(aChrome, aEditor)
+{
   is(aEditor, aChrome.editors[0],
      "stylesheet with index 0 is the first stylesheet listed in the UI");
 

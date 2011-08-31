@@ -24,8 +24,13 @@ function test()
   content.location = TESTCASE_URI;
 }
 
+let gContentAttachHandled = false;
 function run(aChrome)
 {
+  gContentAttachHandled = true;
+  is(aChrome.contentWindow.document.readyState, "complete",
+     "content document is complete");
+
   let SEC = gChromeWindow.styleEditorChrome;
   is(SEC, aChrome, "StyleEditorChrome object exists as new window property");
 
@@ -47,6 +52,11 @@ function run(aChrome)
 let gEditorAddedCount = 0;
 function testEditorAdded(aChrome, aEditor)
 {
+  if (!gEditorAddedCount) {
+    is(gContentAttachHandled, true,
+       "ContentAttach event triggered before EditorAdded");
+  }
+
   if (aEditor.styleSheetIndex == 0) {
     gEditorAddedCount++;
     testFirstStyleSheetEditor(aChrome, aEditor);

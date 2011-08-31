@@ -110,5 +110,24 @@ function testNewChrome(aEditor)
   ok(aEditor.hasFlag("error"),
      "editor has error flag after attempting to save with invalid path");
 
-  finish();
+  // listen for when editor get saved again
+  aEditor.addActionListener({
+    onFlagChange: function (aEditor, aFlag) {
+      if (aFlag != "unsaved") {
+        return;
+      }
+
+      ok(!aEditor.hasFlag("unsaved"),
+         "first stylesheet does not has UNSAVED flag after key binding Save from editor");
+
+      finish();
+    }
+  });
+
+  // save using source editor key binding
+  let sourceEditorWindow = aEditor.sourceEditor.editorElement.contentWindow
+                           || gChromeWindow;
+  waitForFocus(function () {
+    EventUtils.synthesizeKey("S", {accelKey: true}, gChromeWindow);
+  }, sourceEditorWindow);
 }

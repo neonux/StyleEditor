@@ -40,11 +40,13 @@ function test()
 }
 
 function run(aChrome) {
-  waitForFocus(function () {
-    // create a new stylesheet for the test
-    let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
-    EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
-  }, gChromeWindow);
+  executeSoon(function () {
+    waitForFocus(function () {
+      // create a new stylesheet for the test
+      let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
+      EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
+    }, gChromeWindow);
+  });
 }
 
 function testEditor(aEditor)
