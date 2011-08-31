@@ -257,7 +257,8 @@ AdaptiveSplitView.prototype = {
     aSummary.setUserData(BINDING_USERDATA, binding, null);
 
     if (!binding.disableAnimations) {
-      scheduleAnimation(aSummary, "splitview-slide", "splitview-flash");
+      aSummary.classList.add("splitview-slide");
+      aSummary.classList.add("splitview-flash");
     }
     this._nav.appendChild(aSummary);
 
@@ -276,6 +277,7 @@ AdaptiveSplitView.prototype = {
     }
 
     if (!binding.disableAnimations) {
+      scheduleAnimation(aSummary, "splitview-slide", "splitview-flash");
       aSummary.scrollIntoView();
     }
   },
