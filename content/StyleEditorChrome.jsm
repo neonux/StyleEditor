@@ -76,6 +76,8 @@ function StyleEditorChrome(aRoot, aContentWindow)
 
   this._editors = [];
   this._listeners = []; // @see addChromeListener
+
+  this._contentWindow = null;
   this._isContentAttached = false;
 
   let initializeUI = function (aEvent) {
@@ -124,25 +126,26 @@ StyleEditorChrome.prototype = {
 
     this._contentWindow = aContentWindow;
 
-    if (aContentWindow) {
-      if (aContentWindow.document.readyState == "complete") {
-        this._populateChrome();
-      } else {
-        aContentWindow.addEventListener("readystatechange", function onContentReady() {
-          if (this.contentDocument.readyState != "complete") {
-            return false;
-          }
-          aContentWindow.removeEventListener("readystatechange", onContentReady, false);
-          this._populateChrome();
-        }.bind(this), false);
-      }
-
-      aContentWindow.addEventListener("unload", function onContentUnload() {
-        aContentWindow.removeEventListener("unload", onContentUnload, false);
-        this.contentWindow = null; // detach
-      }.bind(this), false);
-    } else {
+    if (!aContentWindow) {
       this._disableChrome();
+      return;
+    }
+
+    let onContentUnload = function () {
+      aContentWindow.removeEventListener("unload", onContentUnload, false);
+      this.contentWindow = null; // detach
+    }.bind(this);
+    aContentWindow.addEventListener("unload", onContentUnload, false);
+
+    if (aContentWindow.document.readyState == "complete") {
+      this._populateChrome();
+      return;
+    } else {
+      let onContentReady = function () {
+        aContentWindow.removeEventListener("load", onContentReady, false);
+        this._populateChrome();
+      }.bind(this);
+      aContentWindow.addEventListener("load", onContentReady, false);
     }
   },
 
@@ -303,6 +306,12 @@ StyleEditorChrome.prototype = {
     this._document.title = _("chromeWindowTitle",
           this.contentDocument.title || this.contentDocument.location.href);
 
+    // queue ContentAttach before all editors are queued for loading
+    // do not trigger in this execution context to make sure DOM is sync
+    this._window.setTimeout(function () {
+      this._triggerChromeListeners("ContentAttach");
+    }.bind(this), 0);
+
     let document = this.contentDocument;
     for (let i = 0; i < document.styleSheets.length; ++i) {
       let styleSheet = document.styleSheets[i];
@@ -312,17 +321,13 @@ StyleEditorChrome.prototype = {
       this._editors.push(editor);
 
       // Queue editors loading so that ContentAttach is consistently triggered
-      // right after all editor instances are available but NOT loaded/ready yet.
-      // Also, if there's many heavy stylsheets, it can improve UI responsivity.
+      // right after all editor instances are available (this.editors) but are
+      // NOT loaded/ready yet. This also helps responsivity during loading when
+      // there is many heavy stylesheets.
       this._window.setTimeout(function queuedStyleSheetLoad() {
         editor.load();
       }, 0);
     }
-
-    // Queue ContentAttach to make sure DOM is sync
-    this._window.setTimeout(function () {
-      this._triggerChromeListeners("ContentAttach");
-    }.bind(this), 0);
   },
 
   /**
