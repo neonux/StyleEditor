@@ -1,10 +1,18 @@
 <!-- LOCALIZATION NOTE : FILE This file contains the Style Editor window strings -->
 <!-- LOCALIZATION NOTE : FILE Do not translate commandkeys -->
 
-<!ENTITY window.title               "Style Editor">
+<!-- LOCALIZATION NOTE (styleeditor.label): This menu item label appears
+  -  in the Tools menu. -->
+<!ENTITY styleeditor.label             "Style Editor">
+<!ENTITY styleeditor.accesskey         "y">
+<!ENTITY styleeditor.keycode           "VK_F9">
+<!ENTITY styleeditor.keytext           "F9">
 
-<!ENTITY devToolsMenu-StyleEditor.label     "Style Editor">
-<!ENTITY devToolsMenu-StyleEditor.accesskey "y">
+<!-- LOCALIZATION NOTE (window.title): This is the main title of Style Editor
+     main window. The content document title follows between brackets, eg. if
+     you open Style Editor on a web page titled "My homepage", the window title
+     will be "Style Editor [My homepage]" -->
+<!ENTITY window.title               "Style Editor">
 
 <!ENTITY newButton.label            "New stylesheet">
 <!ENTITY newButton.tooltip          "Append a new stylesheet to the page">
