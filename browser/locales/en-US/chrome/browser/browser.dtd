@@ -209,6 +209,13 @@ can reach it easily. -->
 <!ENTITY scratchpad.keycode           "VK_F4">
 <!ENTITY scratchpad.keytext           "F4">
 
+<!-- LOCALIZATION NOTE (styleeditor.label): This menu item label appears
+  -  in the Tools menu. -->
+<!ENTITY styleeditor.label            "Style Editor">
+<!ENTITY styleeditor.accesskey        "y">
+<!ENTITY styleeditor.keycode          "VK_F9">
+<!ENTITY styleeditor.keytext          "F9">
+
 <!ENTITY inspectPanelTitle.label      "HTML">
 <!ENTITY inspectButton.label          "Inspect">
 <!ENTITY inspectButton.accesskey      "I">

@@ -1,0 +1,200 @@
+/*
+ * Any copyright is dedicated to the Public Domain.
+ * http://creativecommons.org/publicdomain/zero/1.0/
+ *
+ * All rules are prefixed with #style-editor-* in order to make integration
+ * with other XUL/CSS code (eg. browser) easier, less prone to conflicts.
+ */
+
+:root {
+  background-color: -moz-dialog;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+button {
+  padding: 2px;
+}
+
+html, body,
+.splitview-root,
+.splitview-controller,
+.splitview-main,
+.splitview-nav-container,
+.splitview-nav,
+.splitview-inline-details,
+.splitview-side-details,
+.splitview-details {
+  display: -moz-box;
+  -moz-box-flex: 1;
+  -moz-box-orient: vertical;
+}
+
+.splitview-root {
+  -moz-box-orient: horizontal;
+  overflow: hidden;
+}
+
+.splitview-main {
+  -moz-box-flex: 0;
+}
+
+.splitview-filter.splitview-all-filtered:focus {
+  background-color: #eaa;
+}
+
+.splitview-nav-container {
+  -moz-box-pack: center;
+  margin: 4px;
+  margin-bottom: 0.5em;
+  border: 1px inset WindowFrame;
+  border-radius: 4px;
+  background-color: -moz-default-background-color;
+  color: -moz-default-color;
+}
+
+ol.splitview-nav {
+  overflow-y: auto;
+  list-style-image: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.splitview-nav:focus {
+  outline: 0; /* focusable only for focus stealing */
+}
+
+ol.splitview-nav > li {
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  outline: 0;
+  border-radius: 4px;
+  border-bottom: 1px solid -moz-cellhighlight;
+  padding: 4px;
+  -moz-transition-property: background-color, max-height;
+  -moz-transition-duration: 1s;
+  max-height: 2048px; /* for slide transition */
+}
+ol.splitview-nav > li.splitview-active {
+  -moz-box-flex: 1;
+  background-color: InfoBackground;
+  color: InfoText;
+}
+ol.splitview-nav > li.splitview-filtered {
+  display: none;
+}
+ol.splitview-nav > li.splitview-flash {
+  background-color: peachpuff;
+}
+ol.splitview-nav > li.splitview-slide {
+  max-height: 0px;
+  overflow: hidden;
+}
+
+/* inline details are not shown unless parent active */
+.splitview-inline-details, .splitview-side-details {
+  display: none;
+  -moz-box-flex: 1;
+}
+li.splitview-active .splitview-inline-details {
+  display: -moz-box;
+}
+
+.splitview-side-details {
+  margin: 4px;
+  margin-bottom: 6px;
+}
+
+.splitview-nav:empty,
+.splitview-nav.splitview-all-filtered,
+.splitview-nav + .splitview-nav.placeholder,
+.splitview-filter-bar {
+  display: none;
+}
+.splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered,
+.splitview-nav:empty ~ .splitview-nav.placeholder.empty {
+  display: -moz-box;
+  -moz-box-flex: 0;
+  text-align: center;
+  font-size: 0.9em;
+}
+.splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered {
+  background-color: peachpuff;
+}
+
+@media (min-aspect-ratio: 5/3) {
+  .splitview-controller {
+    -moz-box-flex: 1;
+    max-width: 15em;
+  }
+
+  .splitview-side-details {
+    display: -moz-box;
+    -moz-box-flex: 2;
+  }
+  .splitview-details {
+    display: none;
+  }
+  .splitview-details.splitview-active {
+    display: -moz-box;
+  }
+
+  ol.splitview-nav > li:hover,
+  ol.splitview-nav > li.splitview-active {
+    background-repeat: no-repeat;
+    background-position: center right;
+    -moz-box-flex: 0;
+  }
+  ol.splitview-nav > li:hover {
+    background-image: url(right-arrow-hover.png);
+  }
+  ol.splitview-nav > li.splitview-active {
+    background-image: url(right-arrow.png);
+  }
+
+  /* details are never shown inline in landscape */
+  .splitview-inline-details {
+    display: none;
+  }
+}
+
+@media (max-height: 400px) and (min-aspect-ratio: 16/9) {
+  ol.splitview-nav > li:hover {
+    background-image: url(right-arrow-small-hover.png);
+  }
+  ol.splitview-nav > li.splitview-active {
+    background-image: url(right-arrow-small.png);
+  }
+}
+
+.toolbar {
+  -moz-box-flex: 0;
+  -moz-box-orient: horizontal;
+  padding: 4px;
+  padding-bottom: 4px;
+}
+
+.splitview-main .toolbar {
+  display: -moz-box;
+}
+.splitview-main .toolbar > * {
+  display: -moz-box;
+}
+
+.spacer {
+  -moz-box-flex: 1;
+}
+
+h5 {
+  margin: 0.5em;
+}
+
+/* chrome fixes */
+a {
+  color: -moz-hyperlinktext;
+  text-decoration: underline;
+}

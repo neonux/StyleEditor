@@ -150,3 +150,10 @@ browser.jar:
 % override chrome://browser/skin/tabbrowser/alltabs-box-bkgnd-icon.png     chrome://browser/skin/lion/tabbrowser/alltabs-box-bkgnd-icon.png        os=Darwin osversion>=10.7
 % override chrome://browser/skin/tabview/tabview.png                       chrome://browser/skin/lion/tabview/tabview.png                          os=Darwin osversion>=10.7
 % override chrome://browser/skin/places/toolbar.png                        chrome://browser/skin/lion/places/toolbar.png                           os=Darwin osversion>=10.7
+  skin/classic/browser/devtools/AdaptiveSplitView.css (devtools/AdaptiveSplitView.css)
+  skin/classic/browser/devtools/StyleEditor.css (devtools/StyleEditor.css)
+  skin/classic/browser/devtools/gimp-eye.png (devtools/gimp-eye.png)
+  skin/classic/browser/devtools/right-arrow-hover.png (devtools/right-arrow-hover.png)
+  skin/classic/browser/devtools/right-arrow-small-hover.png (devtools/right-arrow-small-hover.png)
+  skin/classic/browser/devtools/right-arrow-small.png (devtools/right-arrow-small.png)
+  skin/classic/browser/devtools/right-arrow.png (devtools/right-arrow.png)

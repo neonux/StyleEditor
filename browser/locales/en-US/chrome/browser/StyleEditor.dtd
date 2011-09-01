@@ -1,0 +1,65 @@
+<!-- LOCALIZATION NOTE : FILE This file contains the Style Editor window strings -->
+<!-- LOCALIZATION NOTE : FILE Do not translate commandkeys -->
+
+<!-- LOCALIZATION NOTE (styleeditor.label): This menu item label appears
+  -  in the Tools menu. -->
+<!ENTITY styleeditor.label             "Style Editor">
+<!ENTITY styleeditor.accesskey         "y">
+<!ENTITY styleeditor.keycode           "VK_F9">
+<!ENTITY styleeditor.keytext           "F9">
+
+<!-- LOCALIZATION NOTE (window.title): This is the main title of Style Editor
+     main window. The content document title follows between brackets, eg. if
+     you open Style Editor on a web page titled "My homepage", the window title
+     will be "Style Editor [My homepage]" -->
+<!ENTITY window.title               "Style Editor">
+
+<!ENTITY newButton.label            "New stylesheet">
+<!ENTITY newButton.tooltip          "Append a new stylesheet to the page">
+<!ENTITY newButton.accesskey        "N">
+<!ENTITY newButton.commandkey       "n">
+
+<!ENTITY importButton.label         "Import…">
+<!ENTITY importButton.tooltip       "Import and append an existing stylesheet to the page">
+<!ENTITY importButton.accesskey     "I">
+<!ENTITY importButton.commandkey    "i">
+
+<!ENTITY searchInput.tooltip        "Search through all stylesheets">
+<!ENTITY searchInput.placeholder    "Search stylesheets">
+
+<!-- LOCALIZATION NOTE  (searchNoResults): This is shown when searching a term
+     that is not found in any stylesheet or stylesheet name. -->
+<!ENTITY searchNoResults.label      "No results.">
+
+<!-- LOCALIZATION NOTE  (searchClearButton): This button clears the search input
+     box and is visible only when a search term has been typed. -->
+<!ENTITY searchClearButton.label    "Clear">
+
+<!ENTITY visibilityToggle.tooltip   "Toggle stylesheet visibility">
+<!ENTITY visibilityToggle.accesskey "V">
+
+<!ENTITY saveButton.label           "Save">
+<!ENTITY saveButton.tooltip         "Save this stylesheet to a file">
+<!ENTITY saveButton.accesskey       "S">
+<!ENTITY saveButton.commandkey      "s">
+
+<!-- LOCALICATION NOTE  (scoped.label): This is shown in a stylesheets list item
+     when the stylesheet uses the scoped attribute on the <style> element. -->
+<!ENTITY scoped.label               "Scoped.">
+
+<!ENTITY editorTextbox.placeholder  "Type CSS here.">
+
+<!-- LOCALICATION NOTE  (noStyleSheet.label): This is shown when a page has no
+     stylesheet. -->
+<!ENTITY noStyleSheet.label         "This page has no stylesheet.">
+
+<!-- LOCALICATION NOTE  (noStyleSheet-tip-start.label): This is the start of a
+     tip sentence shown when there is no stylesheet. It suggests to create a new
+     stylesheet and provides an action link to do so. -->
+<!ENTITY noStyleSheet-tip-start.label  "Perhaps you'd like to ">
+<!-- LOCALICATION NOTE  (noStyleSheet-tip-action.label): This is text for the
+     link that triggers creation of a new stylesheet. -->
+<!ENTITY noStyleSheet-tip-action.label "append a new stylesheet">
+<!-- LOCALICATION NOTE  (noStyleSheet-tip-end.label): End of the tip sentence -->
+<!ENTITY noStyleSheet-tip-end.label    "?">
+

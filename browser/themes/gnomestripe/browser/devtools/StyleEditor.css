@@ -1,0 +1,119 @@
+/*
+ * Any copyright is dedicated to the Public Domain.
+ * http://creativecommons.org/publicdomain/zero/1.0/
+ *
+ * All rules are prefixed with #style-editor-* in order to make integration
+ * with other XUL/CSS code (eg. browser) easier, less prone to conflicts.
+ */
+
+.unsaved .stylesheet-name {
+  font-style: italic;
+}
+.unsaved .stylesheet-name:before {
+  content: "* ";
+}
+
+/* stylesheet toolbar only visible for the active/focused/hovered stylesheets */
+.splitview-nav > li > header > .toolbar {
+  visibility: hidden;
+  float: right;
+  font-size: 0.8em;
+  margin-right: 20px;
+}
+.splitview-nav > li:hover > header > .toolbar,
+.splitview-nav > li:focus > header > .toolbar,
+.splitview-nav > li.splitview-active > header > .toolbar {
+  visibility: visible;
+}
+.toolbar > a {
+  color: -moz-default-color;
+}
+
+li hgroup {
+  display: block;
+  float: left;
+}
+
+h1, h2, h3 {
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+}
+h1 {
+  font-size: 0.9em;
+}
+h2, h3 {
+  font-size: 0.8em;
+}
+
+.stylesheet-enabled {
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  border: 1px solid transparent;
+  background-image: url(gimp-eye.png);
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.disabled .stylesheet-enabled {
+  background-image: none;
+}
+
+.stylesheet-enabled:focus, li:hover .stylesheet-enabled {
+  outline: 0;
+  border: 1px inset WindowFrame;
+  margin-right: 6px;
+}
+
+.stylesheet-title {
+  color: gray;
+}
+
+.stylesheet-error-message {
+  display: none;
+}
+.error .stylesheet-error-message {
+  display: block;
+  color: red;
+}
+
+.stylesheet-editor-input {
+  display: -moz-box;
+  -moz-box-flex: 1;
+  min-height: 18em;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  border: 1px inset WindowFrame;
+  border-radius: 4px;
+  background-color: -moz-default-background-color;
+}
+
+/* limited height mode */
+@media (max-height: 250px) {
+  .stylesheet-title, .stylesheet-stats {
+    display: none;
+  }
+  .stylesheet-editor-input {
+    margin: 0px;
+    min-height: 10em;
+  }
+}
+
+/* limited width mode (hide search unless it has focus [search-on-type]) */
+@media (max-width: 400px) {
+  .splitview-filter {
+    position: fixed;
+    width: 100%;
+    left: 0px;
+    bottom: -2em;
+    -moz-transition-property: bottom;
+    -moz-transition-duration: 0.5s;
+  }
+  .splitview-filter:focus {
+    bottom: 0em;
+  }
+  .stylesheet-editor-input {
+    margin: 0px;
+  }
+}

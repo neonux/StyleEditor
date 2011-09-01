@@ -99,3 +99,10 @@ browser.jar:
   skin/classic/browser/syncCommon.css
   skin/classic/browser/syncQuota.css
 #endif
+  skin/classic/browser/devtools/AdaptiveSplitView.css (devtools/AdaptiveSplitView.css)
+  skin/classic/browser/devtools/StyleEditor.css (devtools/StyleEditor.css)
+  skin/classic/browser/devtools/gimp-eye.png (devtools/gimp-eye.png)
+  skin/classic/browser/devtools/right-arrow-hover.png (devtools/right-arrow-hover.png)
+  skin/classic/browser/devtools/right-arrow-small-hover.png (devtools/right-arrow-small-hover.png)
+  skin/classic/browser/devtools/right-arrow-small.png (devtools/right-arrow-small.png)
+  skin/classic/browser/devtools/right-arrow.png (devtools/right-arrow.png)
