@@ -32,19 +32,34 @@ BASE_URL_ADDON="chrome://StyleEditor/"
 BASE_URL_ADDON_SED=$(echo $BASE_URL_ADDON | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')
 BASE_URL_BROWSER="chrome://browser/"
 BASE_URL_BROWSER_SED=$(echo $BASE_URL_BROWSER | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')
+TEST_URL_ADDON="chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/"
+TEST_URL_ADDON_SED=$(echo $BASE_URL_ADDON | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')
+TEST_URL_BROWSER="chrome://mochitests/content/browser/browser/devtools/styleeditor/test/browser/"
+TEST_URL_BROWSER_SED=$(echo $BASE_URL_BROWSER | sed -e 's/\\/\\\\/g' -e 's/\//\\\//g' -e 's/&/\\\&/g')
 
+mkdir -p browser/devtools/styleeditor
 for FILE in `git ls-tree -r --name-only $ADDON content/`
 do
   if [ $FILE == $EXCLUDES ]; then
     continue
   fi
-  mkdir -p browser/devtools/styleeditor
   BROWSER_FILE=browser/devtools/styleeditor/`basename $FILE`
   git show $ADDON:$FILE > $BROWSER_FILE
   sed -i -e s/$CONTENT_URL_ADDON_SED/$CONTENT_URL_BROWSER_SED/g \
          -e s/$BASE_URL_ADDON_SED/$BASE_URL_BROWSER_SED/g \
       $BROWSER_FILE
 done
+
+mkdir -p browser/devtools/styleeditor/test/browser
+for FILE in `git ls-tree -r --name-only $ADDON test/ui/`
+do
+  BROWSER_FILE=browser/devtools/styleeditor/test/browser/`basename $FILE`
+  git show $ADDON:$FILE > $BROWSER_FILE
+  sed -i -e s/$TEST_URL_ADDON_SED/$TEST_URL_BROWSER_SED/g \
+      $BROWSER_FILE
+done
+
+
 git add browser/devtools/styleeditor
 
 
