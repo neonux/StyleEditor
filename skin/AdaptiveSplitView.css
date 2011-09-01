@@ -51,9 +51,10 @@ html, body,
   -moz-box-pack: center;
   margin: 4px;
   margin-bottom: 0.5em;
-  border: 1px inset black;
+  border: 1px inset WindowFrame;
   border-radius: 4px;
-  background: white;
+  background-color: -moz-default-background-color;
+  color: -moz-default-color;
 }
 
 ol.splitview-nav {
@@ -76,12 +77,12 @@ ol.splitview-nav > li {
   padding: 4px;
   -moz-transition-property: background-color, max-height;
   -moz-transition-duration: 1s;
-  background-color: white;
   max-height: 2048px; /* for slide transition */
 }
 ol.splitview-nav > li.splitview-active {
   -moz-box-flex: 1;
-  background-color: #ffa;
+  background-color: InfoBackground;
+  color: InfoText;
 }
 ol.splitview-nav > li.splitview-filtered {
   display: none;
@@ -103,6 +104,11 @@ li.splitview-active .splitview-inline-details {
   display: -moz-box;
 }
 
+.splitview-side-details {
+  margin: 4px;
+  margin-bottom: 6px;
+}
+
 .splitview-nav:empty,
 .splitview-nav.splitview-all-filtered,
 .splitview-nav + .splitview-nav.placeholder,
@@ -121,10 +127,6 @@ li.splitview-active .splitview-inline-details {
 }
 
 @media (min-aspect-ratio: 5/3) {
-  * {
-    text-overflow: ellipsis;
-  }
-
   .splitview-controller {
     -moz-box-flex: 1;
     max-width: 15em;
@@ -168,11 +170,6 @@ li.splitview-active .splitview-inline-details {
     background-image: url(right-arrow-small.png);
   }
 }
-
-.splitview-main {
-  color: white;
-}
-
 
 .toolbar {
   -moz-box-flex: 0;

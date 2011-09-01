@@ -26,7 +26,7 @@
   visibility: visible;
 }
 .toolbar > a {
-  color: black;
+  color: -moz-default-color;
 }
 
 li hgroup {
@@ -62,7 +62,7 @@ h2, h3 {
 
 .stylesheet-enabled:focus, li:hover .stylesheet-enabled {
   outline: 0;
-  border: 1px inset black;
+  border: 1px inset WindowFrame;
   margin-right: 6px;
 }
 
@@ -82,12 +82,11 @@ h2, h3 {
   display: -moz-box;
   -moz-box-flex: 1;
   min-height: 18em;
-  margin: 4px;
   padding-top: 3px;
   padding-bottom: 3px;
-  border: 1px inset black;
+  border: 1px inset WindowFrame;
   border-radius: 4px;
-  background: white;
+  background-color: -moz-default-background-color;
 }
 
 /* limited height mode */
