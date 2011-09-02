@@ -5,8 +5,8 @@
   -  in the Tools menu. -->
 <!ENTITY styleeditor.label             "Style Editor">
 <!ENTITY styleeditor.accesskey         "y">
-<!ENTITY styleeditor.keycode           "VK_F9">
-<!ENTITY styleeditor.keytext           "F9">
+<!ENTITY styleeditor.keycode           "VK_F5">
+<!ENTITY styleeditor.keytext           "F5">
 
 <!-- LOCALIZATION NOTE (window.title): This is the main title of Style Editor
      main window. The content document title follows between brackets, eg. if
