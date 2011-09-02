@@ -24,8 +24,8 @@
 <!ENTITY importButton.accesskey     "I">
 <!ENTITY importButton.commandkey    "i">
 
-<!ENTITY searchInput.tooltip        "Search through all stylesheets">
-<!ENTITY searchInput.placeholder    "Search stylesheets">
+<!ENTITY searchInput.tooltip        "Filter stylesheets by name">
+<!ENTITY searchInput.placeholder    "Find stylesheet">
 
 <!-- LOCALIZATION NOTE  (searchNoResults): This is shown when searching a term
      that is not found in any stylesheet or stylesheet name. -->
