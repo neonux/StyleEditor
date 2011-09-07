@@ -998,6 +998,9 @@ const LINE_SEPARATOR = /win/.test(OS) ? "\r\n" : "\n";
  */
 function prettifyCSS(aText)
 {
+  // remove initial and terminating HTML comments and surrounding whitespace
+  aText = aText.replace(/(?:^\s*<!--[\r\n]*)|(?:\s*-->\s*$)/g, "");
+
   let parts = [];    // indented parts
   let partStart = 0; // start offset of currently parsed part
   let indent = "";
