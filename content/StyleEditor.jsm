@@ -55,7 +55,11 @@ const LOAD_ERROR = "error-load";
 const SAVE_ERROR = "error-save";
 
 // max update frequency in ms (avoid potential typing lag and/or flicker)
+// @see StyleEditor.updateStylesheet
 const UPDATE_STYLESHEET_THROTTLE_DELAY = 500;
+
+// @see StyleEditor._persistExpando
+const STYLESHEET_EXPANDO = "-moz-styleeditor-stylesheet-";
 
 
 /**
@@ -893,7 +897,7 @@ StyleEditor.prototype = {
 
   /**
     * Persist StyleEditor-specific to the attached DOM stylesheet expando.
-    * The expando on the DOM stylesheet is used to restore  user-facing state
+    * The expando on the DOM stylesheet is used to restore user-facing state
     * when the StyleEditor is closed and then reopened again.
     *
     * @see styleSheet
@@ -902,7 +906,7 @@ StyleEditor.prototype = {
     if (!this._styleSheet) {
       return; // not loaded
     }
-    let name = "$styleeditor$stylesheet$" + this.styleSheetIndex;
+    let name = STYLESHEET_EXPANDO + this.styleSheetIndex;
     let expando = this.contentDocument.getUserData(name);
     if (!expando) {
       expando = {};
@@ -921,7 +925,7 @@ StyleEditor.prototype = {
     if (!this._styleSheet) {
       return; // not loaded
     }
-    let name = "$styleeditor$stylesheet$" + this.styleSheetIndex;
+    let name = STYLESHEET_EXPANDO + this.styleSheetIndex;
     let expando = this.contentDocument.getUserData(name);
     if (expando) {
       this._flags = expando._flags;
