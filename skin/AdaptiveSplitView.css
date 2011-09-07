@@ -14,6 +14,7 @@
   height: 100%;
   overflow: hidden;
   font-family: sans-serif;
+  font-size: 10pt;
 }
 
 button {
@@ -81,8 +82,7 @@ ol.splitview-nav > li {
 }
 ol.splitview-nav > li.splitview-active {
   -moz-box-flex: 1;
-  background-color: InfoBackground;
-  color: InfoText;
+  background-color: #e1ebfb; /* same as SourceEditor gutter */
 }
 ol.splitview-nav > li.splitview-filtered {
   display: none;
@@ -120,7 +120,6 @@ li.splitview-active .splitview-inline-details {
   display: -moz-box;
   -moz-box-flex: 0;
   text-align: center;
-  font-size: 0.9em;
 }
 .splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered {
   background-color: peachpuff;
