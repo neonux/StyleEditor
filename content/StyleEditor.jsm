@@ -61,6 +61,66 @@ const UPDATE_STYLESHEET_THROTTLE_DELAY = 500;
 // @see StyleEditor._persistExpando
 const STYLESHEET_EXPANDO = "-moz-styleeditor-stylesheet-";
 
+const PREF_BRANCH = "devtools.styleeditor";
+const TRANSITION_DURATION_PREF = PREF_BRANCH + ".transition_duration";
+const TRANSITION_FUNCTION_PREF = PREF_BRANCH + ".transition_function";
+
+const TRANSITION_CLASS = "moz-styleeditor-transitioning"; //FIXME: :root?
+const TRANSITION_TEMPLATE = "\
+:root.moz-styleeditor-transitioning, :root.moz-styleeditor-transitioning * {\
+-moz-transition-duration: ${duration}ms !important; \
+-moz-transition-delay: 0ms !important;\
+-moz-transition-timing-function: ${function} !important;\
+-moz-transition-property: background-color, background-image,\
+                          background-position, background-size, border-color,\
+                          border-radius, border-width, border-spacing, bottom,\
+                          -moz-box-flex, box-shadow, color, clip, fill,\
+                          fill-opacity, flood-color, font-size, font-size-adjust,\
+                          font-stretch, font-weight, height, -moz-image-region,\
+                          left, letter-spacing, lighting-color, line-height,\
+                          margin, marker-offset, max-height, max-width,\
+                          min-height, min-width, opacity, outline-color,\
+                          -moz-outline-radius, outline-width, padding, right,\
+                          stop-color, stop-opacity, stroke, stroke-dasharray,\
+                          stroke-dashoffset, stroke-miterlimit, stroke-opacity,\
+                          stroke-width, text-indent, text-shadow, top,\
+                          -moz-transform-origin, -moz-transform, vertical-align,\
+                          visibility, width, word-spacing, z-index !important;\
+}\n";
+
+/**
+ * Style Editor module-global preferences
+ */
+let gTransitionDuration;
+let gTransitionInsert;
+
+function setTransitionDuration()
+{
+  let duration = Services.prefs.getIntPref(TRANSITION_DURATION_PREF);
+  gTransitionDuration = duration;
+  gTransitionInsert = TRANSITION_TEMPLATE.replace("${duration}", duration);
+  let func = Services.prefs.getCharPref(TRANSITION_FUNCTION_PREF);
+  gTransitionInsert = gTransitionInsert.replace("${function}", func);
+}
+
+// listen to pref changes
+Services.prefs.addObserver(PREF_BRANCH, {
+  observe: function (aSubject, aTopic, aPrefName) {
+    if (aTopic != "nsPref:changed") {
+      return;
+    }
+    switch (aPrefName) {
+      case TRANSITION_DURATION_PREF:
+      case TRANSITION_FUNCTION_PREF:
+        setTransitionDuration();
+        break;
+    }
+  }
+}, false);
+
+// initial setup
+setTransitionDuration();
+
 
 /**
  * StyleEditor constructor.
@@ -110,6 +170,9 @@ function StyleEditor(aDocument, aStyleSheet)
   this._onWindowUnloadBinding = this._onWindowUnload.bind(this);
   // this is to proxies the focus event to underlying SourceEditor
   this._onInputElementFocusBinding = this._onInputElementFocus.bind(this);
+
+  this._onTransitionEndBinding = this._onTransitionEnd.bind(this);
+
   this._focusOnSourceEditorReady = false;
 }
 
@@ -630,15 +693,50 @@ StyleEditor.prototype = {
     let source = this._state.text;
     let oldNode = this.styleSheet.ownerNode;
     let oldIndex = this.styleSheetIndex;
-
-    let newNode = this.contentDocument.createElement("style");
+    let content = this.contentDocument;
+    let newNode = content.createElement("style");
     newNode.setAttribute("type", "text/css");
-    newNode.appendChild(this.contentDocument.createTextNode(source));
+    newNode.appendChild(content.createTextNode(source));
     oldNode.parentNode.replaceChild(newNode, oldNode);
 
-    this._styleSheet = this.contentDocument.styleSheets[oldIndex];
+    this._styleSheet = content.styleSheets[oldIndex];
     this._persistExpando();
 
+    if (gTransitionDuration <= 0) {
+      this._triggerAction("Commit");
+    } else {
+      this._styleSheet.insertRule(gTransitionInsert, 0);
+      let root = content.documentElement;
+      root.classList.add(TRANSITION_CLASS);
+      root.addEventListener("transitionend", this._onTransitionEndBinding, false);
+
+      // We need to fallback to the transitionend path (eg. to trigger Commit)
+      // even when the change didn't start a transition (eg. whitespace only or
+      // property that cannot be transitioned) after the transition duration
+      // has elapsed (+10% buffer)
+      this._onCommitFallbackTask = content.defaultView.setTimeout(
+        this._onTransitionEnd.bind(this), Math.floor(gTransitionDuration * 1.1));
+    }
+  },
+
+  /**
+    * Handler for transitionend event. This cleans up class and rule added for
+    * transition effect, and then trigger Commit as the changes have been
+    * complated.
+    */
+  _onTransitionEnd: function SE__onTransitionEnd(aEvent)
+  {
+    let root = this.contentDocument.documentElement;
+    if (!this._onCommitFallbackTask || aEvent.currentTarget != root ||
+        !root.classList.contains(TRANSITION_CLASS)) {
+      return false; // not our transition
+    }
+
+    root.removeEventListener("transitionend", this._onTransitionEndBinding, false);
+    this.contentDocument.defaultView.clearTimeout(this._onCommitFallbackTask);
+    this._onCommitFallbackTask = null;
+    root.classList.remove(TRANSITION_CLASS);
+    this.styleSheet.deleteRule(0);
     this._triggerAction("Commit");
   },
 
