@@ -92,7 +92,7 @@ h2, h3 {
     display: none;
   }
   .stylesheet-editor-input {
-    margin: 0px;
+    margin: 0;
     min-height: 10em;
   }
 }
@@ -102,7 +102,7 @@ h2, h3 {
   .splitview-filter {
     position: fixed;
     width: 100%;
-    left: 0px;
+    left: 0;
     bottom: -2em;
     -moz-transition-property: bottom;
     -moz-transition-duration: 0.5s;
@@ -111,6 +111,6 @@ h2, h3 {
     bottom: 0em;
   }
   .stylesheet-editor-input {
-    margin: 0px;
+    margin: 0;
   }
 }

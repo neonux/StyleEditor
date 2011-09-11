@@ -11,7 +11,7 @@
   height: 100%;
   overflow: hidden;
   font-family: sans-serif;
-  font-size: 10pt;
+  font-size: 14px;
 }
 
 button {
@@ -85,10 +85,10 @@ ol.splitview-nav > li.splitview-filtered {
   display: none;
 }
 ol.splitview-nav > li.splitview-flash {
-  background-color: peachpuff;
+  background-color: #faf0e1; /* complement of active color #e1ebfb */
 }
 ol.splitview-nav > li.splitview-slide {
-  max-height: 0px;
+  max-height: 0;
   overflow: hidden;
 }
 
@@ -117,9 +117,6 @@ li.splitview-active .splitview-inline-details {
   display: -moz-box;
   -moz-box-flex: 0;
   text-align: center;
-}
-.splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered {
-  background-color: peachpuff;
 }
 
 /* this is to keep in sync with AdaptiveSplitView.js's LANDSCAPE_MEDIA_QUERY */
