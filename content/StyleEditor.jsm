@@ -904,7 +904,7 @@ StyleEditor.prototype = {
   _appendNewStyleSheet: function SE__appendNewStyleSheet(aText)
   {
     let document = this.contentDocument;
-    let parent = document.body;
+    let parent = document.documentElement;
     let style = document.createElement("style");
     style.setAttribute("type", "text/css");
     if (aText) {
