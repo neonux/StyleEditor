@@ -1,9 +1,6 @@
 /*
  * Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/publicdomain/zero/1.0/
- *
- * All rules are prefixed with #style-editor-* in order to make integration
- * with other XUL/CSS code (eg. browser) easier, less prone to conflicts.
  */
 
 :root {
@@ -125,6 +122,7 @@ li.splitview-active .splitview-inline-details {
   background-color: peachpuff;
 }
 
+/* this is to keep in sync with AdaptiveSplitView.js's LANDSCAPE_MEDIA_QUERY */
 @media (min-aspect-ratio: 5/3) {
   .splitview-controller {
     -moz-box-flex: 1;

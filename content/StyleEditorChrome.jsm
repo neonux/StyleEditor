@@ -207,8 +207,7 @@ StyleEditorChrome.prototype = {
    *                                      StyleEditor aEditor)
    * }
    *
-   * A listener does not have to implement all of the interface above, events
-   * whose handler is not a function are ignored.
+   * All listener methods are optional.
    *
    * @param IStyleEditorChromeListener aListener
    * @see removeChromeListener
@@ -323,7 +322,7 @@ StyleEditorChrome.prototype = {
       // Queue editors loading so that ContentAttach is consistently triggered
       // right after all editor instances are available (this.editors) but are
       // NOT loaded/ready yet. This also helps responsivity during loading when
-      // there is many heavy stylesheets.
+      // there are many heavy stylesheets.
       this._window.setTimeout(function queuedStyleSheetLoad() {
         editor.load();
       }, 0);

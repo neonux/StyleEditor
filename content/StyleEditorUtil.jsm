@@ -173,7 +173,7 @@ function log()
  *        An object describing how to wire matching selector, supported properties
  *        are "events", "attributes" and "userData" taking objects themselves.
  *        Each key of properties above represents the name of the event, attribute
- *        or userData, with the value an function to use as the event handler,
+ *        or userData, with the value being a function used as an event handler,
  *        string to use as attribute value, or object to use as named userData
  *        respectively.
  *        If aDescriptor is a function, the argument is equivalent to :

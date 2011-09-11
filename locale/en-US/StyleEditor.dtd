@@ -8,24 +8,24 @@
 <!ENTITY styleeditor.keycode           "VK_F5">
 <!ENTITY styleeditor.keytext           "F5">
 
-<!-- LOCALIZATION NOTE (window.title): This is the main title of Style Editor
-     main window. The content document title follows between brackets, eg. if
-     you open Style Editor on a web page titled "My homepage", the window title
-     will be "Style Editor [My homepage]" -->
+<!-- LOCALIZATION NOTE (window.title): This is the default title for Style Editor
+     main window. NB: the property chromeWindowTitle in StyleEditor.properties
+     is used to dynamically update the Style Editor window title with the title
+     of the web page it is editing. -->
 <!ENTITY window.title               "Style Editor">
 
-<!ENTITY newButton.label            "New stylesheet">
-<!ENTITY newButton.tooltip          "Append a new stylesheet to the page">
+<!ENTITY newButton.label            "New style sheet">
+<!ENTITY newButton.tooltip          "Append a new style sheet to the page">
 <!ENTITY newButton.accesskey        "N">
 <!ENTITY newButton.commandkey       "n">
 
 <!ENTITY importButton.label         "Import…">
-<!ENTITY importButton.tooltip       "Import and append an existing stylesheet to the page">
+<!ENTITY importButton.tooltip       "Import and append an existing style sheet to the page">
 <!ENTITY importButton.accesskey     "I">
 <!ENTITY importButton.commandkey    "i">
 
-<!ENTITY searchInput.tooltip        "Filter stylesheets by name">
-<!ENTITY searchInput.placeholder    "Find stylesheet">
+<!ENTITY searchInput.tooltip        "Filter style sheets by name">
+<!ENTITY searchInput.placeholder    "Find style sheet">
 
 <!-- LOCALIZATION NOTE  (searchNoResults): This is shown when searching a term
      that is not found in any stylesheet or stylesheet name. -->
@@ -35,11 +35,11 @@
      box and is visible only when a search term has been typed. -->
 <!ENTITY searchClearButton.label    "Clear">
 
-<!ENTITY visibilityToggle.tooltip   "Toggle stylesheet visibility">
+<!ENTITY visibilityToggle.tooltip   "Toggle style sheet visibility">
 <!ENTITY visibilityToggle.accesskey "V">
 
 <!ENTITY saveButton.label           "Save">
-<!ENTITY saveButton.tooltip         "Save this stylesheet to a file">
+<!ENTITY saveButton.tooltip         "Save this style sheet to a file">
 <!ENTITY saveButton.accesskey       "S">
 <!ENTITY saveButton.commandkey      "s">
 
@@ -51,7 +51,7 @@
 
 <!-- LOCALICATION NOTE  (noStyleSheet.label): This is shown when a page has no
      stylesheet. -->
-<!ENTITY noStyleSheet.label         "This page has no stylesheet.">
+<!ENTITY noStyleSheet.label         "This page has no style sheet.">
 
 <!-- LOCALICATION NOTE  (noStyleSheet-tip-start.label): This is the start of a
      tip sentence shown when there is no stylesheet. It suggests to create a new
@@ -59,7 +59,6 @@
 <!ENTITY noStyleSheet-tip-start.label  "Perhaps you'd like to ">
 <!-- LOCALICATION NOTE  (noStyleSheet-tip-action.label): This is text for the
      link that triggers creation of a new stylesheet. -->
-<!ENTITY noStyleSheet-tip-action.label "append a new stylesheet">
+<!ENTITY noStyleSheet-tip-action.label "append a new style sheet">
 <!-- LOCALICATION NOTE  (noStyleSheet-tip-end.label): End of the tip sentence -->
 <!ENTITY noStyleSheet-tip-end.label    "?">
-

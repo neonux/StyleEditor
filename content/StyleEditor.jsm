@@ -168,7 +168,7 @@ function StyleEditor(aDocument, aStyleSheet)
 
   // this is to perform pending updates before editor closing
   this._onWindowUnloadBinding = this._onWindowUnload.bind(this);
-  // this is to proxies the focus event to underlying SourceEditor
+  // this is to proxy the focus event to underlying SourceEditor
   this._onInputElementFocusBinding = this._onInputElementFocus.bind(this);
 
   this._onTransitionEndBinding = this._onTransitionEnd.bind(this);
@@ -225,7 +225,7 @@ StyleEditor.prototype = {
 
   /**
    * Set the input element that handles display and input for this editor.
-   * This detaches the previous input element if any were set.
+   * This detaches the previous input element if previously set.
    *
    * @param DOMElement aElement
    */
@@ -307,7 +307,7 @@ StyleEditor.prototype = {
    * Setter for the read-only state of the editor.
    *
    * @param boolean aValue
-   *        Tells if you want the editor to read-only or not.
+   *        Tells if you want the editor to be read-only or not.
    */
   set readOnly(aValue)
   {
@@ -358,7 +358,7 @@ StyleEditor.prototype = {
    * @param nsIWindow aParentWindow
    *        Optional parent window for the file picker.
    */
-  importFromFile: function SE_import(aFile, aParentWindow)
+  importFromFile: function SE_importFromFile(aFile, aParentWindow)
   {
     aFile = this._showFilePicker(aFile, false, aParentWindow);
     if (!aFile) {
@@ -386,7 +386,7 @@ StyleEditor.prototype = {
   get errorMessage() this._errorMessage,
 
   /**
-   * Retrieve whether the stylesheet has been loaded and ready for modifications.
+   * Tell whether the stylesheet has been loaded and ready for modifications.
    *
    * @return boolean
    */
@@ -450,7 +450,7 @@ StyleEditor.prototype = {
   },
 
   /**
-   * Add a listener for significant/semantic StyleEditor actions.
+   * Add a listener for significant StyleEditor actions.
    *
    * The listener implements IStyleEditorActionListener := {
    *   onLoad:                 Called when the style sheet has been loaded and
@@ -475,8 +475,7 @@ StyleEditor.prototype = {
    *                           Arguments: (StyleEditor editor)
    * }
    *
-   * A listener does not have to implement all of the interface above, actions
-   * whose handler is not a function are ignored.
+   * All listener methods are optional.
    *
    * @param IStyleEditorActionListener aListener
    * @see removeActionListener
@@ -995,7 +994,7 @@ StyleEditor.prototype = {
   },
 
   /**
-    * Persist StyleEditor-specific to the attached DOM stylesheet expando.
+    * Persist StyleEditor extra data to the attached DOM stylesheet expando.
     * The expando on the DOM stylesheet is used to restore user-facing state
     * when the StyleEditor is closed and then reopened again.
     *
@@ -1087,7 +1086,7 @@ const LINE_SEPARATOR = /win/.test(OS) ? "\r\n" : "\n";
 
 /**
  * Prettify minified CSS text.
- * This prettify CSS code where there is no indentation in usual places while
+ * This prettifies CSS code where there is no indentation in usual places while
  * keeping original indentation as-is elsewhere.
  *
  * @param string aText
@@ -1160,7 +1159,8 @@ function repeat(aText, aCount)
 
 /**
  * Set up bracket completion on a given SourceEditor.
- * This automatically closes the following brackets: "{", "(", "["
+ * This automatically closes the following brackets when the user types them:
+ * "{", "(", "["
  *
  * @param SourceEditor aSourceEditor
  */
