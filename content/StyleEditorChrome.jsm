@@ -133,7 +133,9 @@ StyleEditorChrome.prototype = {
 
     let onContentUnload = function () {
       aContentWindow.removeEventListener("unload", onContentUnload, false);
-      this.contentWindow = null; // detach
+      if (this.contentWindow == aContentWindow) {
+        this.contentWindow = null; // detach
+      }
     }.bind(this);
     aContentWindow.addEventListener("unload", onContentUnload, false);
 
