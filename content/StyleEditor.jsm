@@ -285,7 +285,8 @@ StyleEditor.prototype = {
         sourceEditor.focus();
       }
 
-      sourceEditor.addEventListener("TextChanged", function onTextChanged() {
+      setupBracketCompletion(sourceEditor);
+      sourceEditor.addEventListener("TextChanged", function onTextChanged(aEvent) {
         this.updateStyleSheet();
       }.bind(this));
 
@@ -1155,4 +1156,49 @@ function prettifyCSS(aText)
 function repeat(aText, aCount)
 {
   return aCount > 0 ? (new Array(aCount + 1)).join(aText) : "";
+}
+
+/**
+ * Set up bracket completion on a given SourceEditor.
+ * This automatically closes the following brackets: "{", "(", "["
+ *
+ * @param SourceEditor aSourceEditor
+ */
+function setupBracketCompletion(aSourceEditor)
+{
+  let editorElement = aSourceEditor.editorElement;
+  let pairs = {
+    123/*{*/: {
+      closeString: "}",
+      closeKeyCode: Ci.nsIDOMKeyEvent.DOM_VK_CLOSE_BRACKET
+    },
+    40/*(*/: {
+      closeString: ")",
+      closeKeyCode: Ci.nsIDOMKeyEvent.DOM_VK_0
+    },
+    91/*[*/: {
+      closeString: "]",
+      closeKeyCode: Ci.nsIDOMKeyEvent.DOM_VK_CLOSE_BRACKET
+    },
+  };
+
+  editorElement.addEventListener("keypress", function onKeyPress(aEvent) {
+    let pair = pairs[aEvent.charCode];
+    if (!pair) {
+      return true;
+    }
+
+    //we got a pair to complete, simulate the closing key
+    let keyCode = pair.closeKeyCode;
+    let charCode = pair.closeString.charCodeAt(0);
+    let modifiers = 0;
+    let utils = editorElement.ownerDocument.defaultView.
+                  QueryInterface(Ci.nsIInterfaceRequestor).
+                  getInterface(Ci.nsIDOMWindowUtils);
+    let handled = utils.sendKeyEvent("keydown", keyCode, 0, modifiers);
+    utils.sendKeyEvent("keypress", 0, charCode, modifiers, !handled);
+    utils.sendKeyEvent("keyup", keyCode, 0, modifiers);
+    // and rewind caret
+    aSourceEditor.setCaretOffset(aSourceEditor.getCaretOffset() - 1);
+  }, false);
 }
