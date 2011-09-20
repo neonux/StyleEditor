@@ -3,8 +3,7 @@
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
 // http rather than chrome to improve coverage
-const TEST_BASE = "http://example.com/browser/browser/base/content/test/StyleEditor/";
-const TESTCASE_URI = TEST_BASE + "simple.html";
+const TESTCASE_URI = TEST_BASE_HTTP + "simple.html";
 
 Components.utils.import("resource://gre/modules/FileUtils.jsm");
 const FILENAME = "styleeditor-import-test.css";

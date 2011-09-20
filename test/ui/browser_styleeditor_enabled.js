@@ -3,8 +3,7 @@
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
 // https rather than chrome to improve coverage
-const TEST_BASE = "https://example.com/browser/browser/base/content/test/StyleEditor/";
-const TESTCASE_URI = TEST_BASE + "simple.html";
+const TESTCASE_URI = TEST_BASE_HTTPS + "simple.html";
 
 
 function test()

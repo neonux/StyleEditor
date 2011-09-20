@@ -2,6 +2,10 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
+const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
+const TEST_BASE_HTTP = "http://example.com/browser/browser/base/content/test/StyleEditor/";
+const TEST_BASE_HTTPS = "https://example.com/browser/browser/base/content/test/StyleEditor/";
+
 let gChromeWindow;               //StyleEditorChrome window
 
 function cleanup()
