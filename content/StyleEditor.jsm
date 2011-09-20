@@ -284,7 +284,8 @@ StyleEditor.prototype = {
       }
 
       setupBracketCompletion(sourceEditor);
-      sourceEditor.addEventListener("TextChanged", function onTextChanged(aEvent) {
+      sourceEditor.addEventListener(SourceEditor.EVENTS.TEXT_CHANGED,
+                                    function onTextChanged(aEvent) {
         this.updateStyleSheet();
       }.bind(this));
 
