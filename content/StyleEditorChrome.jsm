@@ -43,12 +43,10 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-const STYLE_EDITOR_CONTENT = "chrome://StyleEditor/content/";
-
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import(STYLE_EDITOR_CONTENT + "StyleEditor.jsm");
-Cu.import(STYLE_EDITOR_CONTENT + "StyleEditorUtil.jsm");
-Cu.import(STYLE_EDITOR_CONTENT + "AdaptiveSplitView.jsm");
+Cu.import("chrome://StyleEditor/content/StyleEditor.jsm");
+Cu.import("chrome://StyleEditor/content/StyleEditorUtil.jsm");
+Cu.import("chrome://StyleEditor/content/AdaptiveSplitView.jsm");
 
 const STYLE_EDITOR_TEMPLATE = "stylesheet";
 

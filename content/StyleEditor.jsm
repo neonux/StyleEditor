@@ -43,12 +43,10 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-const STYLE_EDITOR_CONTENT = "chrome://StyleEditor/content/";
-
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/FileUtils.jsm");
-Cu.import(STYLE_EDITOR_CONTENT + "StyleEditorUtil.jsm");
+Cu.import("chrome://StyleEditor/content/StyleEditorUtil.jsm");
 Cu.import("resource:///modules/source-editor.jsm");
 
 const LOAD_ERROR = "error-load";
