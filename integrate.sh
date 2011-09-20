@@ -50,10 +50,10 @@ do
       $BROWSER_FILE
 done
 
-mkdir -p browser/devtools/styleeditor/test/browser
+mkdir -p browser/devtools/styleeditor/test
 for FILE in `git ls-tree -r --name-only $ADDON test/ui/`
 do
-  BROWSER_FILE=browser/devtools/styleeditor/test/browser/`basename $FILE`
+  BROWSER_FILE=browser/devtools/styleeditor/test/`basename $FILE`
   git show $ADDON:$FILE > $BROWSER_FILE
   sed -i -e s/$TEST_URL_ADDON_SED/$TEST_URL_BROWSER_SED/g \
       $BROWSER_FILE
@@ -98,24 +98,23 @@ insert_tests()
   done
 }
 
-mkdir -p browser/devtools/styleeditor/test/browser
+mkdir -p browser/devtools/styleeditor/test
 if [ -x tests.tmp ]; then
   rm tests.tmp
 fi
 
 cp styleeditor.Makefile.in browser/devtools/styleeditor/Makefile.in
-cp test.Makefile.in browser/devtools/styleeditor/test/Makefile.in
 
 for FILE in `git ls-tree -r --name-only $ADDON test/ui/`
 do
-  BROWSER_FILE=browser/devtools/styleeditor/test/browser/`basename $FILE`
+  BROWSER_FILE=browser/devtools/styleeditor/test/`basename $FILE`
   git show $ADDON:$FILE > $BROWSER_FILE
   FILE=`basename $FILE`
   #if [[ $FILE == browser_*.js ]]; then
   echo "                 $FILE \\" >> tests.tmp
   #fi
 done
-insert_tests < test.Makefile.in.in > browser/devtools/styleeditor/test/browser/Makefile.in
+insert_tests < test.Makefile.in.in > browser/devtools/styleeditor/test/Makefile.in
 rm tests.tmp
 
 git add browser/devtools/styleeditor
