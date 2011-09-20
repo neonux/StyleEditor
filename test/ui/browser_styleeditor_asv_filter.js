@@ -57,7 +57,8 @@ function onFirstEditorAttach(aEditor)
     is(getFilteredItemsCount(nav), 1, // inline stylesheet is filtered
        "there is 1 filtered item if searching for 's'");
 
-    EventUtils.synthesizeKey("x", {}, gChromeWindow); // Search [six]
+    // use uppercase to check that filtering is case-insensitive
+    EventUtils.synthesizeKey("X", {}, gChromeWindow); // Search [siX]
     is(getFilteredItemsCount(nav), 2,
        "there is 2 filtered items if searching for 's'"); // no match
 

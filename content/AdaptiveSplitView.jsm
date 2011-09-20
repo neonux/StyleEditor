@@ -389,7 +389,8 @@ AdaptiveSplitView.prototype = {
         matches = binding.onFilterBy(summary, binding._details, binding.data, aQuery);
       }
       if (!matches) { // try text content
-        matches = (summary.textContent.indexOf(aQuery) > -1);
+        let content = summary.textContent.toUpperCase();
+        matches = (content.indexOf(aQuery.toUpperCase()) > -1);
       }
 
       count++;
