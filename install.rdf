@@ -3,7 +3,7 @@
 <Description about="urn:mozilla:install-manifest">
   <em:id>devtools-StyleEditor@mozilla.com</em:id>
   <em:name>Style Editor</em:name>
-  <em:version>0.3.0.0</em:version>
+  <em:version>0.3.1.0</em:version>
   <em:description>Tool designed for tweaking CSS stylesheets or styling a web page from scratch, right from within the browser.</em:description>
   <em:creator>Cedric Vivier (Mozilla DevTools)</em:creator>
   <em:homepageURL>https://wiki.mozilla.org/DevTools/Features/StyleEditor</em:homepageURL>
