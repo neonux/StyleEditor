@@ -1,10 +1,11 @@
-commit ea6cd46528846fbe2359fc57c4d79e32741cf769
+commit a355625a0daa38f4b93f735d71931cc8bb6d03fa (HEAD, bug-583041-SE-integration)
 Author: Cedric Vivier <cedricv@neonux.com>
-Date:   Wed Aug 31 21:28:58 2011 +0800
+Date:   Tue Sep 20 16:29:19 2011 -0700
 
-    WIP:
+    browser-base
 ---
- browser/base/content/browser-appmenu.inc         |    6 +++
+ browser/app/profile/firefox.js                   |    3 ++
+ browser/base/content/browser-appmenu.inc         |    5 +++
  browser/base/content/browser-menubar.inc         |    6 +++
  browser/base/content/browser-sets.inc            |    3 ++
  browser/base/content/browser.js                  |   37 ++++++++++++++++++++++
@@ -12,17 +13,37 @@ Date:   Wed Aug 31 21:28:58 2011 +0800
  browser/devtools/jar.mn                          |    1 +
  browser/locales/en-US/chrome/browser/browser.dtd |    7 ++++
  browser/locales/jar.mn                           |    2 +
- 8 files changed, 63 insertions(+), 0 deletions(-)
+ 9 files changed, 65 insertions(+), 0 deletions(-)
 
+diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
+index 3397e66..857110d 100644
+--- a/browser/app/profile/firefox.js
++++ b/browser/app/profile/firefox.js
+@@ -1002,16 +1002,19 @@ pref("devtools.errorconsole.enabled", false);
+ pref("devtools.inspector.enabled", true);
+ 
+ // Enable the style inspector
+ pref("devtools.styleinspector.enabled", true);
+ 
+ // Enable the Scratchpad tool.
+ pref("devtools.scratchpad.enabled", true);
+ 
++// Enable the Style Editor.
++pref("devtools.styleeditor.enabled", true);
++
+ // Enable tools for Chrome development.
+ pref("devtools.chrome.enabled", false);
+ 
+ // The last Web Console height. This is initially 0 which means that the Web
+ // Console will use the default height next time it shows.
+ // Change to -1 if you do not want the Web Console to remember its last height.
+ pref("devtools.hud.height", 0);
+ 
 diff --git a/browser/base/content/browser-appmenu.inc b/browser/base/content/browser-appmenu.inc
-index 72f320b..281fe72 100644
+index 72f320b..34c8124 100644
 --- a/browser/base/content/browser-appmenu.inc
 +++ b/browser/base/content/browser-appmenu.inc
-@@ -183,24 +183,30 @@
-                     key="key_webConsole"/>
-           <menuitem id="appmenu_pageInspect"
-                     hidden="true"
-                     label="&inspectMenu.label;"
+@@ -187,16 +187,21 @@
                      type="checkbox"
                      command="Tools:Inspect"
                      key="key_inspect"/>
@@ -34,7 +55,6 @@ index 72f320b..281fe72 100644
 +          <menuitem id="appmenu_styleEditor"
 +                    hidden="true"
 +                    label="&styleeditor.label;"
-+                    accesskey="&styleeditor.accesskey;"
 +                    key="key_styleeditor"
 +                    command="Tools:StyleEditor"/>
            <menuitem id="appmenu_pageSource"
@@ -45,19 +65,11 @@ index 72f320b..281fe72 100644
                      hidden="true"
                      label="&errorConsoleCmd.label;"
                      key="key_errorConsole"
-                     oncommand="toJavaScriptConsole();"/>
-           <menuseparator id="appmenu_devToolsEndSeparator"/>
-           <menuitem id="appmenu_getMoreDevtools"
-                     label="&getMoreDevtoolsCmd.label;"
 diff --git a/browser/base/content/browser-menubar.inc b/browser/base/content/browser-menubar.inc
 index 094a0f2..8995b9a 100644
 --- a/browser/base/content/browser-menubar.inc
 +++ b/browser/base/content/browser-menubar.inc
-@@ -541,24 +541,30 @@
-                             type="checkbox"
-                             hidden="true"
-                             label="&inspectMenu.label;"
-                             accesskey="&inspectMenu.accesskey;"
+@@ -545,16 +545,22 @@
                              key="key_inspect"
                              command="Tools:Inspect"/>
                    <menuitem id="menu_scratchpad"
@@ -80,19 +92,11 @@ index 094a0f2..8995b9a 100644
                    <menuitem id="javascriptConsole"
                              hidden="true"
                              label="&errorConsoleCmd.label;"
-                             accesskey="&errorConsoleCmd.accesskey;"
-                             key="key_errorConsole"
-                             oncommand="toJavaScriptConsole();"/>
-                   <menuseparator id="devToolsEndSeparator"/>
 diff --git a/browser/base/content/browser-sets.inc b/browser/base/content/browser-sets.inc
 index e4b785d..478c84d 100644
 --- a/browser/base/content/browser-sets.inc
 +++ b/browser/base/content/browser-sets.inc
-@@ -117,24 +117,25 @@
-     <command id="Browser:ShowAllTabs" oncommand="allTabs.open();"/>
-     <command id="Browser:ToggleTabView" oncommand="TabView.toggle();"/>
-     <command id="cmd_fullZoomReduce"  oncommand="FullZoom.reduce()"/>
-     <command id="cmd_fullZoomEnlarge" oncommand="FullZoom.enlarge()"/>
+@@ -121,16 +121,17 @@
      <command id="cmd_fullZoomReset"   oncommand="FullZoom.reset()"/>
      <command id="cmd_fullZoomToggle"  oncommand="ZoomManager.toggleZoom();"/>
      <command id="Browser:OpenLocation" oncommand="openLocation();"/>
@@ -110,15 +114,7 @@ index e4b785d..478c84d 100644
      <command id="History:UndoCloseWindow" oncommand="undoCloseWindow();"/>
      <command id="Browser:ToggleAddonBar" oncommand="toggleAddonBar();"/>
    </commandset>
- 
-   <commandset id="placesCommands">
-     <command id="Browser:ShowAllBookmarks"
-              oncommand="PlacesCommandHook.showPlacesOrganizer('AllBookmarks');"/>
-@@ -239,24 +240,26 @@
- #ifdef XP_GNOME
-     <key id="key_search2" key="&searchFocusUnix.commandkey;" command="Tools:Search" modifiers="accel"/>
-     <key id="key_openDownloads" key="&downloadsUnix.commandkey;" command="Tools:Downloads" modifiers="accel,shift"/>
- #else
+@@ -243,16 +244,18 @@
      <key id="key_openDownloads" key="&downloads.commandkey;" command="Tools:Downloads" modifiers="accel"/>
  #endif
      <key id="key_openAddons" key="&addons.commandkey;" command="Tools:Addons" modifiers="accel,shift"/>
@@ -137,19 +133,11 @@ index e4b785d..478c84d 100644
      <key id="key_undo"
           key="&undoCmd.key;"
           modifiers="accel"/>
- #ifdef XP_UNIX
-     <key id="key_redo" key="&undoCmd.key;" modifiers="accel,shift"/>
- #else
-     <key id="key_redo" key="&redoCmd.key;" modifiers="accel"/>
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index a696a12..8f9e438 100644
+index a451579..01260dc 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -1697,24 +1697,34 @@ function delayedStartup(isLoadingBlank, mustLoadSidebar) {
-   }
- 
-   // Enable Scratchpad in the UI, if the preference allows this.
-   let scratchpadEnabled = gPrefService.getBoolPref(Scratchpad.prefEnabledName);
+@@ -1701,16 +1701,26 @@ function delayedStartup(isLoadingBlank, mustLoadSidebar) {
    if (scratchpadEnabled) {
      document.getElementById("menu_scratchpad").hidden = false;
      document.getElementById("Tools:Scratchpad").removeAttribute("disabled");
@@ -176,15 +164,7 @@ index a696a12..8f9e438 100644
                                               Ci.nsIPrefLocalizedString).data)
      document.getElementById("appmenu_charsetMenu").hidden = true;
  #endif
- 
-   Services.obs.notifyObservers(window, "browser-delayed-startup-finished", "");
- }
- 
-@@ -8694,24 +8704,51 @@ function toggleAddonBar() {
- var Scratchpad = {
-   prefEnabledName: "devtools.scratchpad.enabled",
- 
-   openScratchpad: function SP_openScratchpad() {
+@@ -8699,16 +8709,43 @@ var Scratchpad = {
      const SCRATCHPAD_WINDOW_URL = "chrome://browser/content/scratchpad.xul";
      const SCRATCHPAD_WINDOW_FEATURES = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
  
@@ -228,19 +208,11 @@ index a696a12..8f9e438 100644
                            .getService(Components.interfaces.nsIPropertyBag2);
    return parseFloat(sysInfo.getProperty("version")) < 6;
  #else
-   return false;
- #endif
- });
- 
 diff --git a/browser/devtools/Makefile.in b/browser/devtools/Makefile.in
 index c40b595..8e42f5f 100644
 --- a/browser/devtools/Makefile.in
 +++ b/browser/devtools/Makefile.in
-@@ -41,21 +41,22 @@ DEPTH   = ../..
- topsrcdir = @top_srcdir@
- srcdir    = @srcdir@
- VPATH   = @srcdir@
- 
+@@ -45,16 +45,17 @@ VPATH   = @srcdir@
  include $(DEPTH)/config/autoconf.mk
  
  include $(topsrcdir)/config/config.mk
@@ -258,7 +230,6 @@ index c40b595..8e42f5f 100644
  # DIRS += test # no tests yet
  endif
  
- include $(topsrcdir)/config/rules.mk
 diff --git a/browser/devtools/jar.mn b/browser/devtools/jar.mn
 index ba70429..0ea1369 100644
 --- a/browser/devtools/jar.mn
@@ -273,14 +244,10 @@ index ba70429..0ea1369 100644
      content/browser/orion.css                     (sourceeditor/orion/orion.css)
 +*   content/browser/StyleEditorChrome.xul         (styleeditor/StyleEditorChrome.xul)
 diff --git a/browser/locales/en-US/chrome/browser/browser.dtd b/browser/locales/en-US/chrome/browser/browser.dtd
-index 9b538f4..2b46293 100644
+index ef95905..f09f884 100644
 --- a/browser/locales/en-US/chrome/browser/browser.dtd
 +++ b/browser/locales/en-US/chrome/browser/browser.dtd
-@@ -200,24 +200,31 @@ can reach it easily. -->
-   -  and evaluating bits of JavaScript code for the purposes of function
-   -  prototyping, experimentation and convenient scripting.
-   -
-   -  It's quite possible that you won't have a good analogue for the word
+@@ -204,16 +204,23 @@ can reach it easily. -->
    -  "Scratchpad" in your locale. You should feel free to find a close
    -  approximation to it or choose a word (or words) that means
    -  "simple discardable text editor". -->
@@ -293,8 +260,8 @@ index 9b538f4..2b46293 100644
 +  -  in the Tools menu. -->
 +<!ENTITY styleeditor.label            "Style Editor">
 +<!ENTITY styleeditor.accesskey        "y">
-+<!ENTITY styleeditor.keycode          "VK_F9">
-+<!ENTITY styleeditor.keytext          "F9">
++<!ENTITY styleeditor.keycode          "VK_F7">
++<!ENTITY styleeditor.keytext          "F7">
 +
  <!ENTITY inspectPanelTitle.label      "HTML">
  <!ENTITY inspectButton.label          "Inspect">
@@ -304,19 +271,11 @@ index 9b538f4..2b46293 100644
  <!ENTITY getMoreDevtoolsCmd.accesskey    "M">
  
  <!ENTITY fileMenu.label         "File"> 
- <!ENTITY fileMenu.accesskey       "F">
- <!ENTITY newNavigatorCmd.label        "New Window">
- <!ENTITY newNavigatorCmd.key        "N">
- <!ENTITY newNavigatorCmd.accesskey      "N">
 diff --git a/browser/locales/jar.mn b/browser/locales/jar.mn
 index f846c04..796ed25 100644
 --- a/browser/locales/jar.mn
 +++ b/browser/locales/jar.mn
-@@ -9,24 +9,26 @@
-     locale/browser/aboutHome.dtd                   (%chrome/browser/aboutHome.dtd)
-     locale/browser/aboutSessionRestore.dtd         (%chrome/browser/aboutSessionRestore.dtd)
- #ifdef MOZ_SERVICES_SYNC
-     locale/browser/aboutSyncTabs.dtd               (%chrome/browser/aboutSyncTabs.dtd)
+@@ -13,16 +13,18 @@
  #endif
  *   locale/browser/browser.dtd                     (%chrome/browser/browser.dtd)
      locale/browser/baseMenuOverlay.dtd             (%chrome/browser/baseMenuOverlay.dtd)
@@ -335,7 +294,3 @@ index f846c04..796ed25 100644
      locale/browser/quitDialog.properties           (%chrome/browser/quitDialog.properties)
  *   locale/browser/safeMode.dtd                    (%chrome/browser/safeMode.dtd)
      locale/browser/sanitize.dtd                    (%chrome/browser/sanitize.dtd)
-     locale/browser/search.properties               (%chrome/browser/search.properties)
-     locale/browser/searchbar.dtd                   (%chrome/browser/searchbar.dtd)
-     locale/browser/engineManager.dtd               (%chrome/browser/engineManager.dtd)
-     locale/browser/engineManager.properties        (%chrome/browser/engineManager.properties)

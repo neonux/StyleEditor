@@ -27,6 +27,7 @@ unset GIT_DIR
 unset GIT_WORK_TREE
 
 FILES="\
+browser/app/profile/firefox.js \
 browser/base/content/browser-appmenu.inc \
 browser/base/content/browser-sets.inc \
 browser/base/content/browser-menubar.inc \
