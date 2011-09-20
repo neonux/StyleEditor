@@ -5,8 +5,8 @@
   -  in the Tools menu. -->
 <!ENTITY styleeditor.label             "Style Editor">
 <!ENTITY styleeditor.accesskey         "y">
-<!ENTITY styleeditor.keycode           "VK_F5">
-<!ENTITY styleeditor.keytext           "F5">
+<!ENTITY styleeditor.keycode           "VK_F7">
+<!ENTITY styleeditor.keytext           "F7">
 
 <!-- LOCALIZATION NOTE (window.title): This is the default title for Style Editor
      main window. NB: the property chromeWindowTitle in StyleEditor.properties
