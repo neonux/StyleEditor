@@ -122,8 +122,8 @@ li.splitview-active .splitview-inline-details {
 /* this is to keep in sync with AdaptiveSplitView.js's LANDSCAPE_MEDIA_QUERY */
 @media (min-aspect-ratio: 5/3) {
   .splitview-controller {
-    -moz-box-flex: 1;
-    max-width: 15em;
+    -moz-box-flex: 0;
+    max-width: 300px;
   }
 
   .splitview-side-details {
@@ -156,7 +156,7 @@ li.splitview-active .splitview-inline-details {
   }
 }
 
-@media (max-height: 400px) and (min-aspect-ratio: 16/9) {
+@media (max-height: 250px) and (min-aspect-ratio: 5/3) {
   ol.splitview-nav > li:hover {
     background-image: url(right-arrow-small-hover.png);
   }

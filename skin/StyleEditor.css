@@ -3,6 +3,14 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+
+.stylesheet-name {
+  display: inline-block;
+  max-width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre;
+}
 .unsaved .stylesheet-name {
   font-style: italic;
 }
