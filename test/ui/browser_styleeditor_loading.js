@@ -8,12 +8,13 @@ const TESTCASE_URI = TEST_BASE + "simple.html";
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   gBrowser.selectedTab = gBrowser.addTab();
 
   // launch Style Editor right when the tab is created (before load)
+  // this checks that the Style Editor still launches correctly when it is opened
+  // *while* the page is still loading
   launchStyleEditorChrome(function (aChrome) {
     isnot(gBrowser.selectedBrowser.contentWindow.document.readyState, "complete",
            "content document is loading");

@@ -10,7 +10,6 @@ const NOT_INDENTED = "\nNOT INDENTED";
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
@@ -51,8 +50,6 @@ function run(aChrome) {
 
 function testEditor(aEditor)
 {
-  let sourceEditorWindow = aEditor.sourceEditor.editorElement.contentWindow
-                           || gChromeWindow;
   waitForFocus(function () {
     let lines = ["line 1", "line 2", "line 3"];
     let source = lines.join("\n") + NOT_INDENTED;
@@ -94,5 +91,5 @@ function testEditor(aEditor)
        "Line 1 has been indented");
 
     finish();
-  }, sourceEditorWindow);
+  }, gChromeWindow);
 }

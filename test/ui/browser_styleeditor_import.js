@@ -13,7 +13,6 @@ const SOURCE = "body{background:red;}";
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {

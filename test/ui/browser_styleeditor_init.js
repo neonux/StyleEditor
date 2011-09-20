@@ -8,7 +8,6 @@ const TESTCASE_URI = TEST_BASE + "simple.html";
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
@@ -77,7 +76,7 @@ function testFirstStyleSheetEditor(aChrome, aEditor)
   is(aEditor.styleSheetIndex, 0,
      "first stylesheet is at index 0");
 
-  ok(aEditor == aChrome.editors[0],
+  is(aEditor, aChrome.editors[0],
      "first stylesheet corresponds to StyleEditorChrome.editors[0]");
 
   ok(!aEditor.hasFlag("inline"),

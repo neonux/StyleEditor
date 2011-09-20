@@ -11,7 +11,6 @@ Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
@@ -67,6 +66,7 @@ let gWindowListener = {
   }
 };
 
+let gOldChromeWindow;
 let gFilename;
 
 function run(aEditor)
@@ -84,9 +84,11 @@ function run(aEditor)
     // insert char so that this stylesheet has the UNSAVED flag
     EventUtils.synthesizeKey("x", {}, gChromeWindow);
 
-    gOldChromeWindow = gChromeWindow;
-    Services.wm.addListener(gWindowListener);
-    gChromeWindow.close();
+    executeSoon(function () {
+      gOldChromeWindow = gChromeWindow;
+      Services.wm.addListener(gWindowListener);
+      gChromeWindow.close();
+    });
   }, sourceEditorWindow);
 }
 

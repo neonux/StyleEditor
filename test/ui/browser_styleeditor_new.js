@@ -8,7 +8,6 @@ const TESTCASE_URI = TEST_BASE + "simple.html";
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
@@ -40,6 +39,7 @@ function run(aChrome)
 
 let gNewEditor;       // to make sure only one new stylesheet got created
 let gCommitCount = 0; // to make sure only one Commit event is triggered
+
 function testEditorAdded(aChrome, aEditor)
 {
   if (aEditor.styleSheetIndex != 2) {
@@ -106,6 +106,8 @@ function testEditorAdded(aChrome, aEditor)
         is(gCommitCount, 1, "received only one Commit event (throttle)");
 
         aEditor.removeActionListener(listener);
+
+        gNewEditor = null;
         finish();
       });
     }

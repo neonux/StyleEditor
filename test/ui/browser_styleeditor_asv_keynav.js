@@ -8,7 +8,6 @@ const TESTCASE_URI = TEST_BASE + "four.html";
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
@@ -44,27 +43,27 @@ function onEditor0Attach(aEditor)
 
   waitForFocus(function () {
     let item = getStylesheetNameLinkFor(gChrome.editors[0]);
-    ok(gChromeWindow.document.activeElement == item,
+    is(gChromeWindow.document.activeElement, item,
        "editor 0 item is the active element");
 
     EventUtils.synthesizeKey("VK_DOWN", {}, gChromeWindow);
     item = getStylesheetNameLinkFor(gChrome.editors[1]);
-    ok(gChromeWindow.document.activeElement == item,
+    is(gChromeWindow.document.activeElement, item,
        "editor 1 item is the active element");
 
     EventUtils.synthesizeKey("VK_HOME", {}, gChromeWindow);
     item = getStylesheetNameLinkFor(gChrome.editors[0]);
-    ok(gChromeWindow.document.activeElement == item,
+    is(gChromeWindow.document.activeElement, item,
        "fist editor item is the active element");
 
     EventUtils.synthesizeKey("VK_END", {}, gChromeWindow);
     item = getStylesheetNameLinkFor(gChrome.editors[3]);
-    ok(gChromeWindow.document.activeElement == item,
+    is(gChromeWindow.document.activeElement, item,
        "last editor item is the active element");
 
     EventUtils.synthesizeKey("VK_UP", {}, gChromeWindow);
     item = getStylesheetNameLinkFor(gChrome.editors[2]);
-    ok(gChromeWindow.document.activeElement == item,
+    is(gChromeWindow.document.activeElement, item,
        "editor 2 item is the active element");
 
     EventUtils.synthesizeKey("VK_RETURN", {}, gChromeWindow);
@@ -77,5 +76,6 @@ function onEditor2Attach(aEditor)
   ok(aEditor.sourceEditor.hasFocus(),
      "editor 2 has focus");
 
+  gChrome = null;
   finish();
 }

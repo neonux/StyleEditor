@@ -5,17 +5,11 @@
 const TEST_BASE = "chrome://mochitests/content/browser/browser/base/content/test/StyleEditor/";
 const TESTCASE_URI = TEST_BASE + "simple.html";
 
-let gOriginalWidth; // those are set by run() when gChromeWindow is ready
+let gOriginalWidth; // these are set by run() when gChromeWindow is ready
 let gOriginalHeight;
 
 function test()
 {
-  registerCleanupFunction(function resizeToOriginalAndCleanup() {
-    if (gOriginalWidth && gOriginalHeight) {
-      window.resizeTo(gOriginalWidth, gOriginalHeight);
-    }
-    cleanup();
-  });
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
@@ -38,34 +32,47 @@ function run(aChrome)
   is(aChrome.editors.length, 2,
      "there is 2 stylesheets initially");
 
-  let firstAttach = true;
+  let attachCount = 0;
 
   aChrome.editors[0].addActionListener({
     onAttach: function onEditorAttached(aEditor) {
-      if (firstAttach) {
-        aEditor.sourceEditor.setCaretOffset(4);
+      attachCount++;
 
-        // queue a resize to landscape ratio
+      if (attachCount == 1) {
+        aEditor.sourceEditor.setCaretOffset(4); // to check the caret is preserved
+
+        // queue a resize to inverse aspect ratio
         // this will trigger a detach and reattach (to workaround bug 254144)
         executeSoon(function () {
-          gChromeWindow.resizeTo(800, 400);
+          waitForFocus(function () {
+            gChromeWindow.resizeTo(120, 480);
+          }, gChromeWindow);
         });
-        return;
+      } else {
+        ok(aEditor.sourceEditor,
+           "the editor does reference a SourceEditor again.");
+        is(aEditor.sourceEditor.getCaretOffset(), 4,
+           "the caret position has been preserved.");
+
+        if (attachCount == 2) {
+          // queue a resize to original aspect ratio
+          // this will trigger a detach and reattach (to workaround bug 254144)
+          executeSoon(function () {
+            waitForFocus(function () {
+              gChromeWindow.resizeTo(gOriginalWidth, gOriginalHeight);
+            }, gChromeWindow);
+          });
+        }
       }
-
-      ok(aEditor.sourceEditor,
-         "the editor does reference a SourceEditor again.");
-      is(aEditor.sourceEditor.getCaretOffset(), 4,
-         "the caret position does not have changed.");
-
-      finish();
     },
 
     onDetach: function onEditorDetached(aEditor) {
-      firstAttach = false;
-
-      is(aEditor.sourceEditor, null,
-         "the editor does not reference a SourceEditor in detached state.");
+      if (attachCount == 1) {
+        is(aEditor.sourceEditor, null,
+           "the editor does not reference a SourceEditor in detached state.");
+      } else {
+        finish();
+      }
     }
   });
 }

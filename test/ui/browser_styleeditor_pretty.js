@@ -8,7 +8,6 @@ const TESTCASE_URI = TEST_BASE + "minified.html";
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {

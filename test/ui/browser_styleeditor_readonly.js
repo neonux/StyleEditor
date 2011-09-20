@@ -9,13 +9,15 @@ const TESTCASE_URI = TEST_BASE + "simple.html";
 let gEditorAddedCount = 0;
 let gEditorReadOnlyCount = 0;
 let gChromeListener = {
-  onEditorAdded: function continueWhenAllAreLoaded(aChrome, aEditor) {
+  onEditorAdded: function (aChrome, aEditor) {
     gEditorAddedCount++;
     if (aEditor.readOnly) {
       gEditorReadOnlyCount++;
     }
 
     if (gEditorAddedCount == aChrome.editors.length) {
+      // continue testing after all editors are ready
+
       is(gEditorReadOnlyCount, 0,
          "all editors are NOT read-only initially");
 
@@ -33,7 +35,6 @@ let gChromeListener = {
 
 function test()
 {
-  registerCleanupFunction(cleanup);
   waitForExplicitFinish();
 
   gBrowser.addTab(); // because we'll close the next one
