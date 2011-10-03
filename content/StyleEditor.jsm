@@ -769,11 +769,11 @@ StyleEditor.prototype = {
       try {
         let file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
         file.initWithPath(aFile);
+        return file;
       } catch (ex) {
         this._signalError(aSave ? SAVE_ERROR : LOAD_ERROR);
         return null;
       }
-      return file;
     }
     if (aFile) {
       return aFile;
