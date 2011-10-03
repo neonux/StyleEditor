@@ -1081,7 +1081,7 @@ let StyleEditorFlags = {
 const TAB_CHARS   = "\t";
 
 const OS = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime).OS;
-const LINE_SEPARATOR = /win/.test(OS) ? "\r\n" : "\n";
+const LINE_SEPARATOR = OS === "WINNT" ? "\r\n" : "\n";
 
 /**
  * Prettify minified CSS text.

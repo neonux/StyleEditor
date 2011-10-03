@@ -30,9 +30,10 @@ let editorTestedCount = 0;
 function run(aEditor)
 {
   if (aEditor.styleSheetIndex == 0) {
-    let prettifiedSource = "body{\n\tbackground:white;\n}\n\ndiv{\n\tfont-size:4em;\n\tcolor:red\n}\n";
+    let prettifiedSource = "body\{\r?\n\tbackground\:white;\r?\n\}\r?\n\r?\ndiv\{\r?\n\tfont\-size\:4em;\r?\n\tcolor\:red\r?\n\}\r?\n";
+    let prettifiedSourceRE = new RegExp(prettifiedSource);
 
-    is(aEditor.sourceEditor.getText(), prettifiedSource,
+    ok(prettifiedSourceRE.test(aEditor.sourceEditor.getText()),
        "minified source has been prettified automatically");
     editorTestedCount++;
     let chrome = gChromeWindow.styleEditorChrome;
@@ -41,8 +42,10 @@ function run(aEditor)
   }
 
   if (aEditor.styleSheetIndex == 1) {
-    let originalSource = "body { background: red; }\ndiv {\nfont-size: 5em;\ncolor: red\n}";
-    is(aEditor.sourceEditor.getText(), originalSource,
+    let originalSource = "body \{ background\: red; \}\r?\ndiv \{\r?\nfont\-size\: 5em;\r?\ncolor\: red\r?\n\}";
+    let originalSourceRE = new RegExp(originalSource);
+
+    ok(originalSourceRE.test(aEditor.sourceEditor.getText()),
        "non-minified source has been left untouched");
     editorTestedCount++;
   }
