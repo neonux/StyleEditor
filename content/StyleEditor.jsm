@@ -637,13 +637,14 @@ StyleEditor.prototype = {
         return this._signalError(SAVE_ERROR);
       }
       FileUtils.closeSafeFileOutputStream(ostream);
+
+      // remember filename for next save if any
+      this._friendlyName = null;
+      this._savedFile = aFile;
+      this._persistExpando();
+
       this.clearFlag(StyleEditorFlags.UNSAVED);
     }.bind(this));
-
-    // remember filename for next save if any
-    this._friendlyName = null;
-    this._savedFile = aFile;
-    this._persistExpando();
     return aFile;
   },
 
