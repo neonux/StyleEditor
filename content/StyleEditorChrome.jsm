@@ -402,6 +402,7 @@ StyleEditorChrome.prototype = {
       data: {
         editor: aEditor
       },
+      disableAnimations: this._alwaysDisableAnimations,
       ordinal: aEditor.styleSheetIndex,
       onCreate: function ASV_onItemCreate(aSummary, aDetails, aData) {
         let editor = aData.editor;
