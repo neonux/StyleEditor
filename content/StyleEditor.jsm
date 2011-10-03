@@ -844,41 +844,83 @@ StyleEditor.prototype = {
       let session = cacheService.createSession("HTTP", Ci.nsICache.STORE_ANYWHERE, true);
       session.doomEntriesIfExpired = false;
       session.asyncOpenCacheEntry(aHref, Ci.nsICache.ACCESS_READ, {
-        onCacheEntryAvailable: function onCacheEntryAvailable(aEntry, aMode, aStatus) {
-          if (!Components.isSuccessCode(aStatus)) {
-            return this._signalError(LOAD_ERROR);
-          }
-
-          let source = "";
-          let stream = aEntry.openInputStream(0);
-          let head = aEntry.getMetaDataElement("response-head");
-
-          if (/Content-Encoding:\s*gzip/i.test(head)) {
-            let converter = Cc["@mozilla.org/streamconv;1?from=gzip&to=uncompressed"]
-                              .createInstance(Ci.nsIStreamConverter);
-            converter.asyncConvertData("gzip", "uncompressed", {
-              onDataAvailable: function onDataAvailable(aRequest, aContext, aUncompressedStream, aOffset, aCount) {
-                source += NetUtil.readInputStreamToString(aUncompressedStream, aCount);
-              }
-            }, this);
-            while (stream.available()) {
-              converter.onDataAvailable(null, this, stream, 0, stream.available());
-            }
-          } else {
-            // uncompressed data
-            while (stream.available()) {
-              source += NetUtil.readInputStreamToString(stream, stream.available());
-            }
-          }
-
-          stream.close();
-          aEntry.close();
-          this._onSourceLoad(source);
-        }.bind(this)
+        onCacheEntryAvailable: this._onCacheEntryAvailable.bind(this)
       });
     } catch (ex) {
       this._signalError(LOAD_ERROR);
     }
+  },
+
+   /**
+    * The nsICacheListener.onCacheEntryAvailable method implementation used when
+    * the style sheet source is loaded from the browser cache.
+    *
+    * @param nsICacheEntryDescriptor aEntry
+    * @param nsCacheAccessMode aMode
+    * @param integer aStatus
+    */
+  _onCacheEntryAvailable: function SE__onCacheEntryAvailable(aEntry, aMode, aStatus)
+  {
+    assert(!this._loadingContext);
+    if (!Components.isSuccessCode(aStatus)) {
+      return this._signalError(LOAD_ERROR);
+    }
+
+    let stream = aEntry.openInputStream(0);
+    let context = {
+      chunks: [],
+      stream: stream,
+      entry: aEntry,
+      inputSink: this.onDataAvailable.bind(this),
+      editor: this,
+    };
+    this._loadingContext = context;
+
+    let head = aEntry.getMetaDataElement("response-head");
+    if (/^Content-Encoding:\s*gzip/mi.test(head)) {
+      let converter = Cc["@mozilla.org/streamconv;1?from=gzip&to=uncompressed"]
+                        .createInstance(Ci.nsIStreamConverter);
+      converter.asyncConvertData("gzip", "uncompressed", this, null);
+      context.inputSink = converter.onDataAvailable;
+    }
+
+    // start grabbing available chunk(s)
+    context.inputSink(null, null, stream, 0, stream.available());
+  },
+
+  /**
+   * nsIStreamListener.onDataAvailable implementation used as input sink when
+   * style sheet source is loaded from the browser cache.
+   *
+   * @private
+   * @param nsIRequest aRequest
+   * @param nsISupports aContext
+   * @param nsIInputStream aStream
+   * @param number aOffset
+   * @param number aCount
+   */
+  onDataAvailable: function SE_onDataAvailable(aRequest, aContext, aStream, aOffset, aCount) {
+    let context = this._loadingContext;
+    context.chunks.push(NetUtil.readInputStreamToString(aStream, aCount));
+
+    let available;
+    try {
+      available = context.stream.available();
+      if (!available) {
+        context.stream.close();
+      }
+    } catch (ex) {
+      // note: some nsIInputStream implementations auto-close at EOS and throw
+    }
+    if (!available) {
+      context.entry.close();
+      context.editor._onSourceLoad(context.chunks.join(""));
+      context.editor._loadingContext = null;
+      return;
+    }
+
+    // load the next available chunk
+    context.inputSink(null, aContext, context.stream, 0, available);
   },
 
   /**
@@ -1007,7 +1049,7 @@ StyleEditor.prototype = {
     let expando = this.contentDocument.getUserData(name);
     if (!expando) {
       expando = {};
-      this.contentDocument.setUserData(name , expando, null);
+      this.contentDocument.setUserData(name, expando, null);
     }
     expando._flags = this._flags;
     expando._savedFile = this._savedFile;
