@@ -25,9 +25,6 @@ function test()
 
 function run(aChrome)
 {
-  gOriginalWidth = gChromeWindow.outerWidth;
-  gOriginalHeight = gChromeWindow.outerHeight;
-
   is(aChrome.editors.length, 2,
      "there is 2 stylesheets initially");
 
@@ -44,6 +41,8 @@ function run(aChrome)
         // this will trigger a detach and reattach (to workaround bug 254144)
         executeSoon(function () {
           waitForFocus(function () {
+            gOriginalWidth = gChromeWindow.outerWidth;
+            gOriginalHeight = gChromeWindow.outerHeight;
             gChromeWindow.resizeTo(120, 480);
           }, gChromeWindow);
         });
@@ -56,11 +55,9 @@ function run(aChrome)
         if (attachCount == 2) {
           // queue a resize to original aspect ratio
           // this will trigger a detach and reattach (to workaround bug 254144)
-          executeSoon(function () {
-            waitForFocus(function () {
-              gChromeWindow.resizeTo(gOriginalWidth, gOriginalHeight);
-            }, gChromeWindow);
-          });
+          waitForFocus(function () {
+            gChromeWindow.resizeTo(gOriginalWidth, gOriginalHeight);
+          }, gChromeWindow);
         }
       }
     },

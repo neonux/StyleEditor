@@ -2,7 +2,7 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const TESTCASE_URI = TEST_BASE_HTTPS + "simple.html";
+const TESTCASE_URI = TEST_BASE + "simple.html";
 
 
 function test()
@@ -16,11 +16,15 @@ function test()
   // *while* the page is still loading
   launchStyleEditorChrome(function (aChrome) {
     isnot(gBrowser.selectedBrowser.contentWindow.document.readyState, "complete",
-           "content document is loading");
+          "content document is still loading");
 
-    aChrome.addChromeListener({
-      onContentAttach: run
-    });
+    if (!aChrome.isContentAttached) {
+      aChrome.addChromeListener({
+        onContentAttach: run
+      });
+    } else {
+      run(aChrome);
+    }
   });
 
   content.location = TESTCASE_URI;

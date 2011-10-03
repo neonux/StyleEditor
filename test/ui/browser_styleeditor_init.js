@@ -42,7 +42,7 @@ function run(aChrome)
      "editors are ordered by styleSheetIndex");
 
   // check StyleEditorChrome is a singleton wrt to the same DOMWindow
-  let chromeWindow = gStyleEditor.openChrome();
+  let chromeWindow = StyleEditor.openChrome();
   is(chromeWindow, gChromeWindow,
      "attempt to edit the same document returns the same Style Editor window");
 }

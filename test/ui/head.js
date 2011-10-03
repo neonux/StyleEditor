@@ -10,9 +10,13 @@ let gChromeWindow;               //StyleEditorChrome window
 
 function cleanup()
 {
-  gChromeWindow.close();
-  gChromeWindow = null;
-  gBrowser.removeCurrentTab();
+  if (gChromeWindow) {
+    gChromeWindow.close();
+    gChromeWindow = null;
+  }
+  if (gBrowser.tabs.length > 1) {
+    gBrowser.removeCurrentTab();
+  }
 }
 
 function launchStyleEditorChrome(aCallback)
@@ -21,9 +25,12 @@ function launchStyleEditorChrome(aCallback)
   if (gChromeWindow.document.readyState != "complete") {
     gChromeWindow.addEventListener("load", function onChromeLoad() {
       gChromeWindow.removeEventListener("load", onChromeLoad, true);
+
+      gChromeWindow.styleEditorChrome._alwaysDisableAnimations = true;
       aCallback(gChromeWindow.styleEditorChrome);
     }, true);
   } else {
+    gChromeWindow.styleEditorChrome._alwaysDisableAnimations = true;
     aCallback(gChromeWindow.styleEditorChrome);
   }
 }

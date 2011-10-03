@@ -26,21 +26,23 @@ function run(aChrome)
 {
   is(aChrome.editors.length, 2,
      "there is 2 stylesheets initially");
+}
 
-  executeSoon(function () {
+let gNewEditor;       // to make sure only one new stylesheet got created
+let gCommitCount = 0; // to make sure only one Commit event is triggered
+let gAddedCount = 0;
+
+function testEditorAdded(aChrome, aEditor)
+{
+  if (++gAddedCount == 2) {
+    // test after the 2 initial stylesheets have been loaded
     waitForFocus(function () {
       // create a new style sheet
       let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
       EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
     }, gChromeWindow);
-  });
-}
+  }
 
-let gNewEditor;       // to make sure only one new stylesheet got created
-let gCommitCount = 0; // to make sure only one Commit event is triggered
-
-function testEditorAdded(aChrome, aEditor)
-{
   if (aEditor.styleSheetIndex != 2) {
     return; // this is not the new stylesheet
   }
@@ -53,19 +55,17 @@ function testEditorAdded(aChrome, aEditor)
 
   let listener = {
     onAttach: function (aEditor) {
-      ok(aEditor.isLoaded,
-         "new editor is loaded when attached");
-      ok(aEditor.hasFlag("new"),
-         "new editor has NEW flag");
-      ok(!aEditor.hasFlag("unsaved"),
-         "new editor does not have UNSAVED flag");
-
-      ok(aEditor.inputElement,
-         "new editor has an input element attached");
-
-      let sourceEditorWindow = aEditor.sourceEditor.editorElement.contentWindow
-                               || gChromeWindow;
       waitForFocus(function () {
+        ok(aEditor.isLoaded,
+           "new editor is loaded when attached");
+        ok(aEditor.hasFlag("new"),
+           "new editor has NEW flag");
+        ok(!aEditor.hasFlag("unsaved"),
+           "new editor does not have UNSAVED flag");
+
+        ok(aEditor.inputElement,
+           "new editor has an input element attached");
+
         ok(aEditor.sourceEditor.hasFocus(),
            "new editor has focus");
 
@@ -81,7 +81,7 @@ function testEditorAdded(aChrome, aEditor)
         for each (let c in "body{background-color:red;}") {
           EventUtils.synthesizeKey(c, {}, gChromeWindow);
         }
-      }, sourceEditorWindow) ;
+      }, gChromeWindow) ;
     },
 
     onCommit: function (aEditor) {

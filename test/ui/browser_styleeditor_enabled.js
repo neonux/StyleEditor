@@ -10,21 +10,23 @@ function test()
 {
   waitForExplicitFinish();
 
+  let count = 0;
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
     aChrome.addChromeListener({
       onEditorAdded: function (aChrome, aEditor) {
-        if (aEditor.styleSheetIndex != 0) {
-          return; // we want to test against the first stylesheet
-        }
-
-        if (!aEditor.sourceEditor) {
-          aEditor.addActionListener({
-            onAttach: function (aEditor) {
-              run(aChrome, aEditor);
-            }
-          });
-        } else {
-          run(aChrome, aEditor);
+        count++;
+        if (count == 2) {
+          // we test against first stylesheet after all are ready
+          let editor = aChrome.editors[0];
+          if (!editor.sourceEditor) {
+            editor.addActionListener({
+              onAttach: function (aEditor) {
+                run(aChrome, aEditor);
+              }
+            });
+          } else {
+            run(aChrome, editor);
+          }
         }
       }
     });
@@ -35,9 +37,7 @@ function test()
 
 function run(aChrome, aEditor)
 {
-  waitForFocus(function () {
-    testEnabledToggle(aChrome, aEditor);
-  }, gChromeWindow);
+  testEnabledToggle(aChrome, aEditor);
 }
 
 function testEnabledToggle(aChrome, aEditor)
@@ -47,6 +47,7 @@ function testEnabledToggle(aChrome, aEditor)
 
   let firstStyleSheetEditor = aEditor;
   let firstStyleSheetUI = aChrome.getSummaryElementForEditor(aEditor);
+  let enabledToggle = firstStyleSheetUI.querySelector(".stylesheet-enabled");
 
   is(firstStyleSheetEditor.contentDocument.styleSheets[0].disabled, false,
      "first stylesheet is initially enabled");
@@ -74,8 +75,9 @@ function testEnabledToggle(aChrome, aEditor)
            "first stylesheet is now disabled, UI has DISABLED class");
 
         // now toggle it back to enabled
-        let enabledToggle = firstStyleSheetUI.querySelector(".stylesheet-enabled");
-        EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
+        waitForFocus(function () {
+          EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
+        }, gChromeWindow);
         return;
       }
 
@@ -93,6 +95,7 @@ function testEnabledToggle(aChrome, aEditor)
     }
   });
 
-  let enabledToggle = firstStyleSheetUI.querySelector(".stylesheet-enabled");
-  EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
+  waitForFocus(function () {
+    EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
+  }, gChromeWindow);
 }
