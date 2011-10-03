@@ -137,31 +137,9 @@ li.splitview-active .splitview-inline-details {
     display: -moz-box;
   }
 
-  ol.splitview-nav > li:hover,
-  ol.splitview-nav > li.splitview-active {
-    background-repeat: no-repeat;
-    background-position: center right;
-    -moz-box-flex: 0;
-  }
-  ol.splitview-nav > li:hover {
-    background-image: url(right-arrow-hover.png);
-  }
-  ol.splitview-nav > li.splitview-active {
-    background-image: url(right-arrow.png);
-  }
-
   /* details are never shown inline in landscape */
   .splitview-inline-details {
     display: none;
-  }
-}
-
-@media (max-height: 250px) and (min-aspect-ratio: 5/3) {
-  ol.splitview-nav > li:hover {
-    background-image: url(right-arrow-small-hover.png);
-  }
-  ol.splitview-nav > li.splitview-active {
-    background-image: url(right-arrow-small.png);
   }
 }
 
