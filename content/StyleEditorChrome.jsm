@@ -305,12 +305,6 @@ StyleEditorChrome.prototype = {
     this._document.title = _("chromeWindowTitle",
           this.contentDocument.title || this.contentDocument.location.href);
 
-    // queue ContentAttach before all editors are queued for loading
-    // do not trigger in this execution context to make sure DOM is sync
-    this._window.setTimeout(function () {
-      this._triggerChromeListeners("ContentAttach");
-    }.bind(this), 0);
-
     let document = this.contentDocument;
     for (let i = 0; i < document.styleSheets.length; ++i) {
       let styleSheet = document.styleSheets[i];
@@ -318,15 +312,17 @@ StyleEditorChrome.prototype = {
       let editor = new StyleEditor(document, styleSheet);
       editor.addActionListener(this);
       this._editors.push(editor);
-
-      // Queue editors loading so that ContentAttach is consistently triggered
-      // right after all editor instances are available (this.editors) but are
-      // NOT loaded/ready yet. This also helps responsivity during loading when
-      // there are many heavy stylesheets.
-      this._window.setTimeout(function queuedStyleSheetLoad() {
-        editor.load();
-      }, 0);
     }
+
+    this._triggerChromeListeners("ContentAttach");
+
+    // Queue editors loading so that ContentAttach is consistently triggered
+    // right after all editor instances are available (this.editors) but are
+    // NOT loaded/ready yet. This also helps responsivity during loading when
+    // there are many heavy stylesheets.
+    this._editors.forEach(function (aEditor) {
+      this._window.setTimeout(aEditor.load.bind(aEditor), 0);
+    }, this);
   },
 
   /**
