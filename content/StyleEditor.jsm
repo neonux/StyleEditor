@@ -610,15 +610,19 @@ StyleEditor.prototype = {
    *        Optional nsIFile or string representing the filename to save in the
    *        background, no UI will be displayed.
    *        To implement 'Save' instead of 'Save as', you can pass savedFile here.
-   * @return nsIFile
-   *         Return the nsIFile object for saved file, or null if save has been
-   *         canceled by the user.
+   * @param function(nsIFile aFile) aCallback
+   *        Optional callback called when the operation has finished.
+   *        aFile has the nsIFile object for saved file or null if the operation
+   *        has failed or has been canceled by the user.
    * @see savedFile
    */
-  saveToFile: function SE_saveToFile(aFile)
+  saveToFile: function SE_saveToFile(aFile, aCallback)
   {
     aFile = this._showFilePicker(aFile, true);
     if (!aFile) {
+      if (aCallback) {
+        aCallback(null);
+      }
       return;
     }
 
@@ -634,7 +638,11 @@ StyleEditor.prototype = {
 
     NetUtil.asyncCopy(istream, ostream, function SE_onStreamCopied(status) {
       if (!Components.isSuccessCode(status)) {
-        return this._signalError(SAVE_ERROR);
+        if (aCallback) {
+          aCallback(null);
+        }
+        this._signalError(SAVE_ERROR);
+        return;
       }
       FileUtils.closeSafeFileOutputStream(ostream);
 
@@ -643,9 +651,11 @@ StyleEditor.prototype = {
       this._savedFile = aFile;
       this._persistExpando();
 
+      if (aCallback) {
+        aCallback(aFile);
+      }
       this.clearFlag(StyleEditorFlags.UNSAVED);
     }.bind(this));
-    return aFile;
   },
 
   /**
