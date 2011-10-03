@@ -137,6 +137,10 @@ li.splitview-active .splitview-inline-details {
     display: -moz-box;
   }
 
+  ol.splitview-nav > li.splitview-active {
+    -moz-box-flex: 0;
+  }
+
   /* details are never shown inline in landscape */
   .splitview-inline-details {
     display: none;
