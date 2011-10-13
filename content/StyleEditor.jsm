@@ -47,6 +47,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("chrome://StyleEditor/content/StyleEditorUtil.jsm");
+Cu.import("chrome://StyleEditor/content/StyleValue.jsm");
 Cu.import("resource:///modules/source-editor.jsm");
 
 const LOAD_ERROR = "error-load";
@@ -1120,6 +1121,75 @@ StyleEditor.prototype = {
       }.bind(this)
     });
 
+    bindings.push({
+      action: "StyleEditor.incrementValue",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_UP,
+      alt: true,
+      callback: function incrementValue() {
+        this.incrementValueAtCursorBy(1);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.decrementValue",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_DOWN,
+      alt: true,
+      callback: function decrementValue() {
+        this.incrementValueAtCursorBy(-1);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.incrementSmallValue",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_UP,
+      alt: true,
+      shift: true,
+      callback: function incrementValue() {
+        this.incrementValueAtCursorBy(0.1);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.decrementSmallValue",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_DOWN,
+      alt: true,
+      shift: true,
+      callback: function decrementValue() {
+        this.incrementValueAtCursorBy(-0.1);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.multiplyByTwo",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_PAGE_UP,
+      alt: true,
+      callback: function multiplyByTwo() {
+        this.multiplyValueAtCursorBy(2);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.divideByTwo",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_PAGE_DOWN,
+      alt: true,
+      callback: function divideByTwo() {
+        this.multiplyValueAtCursorBy(0.5);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.increaseByTenPercent",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_PAGE_UP,
+      alt: true,
+      shift: true,
+      callback: function increaseByTenPercent() {
+        this.multiplyValueAtCursorBy(1.1);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.decreaseByTenPercent",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_PAGE_DOWN,
+      alt: true,
+      shift: true,
+      callback: function decreaseByTenPercent() {
+        this.multiplyValueAtCursorBy(0.9);
+      }.bind(this)
+    });
+
     return bindings;
   },
 
@@ -1136,11 +1206,17 @@ StyleEditor.prototype = {
     this._state.text = text;
     let start = offset > 0 ? offset - 1 : 0;
     let end = offset;
-    while (!/[\s;:\{\}\[\]\"\']/.test(text[end] || " ")) {
+    while (!/[\s;:\{\}\[\]\(\)\"\']/.test(text[end] || " ")) {
       end++;
     }
-    while (!/[\s;:\{\}\[\]\"\']/.test(text[start] || " ")) {
+    while (!/[\s;:\{\}\[\]\(\)\"\']/.test(text[start] || " ")) {
       start--;
+    }
+    if (text[start] == "(" && text[end] == ")") { //FIXME: token.function
+      if (/[\s,:]rgba?\($/.test(text.substring(start - 8, start + 1))) {
+        start -= text[start-2] == "a" ? 5/*rgba(*/ : 4/*rgb(*/;
+        end++;
+      }
     }
     return {
       start: start + 1,
@@ -1168,6 +1244,59 @@ StyleEditor.prototype = {
     let url = MDN_CSS_URL.replace("{locale}", gLocale).replace("{token}", token.text);
     let gBrowser = Services.wm.getMostRecentWindow("navigator:browser").gBrowser;
     gBrowser.selectedTab = gBrowser.addTab(url);
+  },
+
+  /**
+   * Increment CSS value at cursor by given delta (can be negative).
+   * Does nothing if the cursor is not in a supported CSS value.
+   *
+   * @param number aDelta
+   * @see StyleValue.incrementBy
+   */
+  incrementValueAtCursorBy: function SE_incrementValueAtCursorBy(aDelta)
+  {
+    let token = this.getTokenAtCursor();
+    let value = new StyleValue(token.text);
+    if (value.incrementBy(aDelta)) {
+      this._replaceToken(token, value.text);
+    }
+  },
+
+  /**
+   * Multiply CSS value at cursor by given ratio (can be fractional).
+   * Does nothing if the cursor is not in a supported CSS value.
+   *
+   * @param number aRatio
+   * @see StyleValue.multiplyBy
+   */
+  multiplyValueAtCursorBy: function SE_multiplyValueAtCursorBy(aRatio)
+  {
+    let token = this.getTokenAtCursor();
+    let value = new StyleValue(token.text);
+    if (value.multiplyBy(aRatio)) {
+      this._replaceToken(token, value.text);
+    }
+  },
+
+  /**
+   * Replace token with new text.
+   * This takes care of readjusting caret position to stay on the same token
+   * if the new text is shorter.
+   *
+   * @param object aToken
+   *        A token object as returned by getTokenAtCursor
+   * @param string aNewText
+   *        The text to replace the token with.
+   * @see getTokenAtCursor
+   */
+  _replaceToken: function SE__replaceToken(aToken, aNewText)
+  {
+    let offset = this.sourceEditor.getCaretOffset();
+    this.sourceEditor.setText(aNewText, aToken.start, aToken.end);
+    if (offset >= aToken.start || offset <= aToken.end) {
+      offset = Math.min(offset, aToken.start + aNewText.length - 1);
+      this.sourceEditor.setCaretOffset(offset);
+    }
   }
 };
 
