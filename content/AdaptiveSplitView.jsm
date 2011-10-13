@@ -60,8 +60,6 @@ const BINDING_USERDATA = "splitview-binding";
  */
 function AdaptiveSplitView(aRoot)
 {
-  assert(aRoot, "Argument 'aRoot' is required to initialize AdaptiveSplitView.");
-
   this._root = aRoot;
   this._controller = aRoot.querySelector(".splitview-controller");
   this._nav = aRoot.querySelector(".splitview-nav");
@@ -198,10 +196,7 @@ AdaptiveSplitView.prototype = {
   get activeDetails()
   {
     let summary = this.activeSummary;
-    if (!summary) {
-      return null;
-    }
-    return summary.getUserData(BINDING_USERDATA)._details;
+    return summary ? summary.getUserData(BINDING_USERDATA)._details : null;
   },
 
   /**
@@ -509,23 +504,8 @@ AdaptiveSplitView.prototype = {
   }
 };
 
-
 //
 // private helpers
-
-/**
-  * Assert that an expression is true, throw an exception otherwise.
-  *
-  * @param boolean aExpression
-  * @param string aMessage
-  *        Optional message for the exception.
-  */
-function assert(aExpression, aMessage)
-{
-  if (!aExpression) {
-    throw new Error("Assertion failed!\n" + aMessage);
-  }
-}
 
 /**
  * Schedule one or multiple CSS animation(s) on an element.
@@ -536,8 +516,6 @@ function assert(aExpression, aMessage)
  */
 function scheduleAnimation(aElement)
 {
-  assert(arguments.length > 1);
-
   let classes = Array.prototype.slice.call(arguments, 1);
   for each (let klass in classes) {
     aElement.classList.add(klass);
