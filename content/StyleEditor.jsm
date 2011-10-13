@@ -267,7 +267,6 @@ StyleEditor.prototype = {
 
     let sourceEditor = new SourceEditor();
     let config = {
-//    placeholderText: aElement.getAttribute("data-placeholder"),
       placeholderText: this._state.text, //! this is initialText (bug 680371)
       showLineNumbers: true,
       mode: SourceEditor.MODES.CSS,
