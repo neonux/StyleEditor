@@ -86,6 +86,9 @@ const TRANSITION_TEMPLATE = "\
                           visibility, width, word-spacing, z-index !important;\
 }\n";
 
+const LOCALE_PREF = "general.useragent.locale";
+const MDN_CSS_URL = "https://developer.mozilla.org/{locale}/CSS/{token}";
+
 /**
  * Style Editor module-global preferences
  */
@@ -116,9 +119,9 @@ Services.prefs.addObserver(PREF_BRANCH, {
   }
 }, false);
 
-// initial setup
+// initial module setup
 setTransitionDuration();
-
+let gLocale = Services.prefs.getCharPref(LOCALE_PREF).split("-")[0];
 
 /**
  * StyleEditor constructor.
@@ -1109,7 +1112,62 @@ StyleEditor.prototype = {
       }.bind(this)
     });
 
+    bindings.push({
+      action: "StyleEditor.openInfoForToken",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_F1,
+      callback: function getTokenInfo() {
+        this.openInfoForTokenAtCursor();
+      }.bind(this)
+    });
+
     return bindings;
+  },
+
+  /**
+   * Get a object representing the word or CSS value at cursor.
+   * Returned token object can have zero length (eg. cursor is in whitespace).
+   *
+   * @return object{start:,end:,text:,nextCharacter:}
+   */
+  getTokenAtCursor: function SE_getTokenAtCursor()
+  {
+    let offset = this.sourceEditor.getCaretOffset();
+    let text = this._sourceEditor.getText();
+    this._state.text = text;
+    let start = offset > 0 ? offset - 1 : 0;
+    let end = offset;
+    while (!/[\s;:\{\}\[\]\"\']/.test(text[end] || " ")) {
+      end++;
+    }
+    while (!/[\s;:\{\}\[\]\"\']/.test(text[start] || " ")) {
+      start--;
+    }
+    return {
+      start: start + 1,
+      end: end,
+      text: text.substring(start + 1, end),
+      previousCharacter: text[start-1] || " ",
+      nextCharacter: text[end] || " "
+    };
+  },
+
+  /**
+   * Open a new browser tab with documentation about the token at cursor.
+   * Currently open documentation on CSS properties only, does nothing otherwise.
+   *
+   * @see getTokenAtCursor
+   */
+  openInfoForTokenAtCursor: function SE_openInfoForTokenAtCursor()
+  {
+    let token = this.getTokenAtCursor();
+    if (!token.text.length ||
+        !/\s/.test(token.previousCharacter) || token.nextCharacter != ":") {
+      return;
+    }
+
+    let url = MDN_CSS_URL.replace("{locale}", gLocale).replace("{token}", token.text);
+    let gBrowser = Services.wm.getMostRecentWindow("navigator:browser").gBrowser;
+    gBrowser.selectedTab = gBrowser.addTab(url);
   }
 };
 
