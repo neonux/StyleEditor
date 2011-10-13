@@ -389,6 +389,46 @@ StyleValue.prototype = {
     this._value = this._textValue / CONVERSION_TABLE[this._type][this._unit];
     this._value = roundDecimal(this._value);
     return true;
+  },
+
+  /**
+   * Cycle value through supported units or enumeration.
+   *
+   * @param number aDirection
+   *        Cycle forward if positive, backwards otherwise.
+   * @return boolean
+   *         True if the value has been modified, false otherwise (eg. invalid)
+   */
+  cycle: function SV_cycle(aDirection)
+  {
+    if (!this._type || this._type == "number") {
+      return false;
+    }
+
+    let supported;
+    let needsConversion = false;
+    if (this._type == "color") {
+      supported = ["rgb", "rgba", "hex", "shorthex"];
+    } else if (this._type == "enumeration") {
+      supported = ENUMERATION_TABLE[this._value];
+    } else {
+      supported = Object.keys(CONVERSION_TABLE[this._type]);
+      needsConversion = true;
+    }
+
+    // cycle between supported values
+    let index = supported.indexOf(this._unit) + aDirection;
+    if (index < 0) {
+      index = supported.length - 1;
+    } else if (index >= supported.length) {
+      index = 0;
+    }
+    this._unit = supported[index];
+    if (needsConversion) {
+      this._textValue =
+        roundDecimal(this._value * CONVERSION_TABLE[this._type][this._unit]);
+    }
+    return true;
   }
 };
 

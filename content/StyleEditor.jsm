@@ -1189,6 +1189,22 @@ StyleEditor.prototype = {
         this.multiplyValueAtCursorBy(0.9);
       }.bind(this)
     });
+    bindings.push({
+      action: "StyleEditor.cycleLeft",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_LEFT,
+      alt: true,
+      callback: function cycleLeft() {
+        this.cycleValueAtCursor(-1);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.cycleRight",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_RIGHT,
+      alt: true,
+      callback: function cycleRight() {
+        this.cycleValueAtCursor(1);
+      }.bind(this)
+    });
 
     return bindings;
   },
@@ -1274,6 +1290,22 @@ StyleEditor.prototype = {
     let token = this.getTokenAtCursor();
     let value = new StyleValue(token.text);
     if (value.multiplyBy(aRatio)) {
+      this._replaceToken(token, value.text);
+    }
+  },
+
+  /**
+   * Cycle CSS value by unit or enumeration.
+   *
+   * @param number aDirection
+   *        Cycle forward if positive, backwards otherwise.
+   * @see StyleValue.cycle
+   */
+  cycleValueAtCursor: function SE_cycleValueAtCursor(aDirection)
+  {
+    let token = this.getTokenAtCursor();
+    let value = new StyleValue(token.text);
+    if (value.cycle(aDirection)) {
       this._replaceToken(token, value.text);
     }
   },
