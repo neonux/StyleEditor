@@ -3,7 +3,6 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-
 .stylesheet-name {
   display: inline-block;
   max-width: 250px;
@@ -18,25 +17,42 @@
   content: "* ";
 }
 
-/* stylesheet toolbar only visible for the active/focused/hovered stylesheets */
-.splitview-nav > li > header > .toolbar {
-  visibility: hidden;
-  float: right;
-  font-size: 0.8em;
-  margin-right: 20px;
+.splitview-nav hgroup {
+  float: left;
+  margin-top: 4px; /* align with toggle */
 }
-.splitview-nav > li:hover > header > .toolbar,
-.splitview-nav > li:focus > header > .toolbar,
-.splitview-nav > li.splitview-active > header > .toolbar {
-  visibility: visible;
-}
-.toolbar > a {
-  color: -moz-default-color;
+.splitview-nav .stylesheet-more {
+  position: relative;
+  right: 0;
 }
 
-li hgroup {
-  display: block;
-  float: left;
+.splitview-nav hgroup.stylesheet-stats,
+.splitview-nav hgroup.stylesheet-actions {
+  position: absolute;
+  z-index: 2;
+  right: -100px;
+  -moz-transition: right 0.2s ease-in-out;
+  -moz-transition-delay: 0.2s;
+}
+.splitview-nav hgroup.stylesheet-stats {
+  z-index: 1;
+  right: 4px;
+  -moz-transition-delay: 0.4s;
+}
+.splitview-nav hgroup.stylesheet-actions a {
+  padding-left: 1ex; /* Fitts */
+  padding-right: 1ex;
+  color: black;
+}
+.splitview-nav > li:hover hgroup.stylesheet-stats,
+.splitview-nav > li:focus hgroup.stylesheet-stats,
+.splitview-nav > li.splitview-active hgroup.stylesheet-stats {
+  right: -100px;
+}
+.splitview-nav > li:hover hgroup.stylesheet-actions,
+.splitview-nav > li:focus hgroup.stylesheet-actions,
+.splitview-nav > li.splitview-active hgroup.stylesheet-actions {
+  right: 4px;
 }
 
 h1, h2, h3 {
@@ -86,7 +102,7 @@ h2, h3 {
 .stylesheet-editor-input {
   display: -moz-box;
   -moz-box-flex: 1;
-  min-height: 18em;
+  min-height: 8em;
   padding-top: 3px;
   padding-bottom: 3px;
   border: 1px inset WindowFrame;
@@ -94,19 +110,8 @@ h2, h3 {
   background-color: -moz-default-background-color;
 }
 
-/* limited height mode */
-@media (max-height: 250px) {
-  .stylesheet-title, .stylesheet-stats {
-    display: none;
-  }
-  .stylesheet-editor-input {
-    margin: 0;
-    min-height: 10em;
-  }
-}
-
 /* limited width mode (hide search unless it has focus [search-on-type]) */
-@media (max-width: 400px) {
+@media (max-width: 250px) {
   .splitview-filter {
     position: fixed;
     width: 100%;

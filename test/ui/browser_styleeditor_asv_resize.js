@@ -12,11 +12,12 @@ function test()
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
-    aChrome.addChromeListener({
-      onContentAttach: run
-    });
     if (aChrome.isContentAttached) {
       run(aChrome);
+    } else {
+      aChrome.addChromeListener({
+        onContentAttach: run
+      });
     }
   });
 
@@ -28,47 +29,35 @@ function run(aChrome)
   is(aChrome.editors.length, 2,
      "there is 2 stylesheets initially");
 
-  let attachCount = 0;
-
   aChrome.editors[0].addActionListener({
     onAttach: function onEditorAttached(aEditor) {
-      attachCount++;
+      let originalSourceEditor = aEditor.sourceEditor;
+      aEditor.sourceEditor.setCaretOffset(4); // to check the caret is preserved
 
-      if (attachCount == 1) {
-        aEditor.sourceEditor.setCaretOffset(4); // to check the caret is preserved
+      // queue a resize to inverse aspect ratio
+      // this will trigger a detach and reattach (to workaround bug 254144)
+      executeSoon(function () {
+        waitForFocus(function () {
+          gOriginalWidth = gChromeWindow.outerWidth;
+          gOriginalHeight = gChromeWindow.outerHeight;
+          gChromeWindow.resizeTo(120, 480);
 
-        // queue a resize to inverse aspect ratio
-        // this will trigger a detach and reattach (to workaround bug 254144)
-        executeSoon(function () {
-          waitForFocus(function () {
-            gOriginalWidth = gChromeWindow.outerWidth;
-            gOriginalHeight = gChromeWindow.outerHeight;
-            gChromeWindow.resizeTo(120, 480);
-          }, gChromeWindow);
-        });
-      } else {
-        ok(aEditor.sourceEditor,
-           "the editor does reference a SourceEditor again.");
-        is(aEditor.sourceEditor.getCaretOffset(), 4,
-           "the caret position has been preserved.");
+          executeSoon(function () {
+            is(aEditor.sourceEditor, originalSourceEditor,
+               "the editor still references the same SourceEditor instance");
+            is(aEditor.sourceEditor.getCaretOffset(), 4,
+               "the caret position has been preserved");
 
-        if (attachCount == 2) {
-          // queue a resize to original aspect ratio
-          // this will trigger a detach and reattach (to workaround bug 254144)
-          waitForFocus(function () {
-            gChromeWindow.resizeTo(gOriginalWidth, gOriginalHeight);
-          }, gChromeWindow);
-        }
-      }
-    },
-
-    onDetach: function onEditorDetached(aEditor) {
-      if (attachCount == 1) {
-        is(aEditor.sourceEditor, null,
-           "the editor does not reference a SourceEditor in detached state.");
-      } else {
-        finish();
-      }
+            // queue a resize to original aspect ratio
+            waitForFocus(function () {
+              gChromeWindow.resizeTo(gOriginalWidth, gOriginalHeight);
+              executeSoon(function () {
+                finish();
+              });
+            }, gChromeWindow);
+          });
+        }, gChromeWindow);
+      });
     }
   });
 }

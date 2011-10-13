@@ -67,7 +67,6 @@ function AdaptiveSplitView(aRoot)
   this._activeSummary = null
 
   this._mql = aRoot.ownerDocument.defaultView.matchMedia(LANDSCAPE_MEDIA_QUERY);
-  this._mql.addListener(this._onOrientationChange.bind(this));
 
   this._filter = aRoot.querySelector("input.splitview-filter");
   if (this._filter) {
@@ -182,10 +181,6 @@ AdaptiveSplitView.prototype = {
     if (binding.onShow) {
       binding.onShow(aSummary, binding._details, binding.data, false);
     }
-
-    if (!this.isLandscape) {
-      scheduleAnimation(aSummary, "splitview-slide");
-    }
     aSummary.scrollIntoView();
   },
 
@@ -262,10 +257,7 @@ AdaptiveSplitView.prototype = {
       this.activeSummary = aSummary;
     }.bind(this), false);
 
-    let detailsContainer = (this.isLandscape)
-                           ? this._side
-                           : aSummary.querySelector(".splitview-inline-details");
-    detailsContainer.appendChild(aDetails);
+    this._side.appendChild(aDetails);
 
     if (binding.onCreate) {
       binding.onCreate(aSummary, aDetails, binding.data);
@@ -429,43 +421,6 @@ AdaptiveSplitView.prototype = {
     viewSpecific = binding._details.className.match(/(splitview\-[\w-]+)/g);
     viewSpecific = viewSpecific ? viewSpecific.join(" ") : "";
     binding._details.className = viewSpecific + " " + aClassName;
-  },
-
-  /**
-   * Called by media query listener when orientation changes.
-   */
-  _onOrientationChange: function ASV__onOrientationChange()
-  {
-    // move details nodes as needed
-    for (let i = 0; i < this._nav.childNodes.length; ++i) {
-      let summary = this._nav.childNodes[i];
-      let detailsContainer = (this.isLandscape)
-                             ? this._side
-                             : summary.querySelector(".splitview-inline-details");
-      let binding = summary.getUserData(BINDING_USERDATA);
-      if (binding.onHide) {
-        // signal orientation change by hiding explicitly (last argument is true)
-        // this allows user code to implement special handing for this if needed
-        // (eg. with iframes until Mozilla bug 254144 is fixed)
-        binding.onHide(binding._summary,
-                       binding._details,
-                       binding.data,
-                       true);
-      }
-      detailsContainer.appendChild(binding._details);
-    }
-
-    // we are re-showing the active item
-    if (this.activeSummary) {
-      let binding = this.activeSummary.getUserData(BINDING_USERDATA);
-      if (binding.onShow) {
-        // signal orientation change by showing again (last argument is true)
-        binding.onShow(binding._summary,
-                       binding._details,
-                       binding.data,
-                       true);
-      }
-    }
   },
 
   /**

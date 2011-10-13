@@ -24,7 +24,6 @@ html, body,
 .splitview-main,
 .splitview-nav-container,
 .splitview-nav,
-.splitview-inline-details,
 .splitview-side-details,
 .splitview-details {
   display: -moz-box;
@@ -33,14 +32,23 @@ html, body,
 }
 
 .splitview-root {
-  -moz-box-orient: horizontal;
-  overflow: hidden;
+  -moz-box-orient: vertical;
 }
 
 .splitview-main {
   -moz-box-flex: 0;
 }
 
+.splitview-controller {
+  min-height: 8em;
+  max-height: 14em;
+}
+
+.splitview-filter {
+  display: -moz-box;
+  -moz-box-flex: 1;
+  margin-left: 1ex;
+}
 .splitview-filter.splitview-all-filtered:focus {
   background-color: #eaa;
 }
@@ -56,6 +64,7 @@ html, body,
 }
 
 ol.splitview-nav {
+  overflow-x: hidden;
   overflow-y: auto;
   list-style-image: none;
   list-style: none;
@@ -78,32 +87,34 @@ ol.splitview-nav > li {
   max-height: 2048px; /* for slide transition */
 }
 ol.splitview-nav > li.splitview-active {
-  -moz-box-flex: 1;
-  background-color: #e1ebfb; /* same as SourceEditor gutter */
+  background-color: rgb(225,235,251); /* same as SourceEditor gutter */
 }
-ol.splitview-nav > li.splitview-filtered {
-  display: none;
+ol.splitview-nav > li:hover, ol.splitview-nav > li:focus {
+  background-color: rgb(240,245,253);
 }
 ol.splitview-nav > li.splitview-flash {
   background-color: #faf0e1; /* complement of active color #e1ebfb */
+}
+ol.splitview-nav > li.splitview-filtered {
+  display: none;
 }
 ol.splitview-nav > li.splitview-slide {
   max-height: 0;
   overflow: hidden;
 }
 
-/* inline details are not shown unless parent active */
-.splitview-inline-details, .splitview-side-details {
-  display: none;
-  -moz-box-flex: 1;
-}
-li.splitview-active .splitview-inline-details {
-  display: -moz-box;
-}
-
 .splitview-side-details {
+  -moz-box-flex: 1;
   margin: 4px;
   margin-bottom: 6px;
+}
+
+/* only the active details is shown */
+.splitview-side-details > * {
+  display: none;
+}
+.splitview-side-details > .splitview-active {
+  display: -moz-box;
 }
 
 .splitview-nav:empty,
@@ -121,29 +132,18 @@ li.splitview-active .splitview-inline-details {
 
 /* this is to keep in sync with AdaptiveSplitView.js's LANDSCAPE_MEDIA_QUERY */
 @media (min-aspect-ratio: 5/3) {
+  .splitview-root {
+    -moz-box-orient: horizontal;
+  }
   .splitview-controller {
     -moz-box-flex: 0;
-    max-width: 300px;
-  }
-
-  .splitview-side-details {
-    display: -moz-box;
-    -moz-box-flex: 2;
+    max-height: none;
   }
   .splitview-details {
     display: none;
   }
   .splitview-details.splitview-active {
     display: -moz-box;
-  }
-
-  ol.splitview-nav > li.splitview-active {
-    -moz-box-flex: 0;
-  }
-
-  /* details are never shown inline in landscape */
-  .splitview-inline-details {
-    display: none;
   }
 }
 

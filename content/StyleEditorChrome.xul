@@ -51,6 +51,7 @@
 <xul:script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
 
 <div id="style-editor-chrome" class="splitview-root">
+  <div class="splitview-side-details"></div>
   <div class="splitview-controller">
     <div class="splitview-main">
       <div class="toolbar">
@@ -86,8 +87,6 @@
     </div> <!-- .splitview-nav-container -->
   </div>   <!-- .splitview-controller -->
 
-  <div class="splitview-side-details"></div>
-
   <div id="splitview-templates" hidden="true">
     <li id="splitview-tpl-summary-stylesheet" tabindex="0">
       <header>
@@ -97,18 +96,19 @@
         <hgroup>
           <h1><a class="stylesheet-name" href="#"></a></h1>
           <h2 class="stylesheet-title"></h2>
-          <h3 class="stylesheet-stats">
-            <span class="stylesheet-rule-count"></span>
-          </h3>
           <h3 class="stylesheet-error-message"></h3>
         </hgroup>
-        <div class="toolbar">
-          <a class="stylesheet-saveButton" href="#"
-             title="&saveButton.tooltip;"
-             accesskey="&saveButton.accesskey;">&saveButton.label;</a>
+        <div class="stylesheet-more">
+          <hgroup class="stylesheet-stats">
+            <h3 class="stylesheet-rule-count"></h3>
+          </hgroup>
+          <hgroup class="stylesheet-actions">
+            <h1><a class="stylesheet-saveButton" href="#"
+               title="&saveButton.tooltip;"
+               accesskey="&saveButton.accesskey;">&saveButton.label;</a></h1>
+          </hgroup>
         </div>
       </header>
-      <div class="splitview-inline-details"></div>
     </li>
 
     <div id="splitview-tpl-details-stylesheet" class="splitview-details">
