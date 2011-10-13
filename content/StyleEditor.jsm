@@ -1206,7 +1206,7 @@ function prettifyCSS(aText)
   */
 function repeat(aText, aCount)
 {
-  return aCount > 0 ? (new Array(aCount + 1)).join(aText) : "";
+  return (new Array(aCount + 1)).join(aText);
 }
 
 /**
