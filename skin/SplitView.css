@@ -130,7 +130,7 @@ ol.splitview-nav > li.splitview-slide {
   text-align: center;
 }
 
-/* this is to keep in sync with AdaptiveSplitView.js's LANDSCAPE_MEDIA_QUERY */
+/* this is to keep in sync with SplitView.jsm's LANDSCAPE_MEDIA_QUERY */
 @media (min-aspect-ratio: 5/3) {
   .splitview-root {
     -moz-box-orient: horizontal;

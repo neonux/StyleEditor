@@ -37,18 +37,18 @@
 
 "use strict";
 
-const EXPORTED_SYMBOLS = ["AdaptiveSplitView"];
+const EXPORTED_SYMBOLS = ["SplitView"];
 
-/* this must be kept in sync with CSS (ie. AdaptiveSplitView.css) */
+/* this must be kept in sync with CSS (ie. SplitView.css) */
 const LANDSCAPE_MEDIA_QUERY = "(min-aspect-ratio: 5/3)";
 
 const BINDING_USERDATA = "splitview-binding";
 
 
 /**
- * AdaptiveSplitView constructor
+ * SplitView constructor
  *
- * Initialize the adaptive split view UI on an existing DOM element.
+ * Initialize the split view UI on an existing DOM element.
  *
  * A split view contains items, each of those having one summary and one details
  * elements.
@@ -58,7 +58,7 @@ const BINDING_USERDATA = "splitview-binding";
  * @param DOMElement aRoot
  * @see appendItem
  */
-function AdaptiveSplitView(aRoot)
+function SplitView(aRoot)
 {
   this._root = aRoot;
   this._controller = aRoot.querySelector(".splitview-controller");
@@ -125,7 +125,7 @@ function AdaptiveSplitView(aRoot)
   }.bind(this), false);
 }
 
-AdaptiveSplitView.prototype = {
+SplitView.prototype = {
   /**
     * Retrieve whether the UI currently has a landscape orientation.
     *
@@ -402,7 +402,7 @@ AdaptiveSplitView.prototype = {
   /**
    * Set the item's CSS class name.
    * This sets the class on both the summary and details elements, retaining
-   * any AdaptiveSplitView-specific classes.
+   * any SplitView-specific classes.
    *
    * @param DOMElement aSummary
    *        Summary element of the item to set.

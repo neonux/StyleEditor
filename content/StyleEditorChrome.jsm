@@ -46,7 +46,7 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("chrome://StyleEditor/content/StyleEditor.jsm");
 Cu.import("chrome://StyleEditor/content/StyleEditorUtil.jsm");
-Cu.import("chrome://StyleEditor/content/AdaptiveSplitView.jsm");
+Cu.import("chrome://StyleEditor/content/SplitView.jsm");
 
 const STYLE_EDITOR_TEMPLATE = "stylesheet";
 
@@ -84,7 +84,7 @@ function StyleEditorChrome(aRoot, aContentWindow)
     }
 
     let viewRoot = this._root.parentNode.querySelector(".splitview-root");
-    this._view = new AdaptiveSplitView(viewRoot);
+    this._view = new SplitView(viewRoot);
 
     this._setupChrome();
 
@@ -353,7 +353,7 @@ StyleEditorChrome.prototype = {
    * @param StyleEditor aEditor
    * @return DOMElement
    *         Item's summary element or null if not found.
-   * @see AdaptiveSplitView
+   * @see SplitView
    */
   getSummaryElementForEditor: function SEC_getSummaryElementForEditor(aEditor)
   {
