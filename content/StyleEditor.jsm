@@ -1222,17 +1222,11 @@ StyleEditor.prototype = {
     this._state.text = text;
     let start = offset > 0 ? offset - 1 : 0;
     let end = offset;
-    while (!/[\s;:\{\}\[\]\(\)\"\']/.test(text[end] || " ")) {
+    while (!/[\s;:\{\}\[\]\"\']/.test(text[end] || " ")) {
       end++;
     }
-    while (!/[\s;:\{\}\[\]\(\)\"\']/.test(text[start] || " ")) {
+    while (!/[\s;:\{\}\[\]\"\']/.test(text[start] || " ")) {
       start--;
-    }
-    if (text[start] == "(" && text[end] == ")") { //FIXME: token.function
-      if (/[\s,:]rgba?\($/.test(text.substring(start - 8, start + 1))) {
-        start -= text[start-2] == "a" ? 5/*rgba(*/ : 4/*rgb(*/;
-        end++;
-      }
     }
     return {
       start: start + 1,
