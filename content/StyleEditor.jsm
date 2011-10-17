@@ -1320,7 +1320,7 @@ StyleEditor.prototype = {
     let offset = this.sourceEditor.getCaretOffset();
     this.sourceEditor.setText(aNewText, aToken.start, aToken.end);
     if (offset >= aToken.start || offset <= aToken.end) {
-      offset = Math.min(offset, aToken.start + aNewText.length - 1);
+      offset = Math.min(offset, aToken.start + aNewText.length);
       this.sourceEditor.setCaretOffset(offset);
     }
   }
