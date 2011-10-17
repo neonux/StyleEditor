@@ -3,43 +3,77 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-.stylesheet-name {
+.splitview-nav > li, .splitview-nav > li hgroup {
+  float: left;
+}
+.splitview-nav > li > hgroup.stylesheet-info {
+  max-width: 66%;
+}
+.splitview-nav > li > hgroup .stylesheet-name {
   display: inline-block;
-  max-width: 250px;
+  width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: pre;
+  white-space: nowrap;
 }
-.unsaved .stylesheet-name {
+.splitview-nav > li.unsaved > hgroup .stylesheet-name {
   font-style: italic;
 }
-.unsaved .stylesheet-name:before {
+.splitview-nav > li.unsaved > hgroup .stylesheet-name:before {
+  font-style: italic;
   content: "* ";
 }
 
-.splitview-nav hgroup {
+.splitview-nav > li > .stylesheet-enabled {
   float: left;
-  margin-top: 4px; /* align with toggle */
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  border: 1px solid transparent;
+  background-image: url(gimp-eye.png);
+  background-position: center center;
+  background-repeat: no-repeat;
 }
-.splitview-nav .stylesheet-more {
+.splitview-nav > li.disabled > .stylesheet-enabled {
+  background-image: none;
+}
+.splitview-nav > li > .stylesheet-enabled:focus,
+.splitview-nav > li:hover > .stylesheet-enabled {
+  outline: 0;
+  border: 1px inset WindowFrame;
+  margin-right: 6px;
+}
+
+.splitview-nav > li hgroup .stylesheet-title {
+  color: gray;
+}
+
+.splitview-nav > li hgroup > .stylesheet-error-message {
+  display: none;
+}
+.splitview-nav > li.error hgroup > .stylesheet-error-message {
+  display: block;
+  color: red;
+}
+
+.splitview-nav > li > .stylesheet-more {
   position: relative;
   right: 0;
 }
-
-.splitview-nav hgroup.stylesheet-stats,
-.splitview-nav hgroup.stylesheet-actions {
+.splitview-nav > li hgroup.stylesheet-stats,
+.splitview-nav > li hgroup.stylesheet-actions {
   position: absolute;
   z-index: 2;
   right: -100px;
   -moz-transition: right 0.2s ease-in-out;
   -moz-transition-delay: 0.2s;
 }
-.splitview-nav hgroup.stylesheet-stats {
+.splitview-nav > li hgroup.stylesheet-stats {
   z-index: 1;
   right: 4px;
   -moz-transition-delay: 0.4s;
 }
-.splitview-nav hgroup.stylesheet-actions a {
+.splitview-nav > li hgroup.stylesheet-actions a {
   padding-left: 1ex; /* Fitts */
   padding-right: 1ex;
   color: black;
@@ -53,50 +87,6 @@
 .splitview-nav > li:focus hgroup.stylesheet-actions,
 .splitview-nav > li.splitview-active hgroup.stylesheet-actions {
   right: 4px;
-}
-
-h1, h2, h3 {
-  font-weight: normal;
-  margin: 0;
-  padding: 0;
-}
-h1 {
-  font-size: 0.9em;
-}
-h2, h3 {
-  font-size: 0.8em;
-}
-
-.stylesheet-enabled {
-  float: left;
-  width: 20px;
-  height: 20px;
-  margin-right: 6px;
-  border: 1px solid transparent;
-  background-image: url(gimp-eye.png);
-  background-position: center center;
-  background-repeat: no-repeat;
-}
-.disabled .stylesheet-enabled {
-  background-image: none;
-}
-
-.stylesheet-enabled:focus, li:hover .stylesheet-enabled {
-  outline: 0;
-  border: 1px inset WindowFrame;
-  margin-right: 6px;
-}
-
-.stylesheet-title {
-  color: gray;
-}
-
-.stylesheet-error-message {
-  display: none;
-}
-.error .stylesheet-error-message {
-  display: block;
-  color: red;
 }
 
 .stylesheet-editor-input {
@@ -123,7 +113,13 @@ h2, h3 {
   .splitview-filter:focus {
     bottom: 0em;
   }
-  .stylesheet-editor-input {
-    margin: 0;
-  }
+}
+
+h1,
+h2,
+h3 {
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9em;
 }

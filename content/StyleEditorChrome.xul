@@ -40,6 +40,7 @@
 ]>
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 <?xml-stylesheet href="chrome://StyleEditor/skin/SplitView.css" type="text/css"?>
+<?xml-stylesheet href="chrome://StyleEditor/content/SplitView.css" type="text/css"?>
 <?xml-stylesheet href="chrome://StyleEditor/skin/StyleEditor.css" type="text/css"?>
 <xul:window xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns="http://www.w3.org/1999/xhtml"
@@ -89,26 +90,24 @@
 
   <div id="splitview-templates" hidden="true">
     <li id="splitview-tpl-summary-stylesheet" tabindex="0">
-      <header>
-        <a class="stylesheet-enabled" tabindex="0" href="#"
-           title="&visibilityToggle.tooltip;"
-           accesskey="&saveButton.accesskey;"></a>
-        <hgroup>
-          <h1><a class="stylesheet-name" href="#"></a></h1>
-          <h2 class="stylesheet-title"></h2>
-          <h3 class="stylesheet-error-message"></h3>
+      <a class="stylesheet-enabled" tabindex="0" href="#"
+         title="&visibilityToggle.tooltip;"
+         accesskey="&saveButton.accesskey;"></a>
+      <hgroup class="stylesheet-info">
+        <h1><a class="stylesheet-name" href="#"></a></h1>
+        <h2 class="stylesheet-title"></h2>
+        <h3 class="stylesheet-error-message"></h3>
+      </hgroup>
+      <div class="stylesheet-more">
+        <hgroup class="stylesheet-stats">
+          <h3 class="stylesheet-rule-count"></h3>
         </hgroup>
-        <div class="stylesheet-more">
-          <hgroup class="stylesheet-stats">
-            <h3 class="stylesheet-rule-count"></h3>
-          </hgroup>
-          <hgroup class="stylesheet-actions">
-            <h1><a class="stylesheet-saveButton" href="#"
-               title="&saveButton.tooltip;"
-               accesskey="&saveButton.accesskey;">&saveButton.label;</a></h1>
-          </hgroup>
-        </div>
-      </header>
+        <hgroup class="stylesheet-actions">
+          <h1><a class="stylesheet-saveButton" href="#"
+                 title="&saveButton.tooltip;"
+                 accesskey="&saveButton.accesskey;">&saveButton.label;</a></h1>
+        </hgroup>
+      </div>
     </li>
 
     <div id="splitview-tpl-details-stylesheet" class="splitview-details">

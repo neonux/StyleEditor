@@ -4,21 +4,9 @@
  */
 
 :root {
-  background-color: -moz-dialog;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
   font-family: sans-serif;
-  font-size: 14px;
 }
 
-button {
-  padding: 2px;
-}
-
-html, body,
 .splitview-root,
 .splitview-controller,
 .splitview-main,
@@ -28,10 +16,6 @@ html, body,
 .splitview-details {
   display: -moz-box;
   -moz-box-flex: 1;
-  -moz-box-orient: vertical;
-}
-
-.splitview-root {
   -moz-box-orient: vertical;
 }
 
@@ -71,7 +55,7 @@ ol.splitview-nav {
   padding: 0;
   margin: 0;
 }
-.splitview-nav:focus {
+ol.splitview-nav:focus {
   outline: 0; /* focusable only for focus stealing */
 }
 
@@ -81,7 +65,9 @@ ol.splitview-nav > li {
   outline: 0;
   border-radius: 4px;
   border-bottom: 1px solid -moz-cellhighlight;
-  padding: 4px;
+  padding: 2px;
+  padding-top: 4px;
+  vertical-align: bottom;
   -moz-transition-property: background-color, max-height;
   -moz-transition-duration: 1s;
   max-height: 2048px; /* for slide transition */
@@ -95,9 +81,6 @@ ol.splitview-nav > li:hover, ol.splitview-nav > li:focus {
 ol.splitview-nav > li.splitview-flash {
   background-color: #faf0e1; /* complement of active color #e1ebfb */
 }
-ol.splitview-nav > li.splitview-filtered {
-  display: none;
-}
 ol.splitview-nav > li.splitview-slide {
   max-height: 0;
   overflow: hidden;
@@ -106,26 +89,14 @@ ol.splitview-nav > li.splitview-slide {
 .splitview-side-details {
   -moz-box-flex: 1;
   margin: 4px;
-  margin-bottom: 6px;
 }
 
-/* only the active details is shown */
-.splitview-side-details > * {
-  display: none;
-}
 .splitview-side-details > .splitview-active {
   display: -moz-box;
 }
 
-.splitview-nav:empty,
-.splitview-nav.splitview-all-filtered,
-.splitview-nav + .splitview-nav.placeholder,
-.splitview-filter-bar {
-  display: none;
-}
 .splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered,
 .splitview-nav:empty ~ .splitview-nav.placeholder.empty {
-  display: -moz-box;
   -moz-box-flex: 0;
   text-align: center;
 }
@@ -147,26 +118,18 @@ ol.splitview-nav > li.splitview-slide {
   }
 }
 
-.toolbar {
+.splitview-main .toolbar, .splitview-main .toolbar > * {
+  display: -moz-box;
+}
+.splitview-main .toolbar {
   -moz-box-flex: 0;
   -moz-box-orient: horizontal;
-  padding: 4px;
-  padding-bottom: 4px;
-}
-
-.splitview-main .toolbar {
-  display: -moz-box;
-}
-.splitview-main .toolbar > * {
-  display: -moz-box;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 .spacer {
   -moz-box-flex: 1;
-}
-
-h5 {
-  margin: 0.5em;
 }
 
 /* chrome fixes */
