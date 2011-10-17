@@ -38,7 +38,7 @@ function getStylesheetNameLinkFor(aEditor)
 function onEditor0Attach(aEditor)
 {
   let summary = gChrome.getSummaryElementForEditor(aEditor);
-  EventUtils.synthesizeMouse(summary, 10, 1, {}, gChromeWindow);
+  EventUtils.synthesizeMouseAtCenter(summary, {}, gChromeWindow);
 
   waitForFocus(function () {
     let item = getStylesheetNameLinkFor(gChrome.editors[0]);
