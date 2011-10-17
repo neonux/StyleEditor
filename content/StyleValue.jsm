@@ -176,8 +176,22 @@ const COLOR_TABLE = {
   "olivedrab": [107, 142, 35, 1.0]
 };
 const ENUMERATION_TABLE = {
-  "border-style": ["none", "hidden", "dashed", "dotted", "double", "groove",
-                   "inset", "outset", "ridge", "solid"]
+  "border-style": ["dashed", "dotted", "double", "groove", "inset", "outset",
+                   "ridge", "solid"],
+  "align": ["left", "center", "right", "justify", "both", "top", "bottom"],
+  "vertical-align": ["baseline", "sub", "super", "text-top", "text-bottom",
+                     "middle", "top", "bottom"],
+  "visibility": ["visible", "hidden", "collapse", "scroll", "auto"],
+  "display": ["none", "block", "inline", "inline-block"],
+  "position": ["absolute", "relative", "fixed", "static"],
+  "repeat": ["no-repeat", "repeat", "repeat-x", "repeat-y"],
+  "font-style": ["italic", "oblique"],
+  "font-family": ["serif", "sans-serif", "monospace", "cursive", "fantasy"],
+  "font-weight": ["bold", "bolder", "lighter"],
+  "text-decoration": ["underline", "overline", "line-through"],
+  "white-space": ["pre", "nowrap", "pre-wrap", "pre-line"],
+  "text-transform": ["capitalize", "uppercase", "lowercase"],
+  "text-overflow": ["ellipsis", "crop"]
 };
 
 
