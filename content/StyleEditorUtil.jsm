@@ -139,17 +139,6 @@ function forEach(aObject, aCallback)
 }
 
 /**
- * Retrieve the content window for currently selected browser tab.
- *
- * @return DOMWindow
- */
-function getCurrentBrowserTabContentWindow()
-{
-  let mostRecentWindow = Services.wm.getMostRecentWindow("navigator:browser");
-  return mostRecentWindow.gBrowser.selectedBrowser.contentWindow;
-}
-
-/**
  * Log a message to the console.
  * 
  * @param ...rest

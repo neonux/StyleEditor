@@ -120,7 +120,8 @@
 <xul:script type="application/javascript"><![CDATA[
 Components.utils.import("chrome://StyleEditor/content/StyleEditorChrome.jsm");
 let chromeRoot = document.getElementById("style-editor-chrome");
-let chrome = new StyleEditorChrome(chromeRoot);
+let contentWindow = window.arguments[0];
+let chrome = new StyleEditorChrome(chromeRoot, contentWindow);
 window.styleEditorChrome = chrome;
 ]]></xul:script>
 </xul:window>

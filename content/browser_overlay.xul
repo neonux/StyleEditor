@@ -48,22 +48,24 @@
     {
       const CHROME_URL = "chrome://StyleEditor/content/StyleEditorChrome.xul";
       const CHROME_WINDOW_TYPE = "Tools:StyleEditor";
-      const CHROME_WINDOW_FLAGS = "chrome,centerscreen,resizable,dependent";
+      const CHROME_WINDOW_FLAGS = "chrome,centerscreen,resizable,dialog=no";
 
       // focus currently open Style Editor window for this document, if any
-      let contentWindow = Services.wm.getMostRecentWindow("navigator:browser")
-                            .gBrowser.selectedBrowser.contentWindow;
+      let contentWindow = gBrowser.selectedBrowser.contentWindow;
+      let contentWindowID = contentWindow.QueryInterface(Ci.nsIInterfaceRequestor).
+        getInterface(Ci.nsIDOMWindowUtils).currentInnerWindowID;
       let enumerator = Services.wm.getEnumerator(CHROME_WINDOW_TYPE);
       while(enumerator.hasMoreElements()) {
         var win = enumerator.getNext();
-        if (win.styleEditorChrome.contentWindow == contentWindow) {
+        if (win.styleEditorChrome.contentWindowID == contentWindowID) {
           win.focus();
           return win;
         }
       }
 
       let chromeWindow = Services.ww.openWindow(null, CHROME_URL, "_blank",
-                                                CHROME_WINDOW_FLAGS, null);
+                                                CHROME_WINDOW_FLAGS,
+                                                contentWindow);
       chromeWindow.focus();
       return chromeWindow;
     }

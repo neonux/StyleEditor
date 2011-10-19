@@ -61,8 +61,7 @@ const STYLE_EDITOR_TEMPLATE = "stylesheet";
  * @param DOMElement aRoot
  *        Element that owns the chrome UI.
  * @param DOMWindow aContentWindow
- *        Optional content DOMWindow to attach to this chrome.
- *        Default: the currently active browser tab content window.
+ *        Content DOMWindow to attach to this chrome.
  */
 function StyleEditorChrome(aRoot, aContentWindow)
 {
@@ -89,7 +88,8 @@ function StyleEditorChrome(aRoot, aContentWindow)
     this._setupChrome();
 
     // attach to the content window
-    this.contentWindow = aContentWindow || getCurrentBrowserTabContentWindow();
+    this.contentWindow = aContentWindow;
+    this._contentWindowID = null;
   }.bind(this);
 
   if (this._document.readyState == "complete") {
@@ -104,8 +104,25 @@ StyleEditorChrome.prototype = {
    * Retrieve the content window attached to this chrome.
    *
    * @return DOMWindow
+   *         Content window or null if no content window is attached.
    */
   get contentWindow() this._contentWindow,
+
+  /**
+   * Retrieve the ID of the content window attached to this chrome.
+   *
+   * @return number
+   *         Window ID or -1 if no content window is attached.
+   */
+  get contentWindowID()
+  {
+    try {
+      return this._contentWindow.QueryInterface(Ci.nsIInterfaceRequestor).
+        getInterface(Ci.nsIDOMWindowUtils).currentInnerWindowID;
+    } catch (ex) {
+      return -1;
+    }
+  },
 
   /**
    * Set the content window attached to this chrome.
