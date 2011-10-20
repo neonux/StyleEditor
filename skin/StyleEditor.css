@@ -123,3 +123,36 @@ h3 {
   padding: 0;
   font-size: 0.9em;
 }
+
+.hud {
+  -moz-box-pack: center;
+  -moz-box-align: center;
+  pointer-events: none;
+}
+
+.hud > .color-sampling-ring {
+  position: absolute;
+  pointer-events: none;
+  overflow:hidden;
+  border-width: 16px;
+  border-radius: 60px;
+  border-color: rgb(128,128,128);
+  border-style: solid;
+  -moz-transition-duration: 0.2s;
+  -moz-transition-property: width, height, border-radius, border-width, border-color;
+}
+.hud > .color-sampling-ring > * {
+  position: relative;
+  width: 40px;
+  height: 20px;
+  -moz-transition-duration: inherit;
+  -moz-transition-property: background-color;
+}
+.hud > .color-sampling-ring.hidden {
+  border-width: 0;
+  border-radius: 0;
+}
+.hud > .color-sampling-ring.hidden > * {
+  width: 0;
+  height: 0;
+}

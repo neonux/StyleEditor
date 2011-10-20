@@ -111,8 +111,17 @@
     </li>
 
     <div id="splitview-tpl-details-stylesheet" class="splitview-details">
-      <div class="stylesheet-editor-input textbox" tabindex="0"
-           data-placeholder="&editorTextbox.placeholder;"></div>
+      <xul:stack flex="1" style="-moz-box-pack: center; -moz-box-align: center;">
+        <div class="stylesheet-editor-input textbox" tabindex="0"
+             data-placeholder="&editorTextbox.placeholder;">
+        </div>
+        <xul:box class="hud">
+          <div class="color-sampling-ring hidden">
+            <div class="color-sampling-ring-inner-top"></div>
+            <div class="color-sampling-ring-inner-bottom"></div>
+          </div>
+        </xul:box>
+      </xul:stack>
     </div>
   </div> <!-- #splitview-templates -->
 </div>   <!-- .splitview-root -->

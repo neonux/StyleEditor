@@ -196,43 +196,46 @@ const ENUMERATION_TABLE = {
 
 
 /**
- * StyleValue constructor.
+ * StyleValue constructor
+ *
  * StyleValue provides methods to manipulate CSS values as defined in :
  * http://www.w3.org/TR/css3-values/
  *
- * @param string aText
- *        The string representation of the value.
+ * @param string aToken
+ *        A token object representing the text of a CSS value.
+ * @see StyleEditor.getTokenAtCursor
  */
-function StyleValue(aText)
+function StyleValue(aToken)
 {
-  aText = aText.trim();
-  this._originalText = aText;
-  this._text = aText;
+  this.token = aToken;
+  let text = aToken.text.trim();
+  this._originalText = aToken.text;
+  this._text = text;
   this._unit = null;
   this._type = null;
-  if (!aText.length) {
+  if (!text.length) {
     return;
   }
 
-  if (aText[0] == "#") {
-    let h = aText.match(/^#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])$/) ||
-            aText.match(/^#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$/);
+  if (text[0] == "#") {
+    let h = text.match(/^#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])$/) ||
+            text.match(/^#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$/);
     if (h) {
       this._type = "color";
-      this._unit = aText.length == 4 ? "shorthex" : "hex";
+      this._unit = text.length == 4 ? "shorthex" : "hex";
       this._value = rgba2hsla([hexdec(h[1]), hexdec(h[2]), hexdec(h[3])]);
     }
-  } else if (/^rgba?\(/.test(aText)) {
-    let rgba = aText.match(/^rgb\(([0-9]+),([0-9]+),([0-9]+)\)$/) ||
-               aText.match(/^rgba\(([0-9]+),([0-9]+),([0-9]+),([0-9.]+)\)$/);
+  } else if (/^rgba?\(/.test(text)) {
+    let rgba = text.match(/^rgb\(([0-9]+),([0-9]+),([0-9]+)\)$/) ||
+               text.match(/^rgba\(([0-9]+),([0-9]+),([0-9]+),([0-9.]+)\)$/);
     if (rgba) {
       this._type = "color";
       this._unit = rgba.length == 5 ? "rgba" : "rgb";
       this._value = rgba2hsla(rgba.slice(1));
     }
-  } else if (/^hsla?\(/.test(aText)) {
-    let hsla = aText.match(/^hsl\(([0-9]+),([0-9]+)\%,([0-9]+)\%\)$/) ||
-               aText.match(/^hsla\(([0-9]+),([0-9]+)\%,([0-9]+)\%,([0-9.]+)\)$/);
+  } else if (/^hsla?\(/.test(text)) {
+    let hsla = text.match(/^hsl\(([0-9]+),([0-9]+)\%,([0-9]+)\%\)$/) ||
+               text.match(/^hsla\(([0-9]+),([0-9]+)\%,([0-9]+)\%,([0-9.]+)\)$/);
     if (hsla) {
       this._type = "color";
       this._unit = hsla.length == 5 ? "hsla" : "hsl";
@@ -240,7 +243,7 @@ function StyleValue(aText)
                      parseInt(hsla[4]) || "1.0"];
     }
   } else {
-    let parts = aText.split(/^(-?[0-9.]+)/);
+    let parts = text.split(/^(-?[0-9.]+)/);
     this._textValue = parseFloat(parts[1]);
     this._value = this._textValue;
     if (parts.length > 1 && this._value !== NaN) {
@@ -259,15 +262,15 @@ function StyleValue(aText)
         this._type = "number";
         CONVERSION_TABLE["number"][this._unit] = 1; // identity
       }
-    } else if (aText in COLOR_TABLE) {
-        this._value = COLOR_TABLE[aText];
+    } else if (text in COLOR_TABLE) {
+        this._value = COLOR_TABLE[text];
         this._type = "color";
         this._unit = "name";
     } else {
       for (let value in ENUMERATION_TABLE) {
-        if (ENUMERATION_TABLE[value].indexOf(aText) >= 0) {
+        if (ENUMERATION_TABLE[value].indexOf(text) >= 0) {
           this._type = "enumeration";
-          this._unit = aText;
+          this._unit = text;
           this._value = value;
           this._textValue = "";
           break;

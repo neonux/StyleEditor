@@ -261,6 +261,8 @@ StyleEditor.prototype = {
     if (!aElement) {
       return;
     }
+    this._colorSamplingRing = aElement.parentNode.
+                                querySelector(".color-sampling-ring");
 
     // attach to new input element
     this.window.addEventListener("unload", this._onWindowUnloadBinding, false);
@@ -289,8 +291,11 @@ StyleEditor.prototype = {
       setupBracketCompletion(sourceEditor);
       sourceEditor.addEventListener(SourceEditor.EVENTS.TEXT_CHANGED,
                                     function onTextChanged(aEvent) {
-        this._lastTokenAtCursor = null;
         this.updateStyleSheet();
+      }.bind(this));
+      sourceEditor.addEventListener(SourceEditor.EVENTS.SELECTION,
+                                    function onSelection(aEvent) {
+        this._hideColorSamplingRing();
       }.bind(this));
 
       this._sourceEditor = sourceEditor;
@@ -1270,13 +1275,11 @@ StyleEditor.prototype = {
   incrementValueAtCursorBy: function SE_incrementValueAtCursorBy(aDelta, aComponent)
   {
     let token = this.getTokenAtCursor();
-    if (!this._lastTokenAtCursor ||
-        this._lastTokenAtCursor.start != token.start) {
-      this._lastTokenAtCursor = token;
-      this._valueAtCursor = new StyleValue(token.text);
+    if (!this._value || this._value.token.start != token.start) {
+      this._value = new StyleValue(token);
     }
-    if (this._valueAtCursor.incrementBy(aDelta, aComponent)) {
-      this._replaceToken(token, this._valueAtCursor.text);
+    if (this._value.incrementBy(aDelta, aComponent)) {
+      this._replaceTokenWithValue(token, this._value);
     }
   },
 
@@ -1290,13 +1293,11 @@ StyleEditor.prototype = {
   multiplyValueAtCursorBy: function SE_multiplyValueAtCursorBy(aRatio)
   {
     let token = this.getTokenAtCursor();
-    if (!this._lastTokenAtCursor ||
-        this._lastTokenAtCursor.start != token.start) {
-      this._lastTokenAtCursor = token;
-      this._valueAtCursor = new StyleValue(token.text);
+    if (!this._value || this._value.token.start != token.start) {
+      this._value = new StyleValue(token);
     }
-    if (this._valueAtCursor.multiplyBy(aRatio)) {
-      this._replaceToken(token, this._valueAtCursor.text);
+    if (this._value.multiplyBy(aRatio)) {
+      this._replaceTokenWithValue(token, this._value);
     }
   },
 
@@ -1310,13 +1311,11 @@ StyleEditor.prototype = {
   cycleValueAtCursor: function SE_cycleValueAtCursor(aDirection)
   {
     let token = this.getTokenAtCursor();
-    if (!this._lastTokenAtCursor ||
-        this._lastTokenAtCursor.start != token.start) {
-      this._lastTokenAtCursor = token;
-      this._valueAtCursor = new StyleValue(token.text);
+    if (!this._value || this._value.token.start != token.start) {
+      this._value = new StyleValue(token);
     }
-    if (this._valueAtCursor.cycle(aDirection)) {
-      this._replaceToken(token, this._valueAtCursor.text);
+    if (this._value.cycle(aDirection)) {
+      this._replaceTokenWithValue(token, this._value);
     }
   },
 
@@ -1339,6 +1338,51 @@ StyleEditor.prototype = {
       offset = Math.min(offset, aToken.start + aNewText.length);
       this.sourceEditor.setCaretOffset(offset);
     }
+  },
+
+  /**
+   * Replace token with new text from a CSS value.
+   *
+   * @param object aToken
+   *        A token object as returned by getTokenAtCursor
+   * @param StyleValue aValue
+   *        The value to replace the token with.
+   */
+  _replaceTokenWithValue: function SE__replaceTokenWithValue(aToken, aValue)
+  {
+    this._replaceToken(aToken, aValue.text);
+    if (aValue.type == "color") {
+      this._showColorSamplingRing(aValue.text, aValue.originalText);
+    }
+  },
+
+  /**
+   * Show the color sampling ring. This provides a visual aid for adjusting
+   * a color in comparison with its original color.
+   *
+   * @param string aColor
+   *        The new/current CSS color.
+   * @param string aOriginalColor
+   *        The original CSS color.
+   * @see hideColorSamplingRing
+   */
+  _showColorSamplingRing: function SE__showColorSamplingRing(aColor, aOriginalColor)
+  {
+    let newColorHemi = this._colorSamplingRing.firstElementChild;
+    let originalColorHemi = this._colorSamplingRing.lastElementChild;
+    newColorHemi.style.backgroundColor = aColor;
+    originalColorHemi.style.backgroundColor = aOriginalColor;
+    this._colorSamplingRing.classList.remove("hidden");
+  },
+
+  /**
+   * Hide the color sampling ring.
+   *
+   * @see showColorSamplingRing
+   */
+  _hideColorSamplingRing: function SE__hideColorSamplingRing()
+  {
+    this._colorSamplingRing.classList.add("hidden");
   }
 };
 
