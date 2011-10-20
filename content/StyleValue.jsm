@@ -214,23 +214,29 @@ function StyleValue(aText)
   }
 
   if (aText[0] == "#") {
-    let hex = aText.match(/#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])$/) ||
-              aText.match(/#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$/);
-    if (hex) {
+    let h = aText.match(/^#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])$/) ||
+            aText.match(/^#([a-fA-F0-9]{2})([a-fA-F0-9]{2})([a-fA-F0-9]{2})$/);
+    if (h) {
       this._type = "color";
       this._unit = aText.length == 4 ? "shorthex" : "hex";
-      this._value = [hexColor(hex[1]), hexColor(hex[2]), hexColor(hex[3]), 1.0];
+      this._value = rgba2hsla([hexdec(h[1]), hexdec(h[2]), hexdec(h[3])]);
     }
   } else if (/^rgba?\(/.test(aText)) {
-    let rgba = aText.match(/rgb\(([0-9]+),([0-9]+),([0-9]+)\)$/) ||
-               aText.match(/rgba\(([0-9]+),([0-9]+),([0-9]+),([0-9.]+)\)$/);
+    let rgba = aText.match(/^rgb\(([0-9]+),([0-9]+),([0-9]+)\)$/) ||
+               aText.match(/^rgba\(([0-9]+),([0-9]+),([0-9]+),([0-9.]+)\)$/);
     if (rgba) {
       this._type = "color";
       this._unit = rgba.length == 5 ? "rgba" : "rgb";
-      this._value = [clampColor(rgba[1]),
-                     clampColor(rgba[2]),
-                     clampColor(rgba[3]),
-                     parseFloat(rgba[4]) || 1.0];
+      this._value = rgba2hsla(rgba.slice(1));
+    }
+  } else if (/^hsla?\(/.test(aText)) {
+    let hsla = aText.match(/^hsl\(([0-9]+),([0-9]+)\%,([0-9]+)\%\)$/) ||
+               aText.match(/^hsla\(([0-9]+),([0-9]+)\%,([0-9]+)\%,([0-9.]+)\)$/);
+    if (hsla) {
+      this._type = "color";
+      this._unit = hsla.length == 5 ? "hsla" : "hsl";
+      this._value = [parseInt(hsla[1]), parseInt(hsla[2]), parseInt(hsla[3]),
+                     parseInt(hsla[4]) || "1.0"];
     }
   } else {
     let parts = aText.split(/^(-?[0-9.]+)/);
@@ -312,29 +318,28 @@ StyleValue.prototype = {
     if (!this._type) {
       return "";
     }
+
     if (this._type == "color") {
+      if (this._unit == "hsla") {
+        return ["hsla(", this._value[0], ",", this._value[1], "%,",
+                this._value[2], "%,", this._value[3], ")"].join("");
+      } else if (this._unit == "hsl") {
+        return ["hsl(", this._value[0], ",", this._value[1], "%,",
+                this._value[2], "%)"].join("");
+      }
+
+      let rgba = hsla2rgba(this._value);
       switch (this._unit) {
       case "rgba":
-        return ["rgba(",
-                this._value[0], ",",
-                this._value[1], ",",
-                this._value[2], ",",
-                this._value[3].toFixed(1), ")"].join("");
+        return "rgba(" + rgba.join(",") + ")";
       case "rgb":
-        return ["rgb(",
-                this._value[0], ",",
-                this._value[1], ",",
-                this._value[2], ")"].join("");
+        return "rgb(" + rgba.slice(0, -1).join(",") + ")";
       case "hex":
-        return ["#",
-                hex(this._value[0]),
-                hex(this._value[1]),
-                hex(this._value[2])].join("");
+        return "#" + rgba.slice(0, -1).map(dechex).join("");
       case "shorthex":
-        return ["#",
-                Math.floor(this._value[0] / 16).toString(16),
-                Math.floor(this._value[1] / 16).toString(16),
-                Math.floor(this._value[2] / 16).toString(16)].join("");
+        return "#" + rgba.slice(0, -1).map(function (component) {
+          return Math.floor(component / 16).toString(16);
+        }).join("");
       }
     }
     return [this._textValue, this._unit].join("");
@@ -345,26 +350,38 @@ StyleValue.prototype = {
    * For color type, this lightens or darkens.
    *
    * @param number aDelta
+   * @param number aComponent
+   *        If value is a color, optional component to modify (H=0, S=1, L=2).
+   *        Default is L.
    * @return boolean
    *         True if the value has been modified, false otherwise (eg. invalid)
    */
-  incrementBy: function SV_incrementBy(aDelta)
+  incrementBy: function SV_incrementBy(aDelta, aComponent)
   {
     if (!this._type || this._type == "enumeration") {
       return false;
     }
 
     if (this._type == "color") {
-      switch (this._unit) {
-      case "name":
+      if (this._unit == "name") {
         this._unit = "rgb";
-        break;
-      case "shorthex":
-        aDelta *= 16;
-        break;
       }
-      for (let i = 0; i < 3; ++i) {
-        this._value[i] = clampColor(Math.floor(this._value[i] + aDelta));
+      if (aComponent === undefined) {
+        aComponent = 2;
+      }
+
+      switch (aComponent) {
+      case 0: //H
+        this._value[0] = Math.floor(this._value[0] + aDelta) % 360;
+        if (this._value[0] < 0) {
+          this._value[0] = 360 + this._value[0];
+        }
+        break;
+      case 1: //S
+      case 2: //L
+        this._value[aComponent] = Math.max(0, Math.min(100, Math.floor(
+                                           this._value[aComponent] + aDelta)));
+        break;
       }
       return true;
     }
@@ -393,9 +410,8 @@ StyleValue.prototype = {
       if (this._unit == "name") {
         this._unit = "rgb";
       }
-      for (let i = 0; i < 3; ++i) {
-        this._value[i] = clampColor(Math.floor(this._value[i] * aRatio));
-      }
+      this._value[2] = Math.max(0, Math.min(100, Math.floor(
+                                            this._value[2] * aRatio)));
       return true;
     }
 
@@ -422,7 +438,7 @@ StyleValue.prototype = {
     let supported;
     let needsConversion = false;
     if (this._type == "color") {
-      supported = ["rgb", "rgba", "hex", "shorthex"];
+      supported = ["rgb", "rgba", "hex", "shorthex", "hsl", "hsla"];
     } else if (this._type == "enumeration") {
       supported = ENUMERATION_TABLE[this._value];
     } else {

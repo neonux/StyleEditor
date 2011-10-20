@@ -1261,13 +1261,16 @@ StyleEditor.prototype = {
    * Does nothing if the cursor is not in a supported CSS value.
    *
    * @param number aDelta
+   * @param number aComponent
+   *        If value is a color, optional component to modify (H=0, S=1, L=2).
+   *        Default is L. If the value is not a color, the component is ignored.
    * @see StyleValue.incrementBy
    */
-  incrementValueAtCursorBy: function SE_incrementValueAtCursorBy(aDelta)
+  incrementValueAtCursorBy: function SE_incrementValueAtCursorBy(aDelta, aComponent)
   {
     let token = this.getTokenAtCursor();
     let value = new StyleValue(token.text);
-    if (value.incrementBy(aDelta)) {
+    if (value.incrementBy(aDelta, aComponent)) {
       this._replaceToken(token, value.text);
     }
   },
