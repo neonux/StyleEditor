@@ -446,27 +446,118 @@ StyleValue.prototype = {
   }
 };
 
+/*                  */
 /* helper functions */
 
-function hex(aNumber)
+/**
+  * Convert decimal number to padded 2-character hexadecimal representation.
+  *
+  * @param number aNumber
+  * @return string
+  */
+function dechex(aNumber)
 {
   let result = aNumber.toString(16);
   return (result.length == 1) ? "0" + result : result;
 }
 
-function hexColor(aHex)
+/**
+  * Convert an one-letter or 2-letter hexadecimal color component to decimal.
+  *
+  * @param string aHex
+  * @return number
+  */
+function hexdec(aHex)
 {
   aHex = (aHex.length > 1) ? aHex : new Array(3).join(aHex);
   return ("0x" + aHex) & 0xff;
 }
 
+/**
+ * Round a number to 2 decimal places.
+ *
+ * @param number aNumber
+ * @return number
+ */
 function roundDecimal(aNumber)
 {
   aNumber = aNumber.toFixed(2);
   return parseFloat(aNumber.replace(/\.0+$/, ""));
 }
 
-function clampColor(aColor)
+/**
+ * Convert an RGBA color to its HSLA representation.
+ *
+ * @param Array[4] rgba
+ *        RGBA color (colors in range 0-255, alpha in range 0.0-1.0)
+ * @return Array[4]
+ *         HSLA representation
+ *         (H in range 0-360, S and L in range 0-100, alpha in range 0.0-1.0)
+ */
+function rgba2hsla(aRgba)
 {
-  return Math.max(0, Math.min(aColor, 255));
+  let r = aRgba[0] / 255;
+  let g = aRgba[1] / 255;
+  let b = aRgba[2] / 255;
+  let a = aRgba[3] || "1.0";
+  let minC = Math.min(r, g, b);
+  let maxC = Math.max(r, g, b);
+  let l = (maxC + minC) / 2;
+
+  if (maxC == minC) {
+    return [0, 0, Math.round(l * 100), a];
+  }
+
+  let delta = maxC - minC;
+  let h;
+  let s = (l > 0.5) ? (delta / (2 - maxC - minC)) : (delta / (maxC + minC));
+  switch (maxC) {
+  case r:
+    h = (g - b) / delta + (g < b ? 6 : 0);
+    break;
+  case g:
+    h = (b - r) / delta + 2;
+    break;
+  case b:
+    h = (r - g) / delta + 4;
+    break;
+  }
+  return [Math.round(h * 60), Math.round(s * 100), Math.round(l * 100), a];
+}
+
+/**
+ * Convert an HSLA color to its RGBA representation.
+ *
+ * @param Array[4] rgba
+ *        HSLA representation
+ *        (H in range 0-360, S and L in range 0-100, alpha in range 0.0-1.0)
+ * @return Array[4]
+ *         RGBA color (colors in range 0-255, alpha in range 0.0-1.0)
+ */
+function hsla2rgba(aHsla)
+{
+  function hue2component(p, q, t) {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1/6) return p + ((q - p) * 6 * t);
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + ((q - p) * (2/3 - t) * 6);
+    return p;
+  }
+
+  let s = aHsla[1] / 100;
+  let l = aHsla[2] / 100;
+  let a = aHsla[3] || "1.0";
+  if (s == 0){
+    l = Math.round(l * 255);
+    return [l, l, l, a];
+  }
+
+  let h = aHsla[0] / 360;
+  let q = (l < 0.5) ? (l * (1 + s)) : ((l + s) - (l * s));
+  let p = 2 * l - q;
+  let r = hue2component(p, q, h + 1/3);
+  let g = hue2component(p, q, h);
+  let b = hue2component(p, q, h - 1/3);
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), a];
 }
