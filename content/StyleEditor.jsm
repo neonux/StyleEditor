@@ -289,6 +289,7 @@ StyleEditor.prototype = {
       setupBracketCompletion(sourceEditor);
       sourceEditor.addEventListener(SourceEditor.EVENTS.TEXT_CHANGED,
                                     function onTextChanged(aEvent) {
+        this._lastTokenAtCursor = null;
         this.updateStyleSheet();
       }.bind(this));
 
@@ -1269,9 +1270,13 @@ StyleEditor.prototype = {
   incrementValueAtCursorBy: function SE_incrementValueAtCursorBy(aDelta, aComponent)
   {
     let token = this.getTokenAtCursor();
-    let value = new StyleValue(token.text);
-    if (value.incrementBy(aDelta, aComponent)) {
-      this._replaceToken(token, value.text);
+    if (!this._lastTokenAtCursor ||
+        this._lastTokenAtCursor.start != token.start) {
+      this._lastTokenAtCursor = token;
+      this._valueAtCursor = new StyleValue(token.text);
+    }
+    if (this._valueAtCursor.incrementBy(aDelta, aComponent)) {
+      this._replaceToken(token, this._valueAtCursor.text);
     }
   },
 
@@ -1285,9 +1290,13 @@ StyleEditor.prototype = {
   multiplyValueAtCursorBy: function SE_multiplyValueAtCursorBy(aRatio)
   {
     let token = this.getTokenAtCursor();
-    let value = new StyleValue(token.text);
-    if (value.multiplyBy(aRatio)) {
-      this._replaceToken(token, value.text);
+    if (!this._lastTokenAtCursor ||
+        this._lastTokenAtCursor.start != token.start) {
+      this._lastTokenAtCursor = token;
+      this._valueAtCursor = new StyleValue(token.text);
+    }
+    if (this._valueAtCursor.multiplyBy(aRatio)) {
+      this._replaceToken(token, this._valueAtCursor.text);
     }
   },
 
@@ -1301,9 +1310,13 @@ StyleEditor.prototype = {
   cycleValueAtCursor: function SE_cycleValueAtCursor(aDirection)
   {
     let token = this.getTokenAtCursor();
-    let value = new StyleValue(token.text);
-    if (value.cycle(aDirection)) {
-      this._replaceToken(token, value.text);
+    if (!this._lastTokenAtCursor ||
+        this._lastTokenAtCursor.start != token.start) {
+      this._lastTokenAtCursor = token;
+      this._valueAtCursor = new StyleValue(token.text);
+    }
+    if (this._valueAtCursor.cycle(aDirection)) {
+      this._replaceToken(token, this._valueAtCursor.text);
     }
   },
 

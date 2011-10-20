@@ -206,6 +206,7 @@ const ENUMERATION_TABLE = {
 function StyleValue(aText)
 {
   aText = aText.trim();
+  this._originalText = aText;
   this._text = aText;
   this._unit = null;
   this._type = null;
@@ -344,6 +345,13 @@ StyleValue.prototype = {
     }
     return [this._textValue, this._unit].join("");
   },
+
+  /**
+   * Retrieve the original text representation of this value.
+   *
+   * @return string
+   */
+  get originalText() this._originalText,
 
   /**
    * Increment value by given delta (can be negative).
