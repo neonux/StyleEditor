@@ -1138,55 +1138,37 @@ StyleEditor.prototype = {
       }.bind(this)
     });
     bindings.push({
-      action: "StyleEditor.incrementSmallValue",
+      action: "StyleEditor.incrementSaturation",
       code: Ci.nsIDOMKeyEvent.DOM_VK_UP,
       alt: true,
       shift: true,
       callback: function incrementValue() {
-        this.incrementValueAtCursorBy(0.1);
+        this.incrementValueAtCursorBy(1, 1);
       }.bind(this)
     });
     bindings.push({
-      action: "StyleEditor.decrementSmallValue",
+      action: "StyleEditor.decrementSaturation",
       code: Ci.nsIDOMKeyEvent.DOM_VK_DOWN,
       alt: true,
       shift: true,
       callback: function decrementValue() {
-        this.incrementValueAtCursorBy(-0.1);
+        this.incrementValueAtCursorBy(-1, 1);
       }.bind(this)
     });
     bindings.push({
-      action: "StyleEditor.multiplyByTwo",
+      action: "StyleEditor.doubleValue",
       code: Ci.nsIDOMKeyEvent.DOM_VK_PAGE_UP,
       alt: true,
-      callback: function multiplyByTwo() {
+      callback: function doubleValue() {
         this.multiplyValueAtCursorBy(2);
       }.bind(this)
     });
     bindings.push({
-      action: "StyleEditor.divideByTwo",
+      action: "StyleEditor.halveValue",
       code: Ci.nsIDOMKeyEvent.DOM_VK_PAGE_DOWN,
       alt: true,
-      callback: function divideByTwo() {
+      callback: function halveValue() {
         this.multiplyValueAtCursorBy(0.5);
-      }.bind(this)
-    });
-    bindings.push({
-      action: "StyleEditor.increaseByTenPercent",
-      code: Ci.nsIDOMKeyEvent.DOM_VK_PAGE_UP,
-      alt: true,
-      shift: true,
-      callback: function increaseByTenPercent() {
-        this.multiplyValueAtCursorBy(1.1);
-      }.bind(this)
-    });
-    bindings.push({
-      action: "StyleEditor.decreaseByTenPercent",
-      code: Ci.nsIDOMKeyEvent.DOM_VK_PAGE_DOWN,
-      alt: true,
-      shift: true,
-      callback: function decreaseByTenPercent() {
-        this.multiplyValueAtCursorBy(0.9);
       }.bind(this)
     });
     bindings.push({
@@ -1203,6 +1185,24 @@ StyleEditor.prototype = {
       alt: true,
       callback: function cycleRight() {
         this.cycleValueAtCursor(1);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.decrementHue",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_LEFT,
+      alt: true,
+      shift: true,
+      callback: function decrementHue() {
+        this.incrementValueAtCursorBy(-1, 0);
+      }.bind(this)
+    });
+    bindings.push({
+      action: "StyleEditor.incrementHue",
+      code: Ci.nsIDOMKeyEvent.DOM_VK_RIGHT,
+      alt: true,
+      shift: true,
+      callback: function incrementHue() {
+        this.incrementValueAtCursorBy(1, 0);
       }.bind(this)
     });
 
