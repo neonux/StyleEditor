@@ -263,7 +263,7 @@ function StyleValue(aToken)
         CONVERSION_TABLE["number"][this._unit] = 1; // identity
       }
     } else if (text in COLOR_TABLE) {
-        this._value = COLOR_TABLE[text];
+        this._value = rgba2hsla(COLOR_TABLE[text]);
         this._type = "color";
         this._unit = "name";
     } else {
