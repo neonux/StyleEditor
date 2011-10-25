@@ -16,7 +16,7 @@ COVERAGE_DIR="${PWD}/build/coverage/${VERSION}"
 export TEST_PATH=browser/base/content/test/StyleEditor
 
 export COVERAGE_PROJECT=Style Editor
-export COVERAGE_FILTER=*/StyleEditor.jsm */StyleEditorChrome.jsm */StyleEditorUtil.jsm */SplitView.jsm
+export COVERAGE_FILTER=*/StyleEditor.jsm */StyleEditorChrome.jsm */StyleEditorUtil.jsm */StyleValue.jsm */SplitView.jsm
 COVERAGE_DIR="${PWD}/build/coverage/${VERSION}"
 
 .PHONY: xpi test testcoverage
