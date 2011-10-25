@@ -322,31 +322,32 @@ StyleValue.prototype = {
     if (!this._type) {
       return "";
     }
-
-    if (this._type == "color") {
-      if (this._unit == "hsla") {
-        return ["hsla(", this._value[0], ",", this._value[1], "%,",
-                this._value[2], "%,", this._value[3], ")"].join("");
-      } else if (this._unit == "hsl") {
-        return ["hsl(", this._value[0], ",", this._value[1], "%,",
-                this._value[2], "%)"].join("");
-      }
-
-      let rgba = hsla2rgba(this._value);
-      switch (this._unit) {
-      case "rgba":
-        return "rgba(" + rgba.join(",") + ")";
-      case "rgb":
-        return "rgb(" + rgba.slice(0, -1).join(",") + ")";
-      case "hex":
-        return "#" + rgba.slice(0, -1).map(dechex).join("");
-      case "shorthex":
-        return "#" + rgba.slice(0, -1).map(function (component) {
-          return Math.floor(component / 16).toString(16);
-        }).join("");
-      }
+    if (this._type != "color") {
+      return [this._textValue, this._unit].join("");
     }
-    return [this._textValue, this._unit].join("");
+
+    switch (this._unit) {
+    case "hsla":
+      return ["hsla(", this._value[0], ",", this._value[1], "%,",
+              this._value[2], "%,", this._value[3], ")"].join("");
+    case "hsl":
+      return ["hsl(", this._value[0], ",", this._value[1], "%,",
+              this._value[2], "%)"].join("");
+    }
+
+    let rgba = hsla2rgba(this._value);
+    switch (this._unit) {
+    case "rgba":
+      return "rgba(" + rgba.join(",") + ")";
+    case "rgb":
+      return "rgb(" + rgba.slice(0, -1).join(",") + ")";
+    case "hex":
+      return "#" + rgba.slice(0, -1).map(dechex).join("");
+    case "shorthex":
+      return "#" + rgba.slice(0, -1).map(function (component) {
+        return Math.floor(component / 16).toString(16);
+      }).join("");
+    }
   },
 
   /**
