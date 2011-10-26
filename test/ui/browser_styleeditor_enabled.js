@@ -76,9 +76,7 @@ function testEnabledToggle(aChrome, aEditor)
 
         // now toggle it back to enabled
         waitForFocus(function () {
-          //! does nothing on Win7 specifically...
-          //EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
-          enabledToggle.click();
+          EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
         }, gChromeWindow);
         return;
       }
@@ -98,8 +96,6 @@ function testEnabledToggle(aChrome, aEditor)
   });
 
   waitForFocus(function () {
-    //! does nothing on Win7 specifically...
-    //EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
-    enabledToggle.click();
+    EventUtils.synthesizeMouseAtCenter(enabledToggle, {}, gChromeWindow);
   }, gChromeWindow);
 }
