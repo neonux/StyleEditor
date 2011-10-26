@@ -1,22 +1,16 @@
-commit a355625a0daa38f4b93f735d71931cc8bb6d03fa (HEAD, bug-583041-SE-integration)
-Author: Cedric Vivier <cedricv@neonux.com>
-Date:   Tue Sep 20 16:29:19 2011 -0700
-
-    browser-base
----
  browser/app/profile/firefox.js                   |    3 ++
  browser/base/content/browser-appmenu.inc         |    5 +++
  browser/base/content/browser-menubar.inc         |    6 +++
  browser/base/content/browser-sets.inc            |    3 ++
- browser/base/content/browser.js                  |   37 ++++++++++++++++++++++
+ browser/base/content/browser.js                  |   39 ++++++++++++++++++++++
  browser/devtools/Makefile.in                     |    1 +
- browser/devtools/jar.mn                          |    1 +
+ browser/devtools/jar.mn                          |    2 +-
  browser/locales/en-US/chrome/browser/browser.dtd |    7 ++++
  browser/locales/jar.mn                           |    2 +
- 9 files changed, 65 insertions(+), 0 deletions(-)
+ 9 files changed, 67 insertions(+), 1 deletions(-)
 
 diff --git a/browser/app/profile/firefox.js b/browser/app/profile/firefox.js
-index 3397e66..857110d 100644
+index 780c869..69f946e 100644
 --- a/browser/app/profile/firefox.js
 +++ b/browser/app/profile/firefox.js
 @@ -1002,16 +1002,19 @@ pref("devtools.errorconsole.enabled", false);
@@ -34,11 +28,11 @@ index 3397e66..857110d 100644
  // Enable tools for Chrome development.
  pref("devtools.chrome.enabled", false);
  
+ // Disable the GCLI enhanced command line.
+ pref("devtools.gcli.enable", false);
+ 
  // The last Web Console height. This is initially 0 which means that the Web
  // Console will use the default height next time it shows.
- // Change to -1 if you do not want the Web Console to remember its last height.
- pref("devtools.hud.height", 0);
- 
 diff --git a/browser/base/content/browser-appmenu.inc b/browser/base/content/browser-appmenu.inc
 index 72f320b..34c8124 100644
 --- a/browser/base/content/browser-appmenu.inc
@@ -134,10 +128,10 @@ index e4b785d..478c84d 100644
           key="&undoCmd.key;"
           modifiers="accel"/>
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index a451579..01260dc 100644
+index fcb6de9..5b7c087 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -1701,16 +1701,26 @@ function delayedStartup(isLoadingBlank, mustLoadSidebar) {
+@@ -1706,16 +1706,26 @@ function delayedStartup(isLoadingBlank, mustLoadSidebar) {
    if (scratchpadEnabled) {
      document.getElementById("menu_scratchpad").hidden = false;
      document.getElementById("Tools:Scratchpad").removeAttribute("disabled");
@@ -164,7 +158,7 @@ index a451579..01260dc 100644
                                               Ci.nsIPrefLocalizedString).data)
      document.getElementById("appmenu_charsetMenu").hidden = true;
  #endif
-@@ -8699,16 +8709,43 @@ var Scratchpad = {
+@@ -8749,16 +8759,45 @@ var Scratchpad = {
      const SCRATCHPAD_WINDOW_URL = "chrome://browser/content/scratchpad.xul";
      const SCRATCHPAD_WINDOW_FEATURES = "chrome,titlebar,toolbar,centerscreen,resizable,dialog=no";
  
@@ -175,31 +169,33 @@ index a451579..01260dc 100644
  
 +var StyleEditor = {
 +  prefEnabledName: "devtools.styleeditor.enabled",
-+
 +  openChrome: function SE_openChrome()
 +  {
-+    const CHROME_URL = "chrome://browser/content/StyleEditorChrome.xul";
++    const CHROME_URL = "chrome://StyleEditor/content/StyleEditorChrome.xul";
 +    const CHROME_WINDOW_TYPE = "Tools:StyleEditor";
-+    const CHROME_WINDOW_FLAGS = "chrome,centerscreen,resizable,dependent";
++    const CHROME_WINDOW_FLAGS = "chrome,centerscreen,resizable,dialog=no";
 +
 +    // focus currently open Style Editor window for this document, if any
-+    let contentWindow = Services.wm.getMostRecentWindow("navigator:browser")
-+                          .gBrowser.selectedBrowser.contentWindow;
++    let contentWindow = gBrowser.selectedBrowser.contentWindow;
++    let contentWindowID = contentWindow.QueryInterface(Ci.nsIInterfaceRequestor).
++      getInterface(Ci.nsIDOMWindowUtils).currentInnerWindowID;
 +    let enumerator = Services.wm.getEnumerator(CHROME_WINDOW_TYPE);
 +    while(enumerator.hasMoreElements()) {
 +      var win = enumerator.getNext();
-+      if (win.styleEditorChrome.contentWindow == contentWindow) {
++      if (win.styleEditorChrome.contentWindowID == contentWindowID) {
 +        win.focus();
 +        return win;
 +      }
 +    }
 +
 +    let chromeWindow = Services.ww.openWindow(null, CHROME_URL, "_blank",
-+                                              CHROME_WINDOW_FLAGS, null);
++                                              CHROME_WINDOW_FLAGS,
++                                              contentWindow);
 +    chromeWindow.focus();
 +    return chromeWindow;
 +  }
 +};
++
  
  XPCOMUtils.defineLazyGetter(window, "gShowPageResizers", function () {
  #ifdef XP_WIN
@@ -209,7 +205,7 @@ index a451579..01260dc 100644
    return parseFloat(sysInfo.getProperty("version")) < 6;
  #else
 diff --git a/browser/devtools/Makefile.in b/browser/devtools/Makefile.in
-index c40b595..8e42f5f 100644
+index 7b9ab20..885b524 100644
 --- a/browser/devtools/Makefile.in
 +++ b/browser/devtools/Makefile.in
 @@ -45,16 +45,17 @@ VPATH   = @srcdir@
@@ -218,8 +214,8 @@ index c40b595..8e42f5f 100644
  include $(topsrcdir)/config/config.mk
  
  DIRS = \
+   highlighter \
    webconsole \
-   scratchpad \
    sourceeditor \
 +  styleeditor \
    styleinspector \
@@ -227,27 +223,30 @@ index c40b595..8e42f5f 100644
    $(NULL)
  
  ifdef ENABLE_TESTS
- # DIRS += test # no tests yet
+ DIRS += scratchpad/test
  endif
  
 diff --git a/browser/devtools/jar.mn b/browser/devtools/jar.mn
-index ba70429..0ea1369 100644
+index ea249b7..185c79e 100644
 --- a/browser/devtools/jar.mn
 +++ b/browser/devtools/jar.mn
-@@ -1,7 +1,8 @@
+@@ -1,10 +1,10 @@
  browser.jar:
+ *   content/browser/inspector.html                (highlighter/inspector.html)
      content/browser/NetworkPanel.xhtml            (webconsole/NetworkPanel.xhtml)
  *   content/browser/scratchpad.xul                (scratchpad/scratchpad.xul)
  *   content/browser/scratchpad.js                 (scratchpad/scratchpad.js)
++*   content/browser/StyleEditorChrome.xul         (styleeditor/StyleEditorChrome.xul)
      content/browser/csshtmltree.xhtml             (styleinspector/csshtmltree.xhtml)
      content/browser/orion.js                      (sourceeditor/orion/orion.js)
      content/browser/orion.css                     (sourceeditor/orion/orion.css)
-+*   content/browser/StyleEditorChrome.xul         (styleeditor/StyleEditorChrome.xul)
+     content/browser/orion-mozilla.css             (sourceeditor/orion/mozilla.css)
+-
 diff --git a/browser/locales/en-US/chrome/browser/browser.dtd b/browser/locales/en-US/chrome/browser/browser.dtd
-index ef95905..f09f884 100644
+index 021e8e1..7933aca 100644
 --- a/browser/locales/en-US/chrome/browser/browser.dtd
 +++ b/browser/locales/en-US/chrome/browser/browser.dtd
-@@ -204,16 +204,23 @@ can reach it easily. -->
+@@ -207,16 +207,23 @@ can reach it easily. -->
    -  "Scratchpad" in your locale. You should feel free to find a close
    -  approximation to it or choose a word (or words) that means
    -  "simple discardable text editor". -->
@@ -272,14 +271,14 @@ index ef95905..f09f884 100644
  
  <!ENTITY fileMenu.label         "File"> 
 diff --git a/browser/locales/jar.mn b/browser/locales/jar.mn
-index f846c04..796ed25 100644
+index 5320a52..daf7fa5 100644
 --- a/browser/locales/jar.mn
 +++ b/browser/locales/jar.mn
-@@ -13,16 +13,18 @@
- #endif
- *   locale/browser/browser.dtd                     (%chrome/browser/browser.dtd)
+@@ -15,16 +15,18 @@
      locale/browser/baseMenuOverlay.dtd             (%chrome/browser/baseMenuOverlay.dtd)
      locale/browser/browser.properties              (%chrome/browser/browser.properties)
+     locale/browser/devtools/gcli.properties         (%chrome/browser/devtools/gcli.properties)
+     locale/browser/devtools/gclicommands.properties (%chrome/browser/devtools/gclicommands.properties)
      locale/browser/styleinspector.properties       (%chrome/browser/styleinspector.properties)
      locale/browser/styleinspector.dtd              (%chrome/browser/styleinspector.dtd)
      locale/browser/scratchpad.properties           (%chrome/browser/scratchpad.properties)
