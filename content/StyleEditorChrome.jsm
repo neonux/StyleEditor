@@ -452,17 +452,10 @@ StyleEditorChrome.prototype = {
 
         this._triggerChromeListeners("EditorAdded", [editor]);
       }.bind(this),
-      onHide: function ASV_onItemShow(aSummary, aDetails, aData, aIsOrientationChange) {
-        let editor = aData.editor;
-        if (aIsOrientationChange) {
-          // force detach (see bug 254144)
-          editor.inputElement = null;
-        }
-      },
-      onShow: function ASV_onItemShow(aSummary, aDetails, aData, aIsOrientationChange) {
+      onShow: function ASV_onItemShow(aSummary, aDetails, aData) {
         let editor = aData.editor;
         if (!editor.inputElement) {
-          // attach input element first time it is shown
+          // attach editor to input element the first time it is shown
           editor.inputElement = aDetails.querySelector(".stylesheet-editor-input");
         }
         editor.inputElement.focus();

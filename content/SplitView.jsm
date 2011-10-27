@@ -164,7 +164,7 @@ SplitView.prototype = {
       binding._details.classList.remove("splitview-active");
 
       if (binding.onHide) {
-        binding.onHide(this._activeSummary, binding._details, binding.data, false);
+        binding.onHide(this._activeSummary, binding._details, binding.data);
       }
     }
 
@@ -179,7 +179,7 @@ SplitView.prototype = {
     this._activeSummary = aSummary;
 
     if (binding.onShow) {
-      binding.onShow(aSummary, binding._details, binding.data, false);
+      binding.onShow(aSummary, binding._details, binding.data);
     }
     aSummary.scrollIntoView();
   },
@@ -219,9 +219,9 @@ SplitView.prototype = {
    *     All properties are optional :
    *     - function(DOMElement summary, DOMElement details, object data) onCreate
    *         Called when the item has been added.
-   *     - function(summary, details, data, isOrientationChange) onShow
+   *     - function(summary, details, data) onShow
    *         Called when the item is shown/active.
-   *     - function(summary, details, data, isOrientationChange) onHide
+   *     - function(summary, details, data) onHide
    *         Called when the item is hidden/inactive.
    *     - function(summary, details, data) onDestroy
    *         Called when the item has been removed.
