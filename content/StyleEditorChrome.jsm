@@ -44,6 +44,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/PluralForm.jsm");
 Cu.import("chrome://StyleEditor/content/StyleEditor.jsm");
 Cu.import("chrome://StyleEditor/content/StyleEditorUtil.jsm");
 Cu.import("chrome://StyleEditor/content/SplitView.jsm");
@@ -388,14 +389,14 @@ StyleEditorChrome.prototype = {
   _updateSummaryForEditor: function SEC__updateSummaryForEditor(aEditor, aSummary)
   {
     let summary = aSummary || this.getSummaryElementForEditor(aEditor);
+    let ruleCount = aEditor.styleSheet.cssRules.length;
 
     this._view.setItemClassName(summary, aEditor.flags);
 
     text(summary, ".stylesheet-name", aEditor.getFriendlyName());
     text(summary, ".stylesheet-title", aEditor.styleSheet.title || "");
     text(summary, ".stylesheet-rule-count",
-         _("ruleCount.label", aEditor.styleSheet.cssRules.length));
-
+      PluralForm.get(ruleCount, _("ruleCount.label")).replace("#1", ruleCount));
     text(summary, ".stylesheet-error-message", aEditor.errorMessage);
   },
 
