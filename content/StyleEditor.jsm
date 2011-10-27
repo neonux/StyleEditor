@@ -1103,7 +1103,7 @@ StyleEditor.prototype = {
 
     bindings.push({
       action: "StyleEditor.save",
-      code: _("saveStyleSheet.accessKey"),
+      code: _("saveStyleSheet.commandkey"),
       accel: true,
       callback: function save() {
         this.saveToFile(this._savedFile);
@@ -1111,7 +1111,7 @@ StyleEditor.prototype = {
     });
     bindings.push({
       action: "StyleEditor.saveAs",
-      code: _("saveStyleSheet.accessKey"),
+      code: _("saveStyleSheet.commandkey"),
       accel: true,
       shift: true,
       callback: function saveAs() {
