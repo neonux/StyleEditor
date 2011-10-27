@@ -10,15 +10,17 @@ function test()
   waitForExplicitFinish();
 
   addTabAndLaunchStyleEditorChromeWhenLoaded(function (aChrome) {
+    function createNewStyleSheet() {
+      executeSoon(function () {
+        waitForFocus(function () {
+          let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
+          EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
+        }, gChromeWindow);
+      });
+    }
+
     aChrome.addChromeListener({
-      onContentAttach: function (aChrome) {
-        executeSoon(function () {
-          waitForFocus(function () {
-            let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
-            EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
-          }, gChromeWindow);
-        });
-      },
+      onContentAttach: createNewStyleSheet,
       onEditorAdded: function (aChrome, aEditor) {
         if (aEditor.sourceEditor) {
           run(aEditor); // already attached to input element
@@ -29,6 +31,9 @@ function test()
         }
       }
     });
+    if (aChrome.isContentAttached) {
+      createNewStyleSheet();
+    }
   });
 
   content.location = TESTCASE_URI;
