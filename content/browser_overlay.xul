@@ -55,7 +55,7 @@
       let contentWindowID = contentWindow.QueryInterface(Ci.nsIInterfaceRequestor).
         getInterface(Ci.nsIDOMWindowUtils).currentInnerWindowID;
       let enumerator = Services.wm.getEnumerator(CHROME_WINDOW_TYPE);
-      while(enumerator.hasMoreElements()) {
+      while (enumerator.hasMoreElements()) {
         var win = enumerator.getNext();
         if (win.styleEditorChrome.contentWindowID == contentWindowID) {
           win.focus();
