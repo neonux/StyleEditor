@@ -123,7 +123,7 @@ function testNewChrome(aEditor)
       onFlagChange: function (aEditor, aFlag) {
         if (!hadError && aFlag == "error") {
           ok(aEditor.hasFlag("error"),
-             "editor has error flag after attempting to save with invalid path");
+             "editor has ERROR flag after attempting to save with invalid path");
           hadError = true;
 
           // save using source editor key binding (previous successful path)
@@ -134,9 +134,13 @@ function testNewChrome(aEditor)
         }
 
         if (hadError && aFlag == "unsaved") {
-          ok(!aEditor.hasFlag("unsaved"),
-             "first stylesheet does not has UNSAVED flag after key binding Save from editor");
-          finish();
+          executeSoon(function () {
+            ok(!aEditor.hasFlag("unsaved"),
+               "first stylesheet has no UNSAVED flag after successful save");
+            ok(!aEditor.hasFlag("error"),
+               "ERROR flag has been removed since last operation succeeded");
+            finish();
+          });
         }
       }
     });

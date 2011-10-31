@@ -382,6 +382,7 @@ StyleEditor.prototype = {
       aStream.close();
 
       this._appendNewStyleSheet(source);
+      this.clearFlag(StyleEditorFlags.ERROR);
     }.bind(this));
   },
 
@@ -664,6 +665,7 @@ StyleEditor.prototype = {
         aCallback(aFile);
       }
       this.clearFlag(StyleEditorFlags.UNSAVED);
+      this.clearFlag(StyleEditorFlags.ERROR);
     }.bind(this));
   },
 
