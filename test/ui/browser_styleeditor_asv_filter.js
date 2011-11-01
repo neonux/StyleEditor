@@ -35,7 +35,7 @@ function run(aChrome)
 
 function onFirstEditorAttach(aEditor)
 {
-  let filter = gChromeWindow.document.querySelector("input.splitview-filter");
+  let filter = gChromeWindow.document.querySelector(".splitview-filter");
   let nav = gChromeWindow.document.querySelector(".splitview-nav");
   nav.focus();
 

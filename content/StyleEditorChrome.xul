@@ -42,6 +42,7 @@
 <?xml-stylesheet href="chrome://StyleEditor/skin/SplitView.css" type="text/css"?>
 <?xml-stylesheet href="chrome://StyleEditor/content/SplitView.css" type="text/css"?>
 <?xml-stylesheet href="chrome://StyleEditor/skin/StyleEditor.css" type="text/css"?>
+<?xml-stylesheet href="chrome://StyleEditor/content/StyleEditor.css" type="text/css"?>
 <xul:window xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns="http://www.w3.org/1999/xhtml"
         id="style-editor-chrome-window"
@@ -56,34 +57,36 @@
   <div class="splitview-controller">
     <div class="splitview-main">
       <div class="toolbar">
-        <button class="style-editor-newButton"
-                accesskey="&newButton.accesskey;"
-                title="&newButton.tooltip;">&newButton.label;</button>
-        <button class="style-editor-importButton"
-                accesskey="&importButton.accesskey;"
-                title="&importButton.tooltip;">&importButton.label;</button>
+        <xul:button class="style-editor-newButton"
+                    accesskey="&newButton.accesskey;"
+                    tooltiptext="&newButton.tooltip;"
+                    label="&newButton.label;"></xul:button>
+        <xul:button class="style-editor-importButton"
+                    accesskey="&importButton.accesskey;"
+                    tooltiptext="&importButton.tooltip;"
+                    label="&importButton.label;"></xul:button>
         <div class="spacer"></div>
-        <input class="splitview-filter"
-               type="search"
-               title="&searchInput.tooltip;"
-               placeholder="&searchInput.placeholder;"/>
+        <xul:textbox class="splitview-filter"
+                     type="search"
+                     tooltiptext="&searchInput.tooltip;"
+                     placeholder="&searchInput.placeholder;"/>
       </div>
     </div>
     <div class="splitview-nav-container">
       <ol class="splitview-nav" tabindex="0"></ol>
       <div class="splitview-nav placeholder empty">
-        <h5>&noStyleSheet.label;</h5>
-        <small>&noStyleSheet-tip-start.label;
+        <p><strong>&noStyleSheet.label;</strong></p>
+        <p>&noStyleSheet-tip-start.label;
           <a href="#"
              class="style-editor-newButton">&noStyleSheet-tip-action.label;</a>
-          &noStyleSheet-tip-end.label;</small>
+          &noStyleSheet-tip-end.label;</p>
       </div>
       <div class="splitview-nav placeholder all-filtered">
-        <h5>&searchNoResults.label;</h5>
-        <small>
+        <p><strong>&searchNoResults.label;</strong></p>
+        <p>
           <a href="#"
              class="splitview-filter-clearButton">&searchClearButton.label;</a>
-        </small>
+        </p>
       </div>
     </div> <!-- .splitview-nav-container -->
   </div>   <!-- .splitview-controller -->

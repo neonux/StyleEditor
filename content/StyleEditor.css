@@ -35,26 +35,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* only the active details pane is shown */
-.splitview-side-details > * {
+.splitview-nav > li hgroup > .stylesheet-error-message {
   display: none;
 }
-.splitview-side-details > .splitview-active {
-  display: -moz-box;
-}
-
-/* filtered items are hidden */
-ol.splitview-nav > li.splitview-filtered {
-  display: none;
-}
-
-.splitview-nav:empty,
-.splitview-nav.splitview-all-filtered,
-.splitview-nav + .splitview-nav.placeholder,
-.splitview-filter-bar {
-  display: none;
-}
-.splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered,
-.splitview-nav:empty ~ .splitview-nav.placeholder.empty {
-  display: -moz-box;
+.splitview-nav > li.error hgroup > .stylesheet-error-message {
+  display: block;
 }

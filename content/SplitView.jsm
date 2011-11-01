@@ -68,7 +68,7 @@ function SplitView(aRoot)
 
   this._mql = aRoot.ownerDocument.defaultView.matchMedia(LANDSCAPE_MEDIA_QUERY);
 
-  this._filter = aRoot.querySelector("input.splitview-filter");
+  this._filter = aRoot.querySelector(".splitview-filter");
   if (this._filter) {
     this._setupFilterBox();
   }
