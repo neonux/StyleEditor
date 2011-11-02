@@ -9,7 +9,7 @@
 <!ENTITY styleeditor.keytext           "F7">
 
 <!-- LOCALIZATION NOTE (window.title): This is the default title for Style Editor
-     main window. NB: the property chromeWindowTitle in StyleEditor.properties
+     main window. NB: the property chromeWindowTitle in styleeditor.properties
      is used to dynamically update the Style Editor window title with the title
      of the web page it is editing. -->
 <!ENTITY window.title               "Style Editor">
