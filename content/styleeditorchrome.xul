@@ -48,7 +48,7 @@
         id="style-editor-chrome-window"
         title="&window.title;"
         windowtype="Tools:StyleEditor"
-        width="640" height="360"
+        width="800" height="280"
         persist="screenX screenY width height sizemode">
 <xul:script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
 
