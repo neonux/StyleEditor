@@ -39,12 +39,12 @@ ol.splitview-nav:focus {
   outline: 0; /* focus ring is on the stylesheet name */
 }
 
-.splitview-nav:-moz-locale-dir(ltr) > li,
-.splitview-nav:-moz-locale-dir(ltr) > li hgroup {
+.splitview-nav > li:-moz-locale-dir(ltr),
+.splitview-nav > li hgroup:-moz-locale-dir(ltr) {
   float: left;
 }
-.splitview-nav:-moz-locale-dir(rtl) > li,
-.splitview-nav:-moz-locale-dir(rtl) > li hgroup {
+.splitview-nav > li:-moz-locale-dir(rtl),
+.splitview-nav > li hgroup:-moz-locale-dir(rtl) {
   float: right;
 }
 .splitview-nav > li > hgroup.stylesheet-info {
@@ -61,8 +61,8 @@ ol.splitview-nav:focus {
 .splitview-nav > li.unsaved > hgroup .stylesheet-name {
   font-style: italic;
 }
-.splitview-nav:-moz-locale-dir(ltr) > li.unsaved > hgroup .stylesheet-name:before,
-.splitview-nav:-moz-locale-dir(rtl) > li.unsaved > hgroup .stylesheet-name:after {
+.splitview-nav > li.unsaved > hgroup .stylesheet-name:before:-moz-locale-dir(ltr),
+.splitview-nav > li.unsaved > hgroup .stylesheet-name:after:-moz-locale-dir(rtl) {
   font-style: italic;
   content: "* ";
 }
@@ -77,7 +77,7 @@ ol.splitview-nav:focus {
   background-position: center center;
   background-repeat: no-repeat;
 }
-.splitview-nav:-moz-locale-dir(rtl) > li > .stylesheet-enabled {
+.splitview-nav > li > .stylesheet-enabled:-moz-locale-dir(rtl) {
   float: right;
 }
 .splitview-nav > li.disabled > .stylesheet-enabled {
@@ -103,7 +103,7 @@ ol.splitview-nav:focus {
   position: relative;
   right: 0;
 }
-.splitview-nav:-moz-locale-dir(rtl) > li > .stylesheet-more {
+.splitview-nav > li > .stylesheet-more:-moz-locale-dir(rtl) {
   left: 0;
 }
 
@@ -130,28 +130,28 @@ ol.splitview-nav:focus {
   padding-right: 6px;
 }
 
-.splitview-nav:-moz-locale-dir(ltr) > li hgroup.stylesheet-actions,
-.splitview-nav:-moz-locale-dir(ltr) > li:hover hgroup.stylesheet-stats,
-.splitview-nav:-moz-locale-dir(ltr) > li:focus hgroup.stylesheet-stats,
-.splitview-nav:-moz-locale-dir(ltr) > li.splitview-active hgroup.stylesheet-stats {
+.splitview-nav > li hgroup.stylesheet-actions:-moz-locale-dir(ltr),
+.splitview-nav > li:hover hgroup.stylesheet-stats:-moz-locale-dir(ltr),
+.splitview-nav > li:focus hgroup.stylesheet-stats:-moz-locale-dir(ltr),
+.splitview-nav > li.splitview-active hgroup.stylesheet-stats:-moz-locale-dir(ltr) {
   right: -50ex;
 }
-.splitview-nav:-moz-locale-dir(rtl) > li hgroup.stylesheet-actions,
-.splitview-nav:-moz-locale-dir(rtl) > li:hover hgroup.stylesheet-stats,
-.splitview-nav:-moz-locale-dir(rtl) > li:focus hgroup.stylesheet-stats,
-.splitview-nav:-moz-locale-dir(rtl) > li.splitview-active hgroup.stylesheet-stats {
+.splitview-nav > li hgroup.stylesheet-actions:-moz-locale-dir(rtl),
+.splitview-nav > li:hover hgroup.stylesheet-stats:-moz-locale-dir(rtl),
+.splitview-nav > li:focus hgroup.stylesheet-stats:-moz-locale-dir(rtl),
+.splitview-nav > li.splitview-active hgroup.stylesheet-stats:-moz-locale-dir(rtl) {
   left: -50ex;
 }
-.splitview-nav:-moz-locale-dir(ltr) > li hgroup.stylesheet-stats,
-.splitview-nav:-moz-locale-dir(ltr) > li:hover hgroup.stylesheet-actions,
-.splitview-nav:-moz-locale-dir(ltr) > li:focus hgroup.stylesheet-actions,
-.splitview-nav:-moz-locale-dir(ltr) > li.splitview-active hgroup.stylesheet-actions {
+.splitview-nav > li hgroup.stylesheet-stats:-moz-locale-dir(ltr),
+.splitview-nav > li:hover hgroup.stylesheet-actions:-moz-locale-dir(ltr),
+.splitview-nav > li:focus hgroup.stylesheet-actions:-moz-locale-dir(ltr),
+.splitview-nav > li.splitview-active hgroup.stylesheet-actions:-moz-locale-dir(ltr) {
   right: 0;
 }
-.splitview-nav:-moz-locale-dir(rtl) > li hgroup.stylesheet-stats,
-.splitview-nav:-moz-locale-dir(rtl) > li:hover hgroup.stylesheet-actions,
-.splitview-nav:-moz-locale-dir(rtl) > li:focus hgroup.stylesheet-actions,
-.splitview-nav:-moz-locale-dir(rtl) > li.splitview-active hgroup.stylesheet-actions {
+.splitview-nav > li hgroup.stylesheet-stats:-moz-locale-dir(rtl),
+.splitview-nav > li:hover hgroup.stylesheet-actions:-moz-locale-dir(rtl),
+.splitview-nav > li:focus hgroup.stylesheet-actions:-moz-locale-dir(rtl),
+.splitview-nav > li.splitview-active hgroup.stylesheet-actions:-moz-locale-dir(rtl) {
   left: 0;
 }
 
