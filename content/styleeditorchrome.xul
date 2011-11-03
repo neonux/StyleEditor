@@ -39,10 +39,10 @@
  %styleEditorDTD;
 ]>
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
-<?xml-stylesheet href="chrome://StyleEditor/skin/splitview.css" type="text/css"?>
 <?xml-stylesheet href="chrome://StyleEditor/content/splitview.css" type="text/css"?>
-<?xml-stylesheet href="chrome://StyleEditor/skin/styleeditor.css" type="text/css"?>
+<?xml-stylesheet href="chrome://StyleEditor/skin/splitview.css" type="text/css"?>
 <?xml-stylesheet href="chrome://StyleEditor/content/styleeditor.css" type="text/css"?>
+<?xml-stylesheet href="chrome://StyleEditor/skin/styleeditor.css" type="text/css"?>
 <xul:window xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns="http://www.w3.org/1999/xhtml"
         id="style-editor-chrome-window"
