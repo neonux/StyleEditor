@@ -53,6 +53,7 @@ ol.splitview-nav:focus {
 .splitview-nav > li > hgroup .stylesheet-name {
   display: inline-block;
   width: 100%;
+  max-width: 34ex;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

@@ -35,6 +35,25 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+box,
+.splitview-nav {
+  -moz-box-flex: 1;
+  -moz-box-orient: vertical;
+}
+
+.splitview-main {
+  -moz-box-flex: 0;
+}
+
+.splitview-controller {
+  min-height: 8em;
+  max-height: 14em;
+}
+
+.splitview-nav {
+  display: -moz-box;
+}
+
 /* only the active details pane is shown */
 .splitview-side-details > * {
   display: none;
@@ -43,15 +62,32 @@
   display: -moz-box;
 }
 
+/* this is to keep in sync with SplitView.jsm's LANDSCAPE_MEDIA_QUERY */
+@media (min-aspect-ratio: 5/3) {
+  .splitview-root {
+    -moz-box-orient: horizontal;
+  }
+  .splitview-controller {
+    -moz-box-flex: 0;
+    max-height: none;
+  }
+  .splitview-details {
+    display: none;
+  }
+  .splitview-details.splitview-active {
+    display: -moz-box;
+  }
+}
+
 /* filtered items are hidden */
 ol.splitview-nav > li.splitview-filtered {
   display: none;
 }
 
+/* "empty list" and "all filtered" placeholders are hidden */
 .splitview-nav:empty,
 .splitview-nav.splitview-all-filtered,
-.splitview-nav + .splitview-nav.placeholder,
-.splitview-filter-bar {
+.splitview-nav + .splitview-nav.placeholder {
   display: none;
 }
 .splitview-nav.splitview-all-filtered ~ .splitview-nav.placeholder.all-filtered,

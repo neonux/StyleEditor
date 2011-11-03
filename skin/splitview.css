@@ -35,33 +35,11 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-.splitview-root,
-.splitview-controller,
-.splitview-main,
-.splitview-nav-container,
-.splitview-nav,
-.splitview-side-details,
-.splitview-details {
-  display: -moz-box;
-  -moz-box-flex: 1;
-  -moz-box-orient: vertical;
-}
-
 .splitview-root {
   margin-top: 4px;
 }
 
-.splitview-main {
-  -moz-box-flex: 0;
-}
-
-.splitview-controller {
-  min-height: 8em;
-  max-height: 14em;
-}
-
 .splitview-filter {
-  display: -moz-box;
   -moz-box-flex: 1;
   -moz-margin-start: 1ex;
   max-width: 25ex;
@@ -134,10 +112,6 @@ ol.splitview-nav > li.splitview-slide {
   -moz-padding-start: 3px;
 }
 
-.spacer {
-  -moz-box-flex: 1;
-}
-
 a {
   color: -moz-hyperlinktext;
   text-decoration: underline;
@@ -145,23 +119,6 @@ a {
 
 button {
   margin: 0;
-}
-
-/* this is to keep in sync with SplitView.jsm's LANDSCAPE_MEDIA_QUERY */
-@media (min-aspect-ratio: 5/3) {
-  .splitview-root {
-    -moz-box-orient: horizontal;
-  }
-  .splitview-controller {
-    -moz-box-flex: 0;
-    max-height: none;
-  }
-  .splitview-details {
-    display: none;
-  }
-  .splitview-details.splitview-active {
-    display: -moz-box;
-  }
 }
 
 /* limited width mode (hide search unless it has focus [search-on-type]) */
