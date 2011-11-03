@@ -124,14 +124,14 @@ button {
 /* limited width mode (hide search unless it has focus [search-on-type]) */
 @media (max-width: 250px) {
   .splitview-filter {
+    max-width: none;
     position: fixed;
-    width: 100%;
-    left: 0;
-    bottom: -2em;
+    margin: 0;
+    bottom: -4em;
     -moz-transition-property: bottom;
-    -moz-transition-duration: 0.5s;
+    -moz-transition-duration: 0.2s;
   }
-  .splitview-filter:focus {
-    bottom: 0em;
+  .splitview-filter[focused="true"] {
+    bottom: 0;
   }
 }
