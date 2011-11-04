@@ -30,21 +30,19 @@ function run(aChrome)
 
 let gNewEditor;       // to make sure only one new stylesheet got created
 let gCommitCount = 0; // to make sure only one Commit event is triggered
-let gAddedCount = 0;
 
 function testEditorAdded(aChrome, aEditor)
 {
-  if (++gAddedCount == 2) {
-    // test after the 2 initial stylesheets have been loaded
-    waitForFocus(function () {
-      // create a new style sheet
-      let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
-      EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
-    }, gChromeWindow);
-  }
-
-  if (aEditor.styleSheetIndex != 2) {
-    return; // this is not the new stylesheet
+  if (aEditor.styleSheetIndex != 2) { // this is not the new stylesheet
+    if (aChrome.editors[0].isLoaded && aChrome.editors[1].isLoaded) {
+      // test after the 2 initial stylesheets have been loaded
+      waitForFocus(function () {
+        // create a new style sheet
+        let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
+        EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
+      }, gChromeWindow);
+    }
+    return;
   }
 
   ok(!gNewEditor, "creating a new stylesheet triggers one EditorAdded event");
