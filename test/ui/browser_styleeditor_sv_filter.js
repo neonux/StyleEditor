@@ -36,6 +36,17 @@ function run(aChrome)
 function onFirstEditorAttach(aEditor)
 {
   let filter = gChromeWindow.document.querySelector(".splitview-filter");
+
+  // force the command event on input since it is not possible to disable
+  // the search textbox's timeout.
+  let forceCommandEvent = function forceCommandEvent() {
+    let evt = gChromeWindow.document.createEvent("XULCommandEvent");
+    evt.initCommandEvent("command", true, true, gChromeWindow, 0, false, false,
+                         false, false, null);
+    filter.dispatchEvent(evt);
+  }
+  filter.addEventListener("input", forceCommandEvent, false);
+
   let nav = gChromeWindow.document.querySelector(".splitview-nav");
   nav.focus();
 
@@ -77,6 +88,8 @@ function onFirstEditorAttach(aEditor)
 
     // auto-select the only result (enter the editor)
     EventUtils.synthesizeKey("VK_ENTER", {}, gChromeWindow);
+
+    filter.removeEventListener("input", forceCommandEvent, false);
   }, gChromeWindow);
 }
 
