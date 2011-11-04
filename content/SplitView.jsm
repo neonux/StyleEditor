@@ -434,7 +434,7 @@ SplitView.prototype = {
       return false;
     }.bind(this);
 
-    this._filter.addEventListener("input", function onFilterInput(aEvent) {
+    this._filter.addEventListener("command", function onFilterInput(aEvent) {
       this.filterItemsBy(this._filter.value);
     }.bind(this), false);
 
