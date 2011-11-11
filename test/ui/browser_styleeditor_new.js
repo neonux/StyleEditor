@@ -28,20 +28,20 @@ function run(aChrome)
      "there is 2 stylesheets initially");
 }
 
+let gAddedCount = 0;  // to add new stylesheet after the 2 initial stylesheets
 let gNewEditor;       // to make sure only one new stylesheet got created
 let gCommitCount = 0; // to make sure only one Commit event is triggered
 
 function testEditorAdded(aChrome, aEditor)
 {
-  if (aEditor.styleSheetIndex != 2) { // this is not the new stylesheet
-    if (aChrome.editors[0].isLoaded && aChrome.editors[1].isLoaded) {
-      // test after the 2 initial stylesheets have been loaded
-      waitForFocus(function () {
-        // create a new style sheet
-        let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
-        EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
-      }, gChromeWindow);
-    }
+  gAddedCount++;
+  if (gAddedCount == 2) {
+    waitForFocus(function () { // create a new style sheet
+      let newButton = gChromeWindow.document.querySelector(".style-editor-newButton");
+      EventUtils.synthesizeMouseAtCenter(newButton, {}, gChromeWindow);
+    }, gChromeWindow);
+  }
+  if (gAddedCount != 3) {
     return;
   }
 
