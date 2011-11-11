@@ -437,18 +437,18 @@ StyleEditorChrome.prototype = {
 
         this._updateSummaryForEditor(editor, aSummary);
 
-        // autofocus first or new stylesheet
-        if (editor.styleSheetIndex == 0 ||
-            editor.hasFlag(StyleEditorFlags.NEW)) {
-          this._view.activeSummary = aSummary;
-        }
-
         aSummary.addEventListener("focus", function onSummaryFocus(aEvent) {
           if (aEvent.target == aSummary) {
             // autofocus the stylesheet name
             aSummary.querySelector(".stylesheet-name").focus();
           }
         }, false);
+
+        // autofocus the first or new stylesheet
+        if (editor.styleSheetIndex == 0 ||
+            editor.hasFlag(StyleEditorFlags.NEW)) {
+          this._view.activeSummary = aSummary;
+        }
 
         this._triggerChromeListeners("EditorAdded", [editor]);
       }.bind(this),
