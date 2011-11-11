@@ -25,9 +25,11 @@ function launchStyleEditorChrome(aCallback)
   if (gChromeWindow.document.readyState != "complete") {
     gChromeWindow.addEventListener("load", function onChromeLoad() {
       gChromeWindow.removeEventListener("load", onChromeLoad, true);
+      gChromeWindow.styleEditorChrome._alwaysDisableAnimations = true;
       aCallback(gChromeWindow.styleEditorChrome);
     }, true);
   } else {
+    gChromeWindow.styleEditorChrome._alwaysDisableAnimations = true;
     aCallback(gChromeWindow.styleEditorChrome);
   }
 }
