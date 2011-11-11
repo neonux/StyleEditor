@@ -41,3 +41,7 @@
 .splitview-nav > li.error hgroup > .stylesheet-error-message {
   display: block;
 }
+
+.loading .splitview-nav-container > .placeholder {
+  display: none !important;
+}

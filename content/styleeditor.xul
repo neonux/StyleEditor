@@ -52,7 +52,7 @@
         persist="screenX screenY width height sizemode">
 <xul:script type="application/javascript" src="chrome://global/content/globalOverlay.js"/>
 
-<xul:box id="style-editor-chrome" class="splitview-root">
+<xul:box id="style-editor-chrome" class="splitview-root loading">
   <xul:box class="splitview-side-details"></xul:box>
   <xul:box class="splitview-controller">
     <xul:box class="splitview-main">
@@ -60,11 +60,13 @@
         <xul:button class="style-editor-newButton"
                     accesskey="&newButton.accesskey;"
                     tooltiptext="&newButton.tooltip;"
-                    label="&newButton.label;"></xul:button>
+                    label="&newButton.label;"
+                    disabled="true"></xul:button>
         <xul:button class="style-editor-importButton"
                     accesskey="&importButton.accesskey;"
                     tooltiptext="&importButton.tooltip;"
-                    label="&importButton.label;"></xul:button>
+                    label="&importButton.label;"
+                    disabled="true"></xul:button>
         <xul:box flex="1"></xul:box>
         <xul:textbox class="splitview-filter"
                      type="search"

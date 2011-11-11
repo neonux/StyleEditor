@@ -35,6 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+.loading .splitview-nav-container {
+  background: -moz-default-background-color url(chrome://browser/skin/tabbrowser/loading.png) no-repeat center center;
+}
+
 ol.splitview-nav:focus {
   outline: 0; /* focus ring is on the stylesheet name */
 }
