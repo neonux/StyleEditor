@@ -883,66 +883,47 @@ StyleEditor.prototype = {
     */
   _onCacheEntryAvailable: function SE__onCacheEntryAvailable(aEntry, aMode, aStatus)
   {
-    assert(!this._loadingContext);
     if (!Components.isSuccessCode(aStatus)) {
       return this._signalError(LOAD_ERROR);
     }
 
     let stream = aEntry.openInputStream(0);
-    let context = {
-      chunks: [],
-      stream: stream,
-      entry: aEntry,
-      inputSink: this.onDataAvailable.bind(this),
-      editor: this,
+    let chunks = [];
+    let streamListener = { // nsIStreamListener inherits nsIRequestObserver
+      onStartRequest: function (aRequest, aContext, aStatusCode) {
+      },
+      onDataAvailable: function (aRequest, aContext, aStream, aOffset, aCount) {
+        chunks.push(NetUtil.readInputStreamToString(aStream, aCount));
+      },
+      onStopRequest: function (aRequest, aContext, aStatusCode) {
+        this._onSourceLoad(chunks.join(""));
+      }.bind(this),
     };
-    this._loadingContext = context;
 
     let head = aEntry.getMetaDataElement("response-head");
     if (/^Content-Encoding:\s*gzip/mi.test(head)) {
       let converter = Cc["@mozilla.org/streamconv;1?from=gzip&to=uncompressed"]
                         .createInstance(Ci.nsIStreamConverter);
-      converter.asyncConvertData("gzip", "uncompressed", this, null);
-      context.inputSink = converter.onDataAvailable;
+      converter.asyncConvertData("gzip", "uncompressed", streamListener, null);
+      streamListener = converter; // proxy original listener via converter
     }
 
-    // start grabbing available chunk(s)
-    context.inputSink(null, null, stream, 0, stream.available());
-  },
-
-  /**
-   * nsIStreamListener.onDataAvailable implementation used as input sink when
-   * style sheet source is loaded from the browser cache.
-   *
-   * @private
-   * @param nsIRequest aRequest
-   * @param nsISupports aContext
-   * @param nsIInputStream aStream
-   * @param number aOffset
-   * @param number aCount
-   */
-  onDataAvailable: function SE_onDataAvailable(aRequest, aContext, aStream, aOffset, aCount) {
-    let context = this._loadingContext;
-    context.chunks.push(NetUtil.readInputStreamToString(aStream, aCount));
-
-    let available;
     try {
-      available = context.stream.available();
-      if (!available) {
-        context.stream.close();
+      streamListener.onStartRequest(null, null);
+      while (stream.available()) {
+        streamListener.onDataAvailable(null, null, stream, 0, stream.available());
       }
+      streamListener.onStopRequest(null, null, 0);
     } catch (ex) {
-      // note: some nsIInputStream implementations auto-close at EOS and throw
+      this._signalError(LOAD_ERROR);
+    } finally {
+      try {
+        stream.close();
+      } catch (ex) {
+        // swallow (some stream implementations can auto-close at eos)
+      }
+      aEntry.close();
     }
-    if (!available) {
-      context.entry.close();
-      context.editor._onSourceLoad(context.chunks.join(""));
-      context.editor._loadingContext = null;
-      return;
-    }
-
-    // load the next available chunk
-    context.inputSink(null, aContext, context.stream, 0, available);
   },
 
   /**
